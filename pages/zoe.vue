@@ -25,11 +25,25 @@ const zoeDamageImages = ref<DamageEntry[]>([
     "description": "Kratzer an der Felge vorne links."
   },
   {
+    "path": "/damages/zoe/signal-2025-05-23-173836.jpeg",
+    "side": "left",
+    "x": 55,
+    "y": 60,
+    "description": "Kratzer an der am Türrahmen (B-Säule) vorne links."
+  },
+  {
     "path": "/damages/zoe/signal-2025-05-18-193431.jpeg",
     "side": "left",
     "x": 69,
     "y": 39,
-    "description": "Delle an der Tür hinten links."
+    "description": "Kleine Delle an der Tür hinten links."
+  },
+  {
+    "path": "/damages/zoe/signal-2025-05-23-173645.jpeg",
+    "side": "left",
+    "x": 80,
+    "y": 53,
+    "description": "Kleine Delle am Kotflügek hinten links."
   },
   {
     "path": "/damages/zoe/signal-2025-05-18-193556.jpeg",
