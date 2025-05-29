@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Page for displaying Kona damage images with schematics
+
 // Define image paths
 const konaDamageImages = ref<DamageEntry[]>([
   { 

@@ -1,4 +1,6 @@
 <script setup lang="ts">
+// Page for displaying Kangoo damage images with schematics
+
 // Define image paths
 const kangooDamageImages = ref<DamageEntry[]>([])
 </script>
