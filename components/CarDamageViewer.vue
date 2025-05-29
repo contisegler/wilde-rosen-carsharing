@@ -1,30 +1,15 @@
-<script setup>
+<script setup lang="ts">
 // Component for displaying car damage images with schematics
 
-// Props definition
-const props = defineProps({
-  damageImages: {
-    type: Array,
-    required: true,
-    // Expected format for each item:
-    // {
-    //   path: String (path to damage image),
-    //   description: String (damage description),
-    //   x: Number (percentage from left),
-    //   y: Number (percentage from top),
-    //   side: String (car side - front, back, left, right, etc.)
-    // }
-  },
-  carModel: {
-    type: String,
-    required: true,
-    description: 'The model of the car (e.g., kona, tucson, etc.)'
-  },
+interface Props {
+  damageImages: DamageEntry[]
+  carModel: string
+}
 
-})
+const props = defineProps<Props>()
 
 // Generate schematic path based on car model and side
-const getSchematicPath = (side) => {
+const getSchematicPath = (side: string) => {
   return `/car_line_drawings/${props.carModel}_${side}.png`
 }
 </script>
