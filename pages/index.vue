@@ -8,7 +8,7 @@
       <div class="d-flex flex-column gap-3 align-items-center">
         <NuxtLink to="/kangoo" class="btn btn-primary btn-lg w-50">Kangoo Damage Inspection</NuxtLink>
         <NuxtLink to="/kona" class="btn btn-primary btn-lg w-50">Kona Damage Inspection</NuxtLink>
-        <NuxtLink to="/zow" class="btn btn-primary btn-lg w-50">Zow Damage Inspection</NuxtLink>
+        <NuxtLink to="/zoe" class="btn btn-primary btn-lg w-50">Zoe Damage Inspection</NuxtLink>
       </div>
     </div>
   </div>
