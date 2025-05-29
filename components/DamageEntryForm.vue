@@ -24,22 +24,36 @@ const currentImageIndex = ref(0)
 const showJson = ref(false)
 const jsonOutput = ref('')
 
-// List of Zoe damage images
-const zoeImages = [
-  '/damages/zoe/signal-2025-05-18-193248.jpeg',
-  '/damages/zoe/signal-2025-05-18-193335.jpeg',
-  '/damages/zoe/signal-2025-05-18-193348.jpeg',
-  '/damages/zoe/signal-2025-05-18-193431.jpeg',
-  '/damages/zoe/signal-2025-05-18-193504.jpeg',
-  '/damages/zoe/signal-2025-05-18-193556.jpeg',
-  '/damages/zoe/signal-2025-05-18-193635.jpeg',
-  '/damages/zoe/signal-2025-05-18-193703.jpeg',
-  '/damages/zoe/signal-2025-05-18-193723.jpeg',
-  '/damages/zoe/signal-2025-05-18-193734.jpeg',
-  '/damages/zoe/signal-2025-05-18-193750.jpeg',
-  '/damages/zoe/signal-2025-05-18-193851.jpeg',
-  '/damages/zoe/signal-2025-05-18-193929.jpeg'
-]
+// List of damage images based on car model
+const getImagesForModel = (model: string) => {
+  if (model === 'kangoo') {
+    // Actual Kangoo images
+    return [
+      '/damages/kangoo/signal-2025-05-18-194106.jpeg',
+      '/damages/kangoo/signal-2025-05-18-194231.jpeg',
+      '/damages/kangoo/signal-2025-05-18-194245.jpeg'
+    ]
+  } else {
+    // Default to Zoe images
+    return [
+      '/damages/zoe/signal-2025-05-18-193248.jpeg',
+      '/damages/zoe/signal-2025-05-18-193335.jpeg',
+      '/damages/zoe/signal-2025-05-18-193348.jpeg',
+      '/damages/zoe/signal-2025-05-18-193431.jpeg',
+      '/damages/zoe/signal-2025-05-18-193504.jpeg',
+      '/damages/zoe/signal-2025-05-18-193556.jpeg',
+      '/damages/zoe/signal-2025-05-18-193635.jpeg',
+      '/damages/zoe/signal-2025-05-18-193703.jpeg',
+      '/damages/zoe/signal-2025-05-18-193723.jpeg',
+      '/damages/zoe/signal-2025-05-18-193734.jpeg',
+      '/damages/zoe/signal-2025-05-18-193750.jpeg',
+      '/damages/zoe/signal-2025-05-18-193851.jpeg',
+      '/damages/zoe/signal-2025-05-18-193929.jpeg'
+    ]
+  }
+}
+
+const damageImages = ref<string[]>(getImagesForModel(props.carModel))
 
 const carSides = [
   { value: 'front', label: 'Front' },
@@ -51,13 +65,13 @@ const carSides = [
 ]
 
 const getSchematicPath = (side: string) => {
-  return `/car_line_drawings/zoe_${side}.png`
+  return `/car_line_drawings/${props.carModel}_${side}.png`
 }
 
 // Initialize with first image
 onMounted(() => {
-  if (zoeImages.length > 0) {
-    formData.path = zoeImages[0]
+  if (damageImages.value.length > 0) {
+    formData.path = damageImages.value[0]
   }
 })
 
@@ -71,9 +85,9 @@ const nextImage = () => {
   // Move to next image
   currentImageIndex.value++
   
-  if (currentImageIndex.value < zoeImages.length) {
+  if (currentImageIndex.value < damageImages.value.length) {
     // Set path to current image
-    formData.path = zoeImages[currentImageIndex.value]
+    formData.path = damageImages.value[currentImageIndex.value]
     
     // Check if we have saved data for this image
     if (tempData.value[currentImageIndex.value]) {
@@ -92,7 +106,14 @@ const nextImage = () => {
     }
   } else {
     // All images processed, prepare entries for JSON output
-    entries.value = Object.values(tempData.value)
+    const entriesArray = []
+    // Convert object to array in the correct order
+    for (let i = 0; i < damageImages.value.length; i++) {
+      if (tempData.value[i]) {
+        entriesArray.push(tempData.value[i])
+      }
+    }
+    entries.value = entriesArray
     generateJsonOutput()
     showJson.value = true
   }
@@ -105,7 +126,7 @@ const previousImage = () => {
   // Move to previous image
   if (currentImageIndex.value > 0) {
     currentImageIndex.value--
-    formData.path = zoeImages[currentImageIndex.value]
+    formData.path = damageImages.value[currentImageIndex.value]
     
     // Restore saved data for the previous image
     if (tempData.value[currentImageIndex.value]) {
@@ -153,7 +174,7 @@ const handleSchematicClick = (event: MouseEvent) => {
 
 const resetForm = () => {
   currentImageIndex.value = 0
-  formData.path = zoeImages[0]
+  formData.path = damageImages.value.length > 0 ? damageImages.value[0] : ''
   formData.side = 'front'
   formData.x = 50
   formData.y = 50
@@ -170,7 +191,7 @@ const resetForm = () => {
       <div class="col-12">
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
-            <h5 class="mb-0">Damage Entry ({{ currentImageIndex + 1 }} of {{ zoeImages.length }})</h5>
+            <h5 class="mb-0">Damage Entry ({{ currentImageIndex + 1 }} of {{ damageImages.length }})</h5>
             <button type="button" class="btn btn-sm btn-outline-secondary" @click="resetForm">
               Start Over
             </button>
@@ -276,7 +297,7 @@ const resetForm = () => {
                 Previous Image
               </button>
               <button type="button" class="btn btn-primary" @click="nextImage">
-                {{ currentImageIndex < zoeImages.length - 1 ? 'Next Image' : 'Finish' }}
+                {{ currentImageIndex < damageImages.length - 1 ? 'Next Image' : 'Finish' }}
               </button>
             </div>
           </div>
