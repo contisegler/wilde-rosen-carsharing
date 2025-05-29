@@ -1,5 +1,16 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2024-11-01',
-  devtools: { enabled: true }
+  compatibilityDate: '2025-05-01',
+  devtools: { enabled: true },
+  css: ['~/assets/main.scss'],
+  vite: {
+    css: {
+      preprocessorOptions: {
+        scss: {
+          // This suppresses deprecation warnings from dependencies
+          quietDeps: true
+        }
+      }
+    }
+  }
 })
