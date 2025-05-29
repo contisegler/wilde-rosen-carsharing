@@ -61,22 +61,66 @@ onMounted(() => {
   }
 })
 
+// Store temporary data for each image
+const tempData = ref<Record<number, FormData>>({})
+
 const nextImage = () => {
-  // Save current entry
-  entries.value.push({ ...formData })
+  // Save current data to temp storage
+  tempData.value[currentImageIndex.value] = { ...formData }
   
   // Move to next image
   currentImageIndex.value++
+  
   if (currentImageIndex.value < zoeImages.length) {
+    // Set path to current image
     formData.path = zoeImages[currentImageIndex.value]
-    formData.side = 'front'
-    formData.x = 50
-    formData.y = 50
-    formData.description = ''
+    
+    // Check if we have saved data for this image
+    if (tempData.value[currentImageIndex.value]) {
+      // Restore saved data
+      const savedData = tempData.value[currentImageIndex.value]
+      formData.side = savedData.side
+      formData.x = savedData.x
+      formData.y = savedData.y
+      formData.description = savedData.description
+    } else {
+      // Set default values for new image
+      formData.side = 'front'
+      formData.x = 50
+      formData.y = 50
+      formData.description = ''
+    }
   } else {
-    // All images processed, show JSON
+    // All images processed, prepare entries for JSON output
+    entries.value = Object.values(tempData.value)
     generateJsonOutput()
     showJson.value = true
+  }
+}
+
+const previousImage = () => {
+  // Save current data to temp storage
+  tempData.value[currentImageIndex.value] = { ...formData }
+  
+  // Move to previous image
+  if (currentImageIndex.value > 0) {
+    currentImageIndex.value--
+    formData.path = zoeImages[currentImageIndex.value]
+    
+    // Restore saved data for the previous image
+    if (tempData.value[currentImageIndex.value]) {
+      const savedData = tempData.value[currentImageIndex.value]
+      formData.side = savedData.side
+      formData.x = savedData.x
+      formData.y = savedData.y
+      formData.description = savedData.description
+    } else {
+      // Default values if no saved data exists (shouldn't happen)
+      formData.side = 'front'
+      formData.x = 50
+      formData.y = 50
+      formData.description = ''
+    }
   }
 }
 
@@ -115,6 +159,7 @@ const resetForm = () => {
   formData.y = 50
   formData.description = ''
   entries.value = []
+  tempData.value = {} // Clear all temporary data
   showJson.value = false
 }
 </script>
@@ -221,7 +266,14 @@ const resetForm = () => {
             </div>
 
             <div class="d-flex justify-content-between">
-              <NuxtLink to="/" class="btn btn-outline-secondary">Back to Home</NuxtLink>
+              <button 
+                type="button" 
+                class="btn btn-outline-secondary" 
+                @click="previousImage"
+                :disabled="currentImageIndex === 0"
+              >
+                Previous Image
+              </button>
               <button type="button" class="btn btn-primary" @click="nextImage">
                 {{ currentImageIndex < zoeImages.length - 1 ? 'Next Image' : 'Finish' }}
               </button>
