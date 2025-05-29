@@ -8,20 +8,28 @@ const props = defineProps({
     required: true,
     // Expected format for each item:
     // {
-    //   damagePath: String (path to damage image),
-    //   schematicPath: String (path to schematic image),
-    //   title: String (damage title),
+    //   path: String (path to damage image),
     //   description: String (damage description),
     //   x: Number (percentage from left),
     //   y: Number (percentage from top),
     //   side: String (car side - front, back, left, right, etc.)
     // }
   },
+  carModel: {
+    type: String,
+    required: true,
+    description: 'The model of the car (e.g., kona, tucson, etc.)'
+  },
   title: {
     type: String,
     default: 'Car Damage Inspection'
   }
-});
+})
+
+// Generate schematic path based on car model and side
+const getSchematicPath = (side) => {
+  return `/car_line_drawings/${props.carModel}_${side}.png`
+}
 </script>
 
 <template>
@@ -37,9 +45,9 @@ const props = defineProps({
               <!-- Main Damage Image with NuxtImg -->
               <div class="damage-image-container">
                 <NuxtImg 
-                  :src="image.damagePath" 
+                  :src="image.path" 
                   class="damage-image" 
-                  :alt="image.title"
+                  alt="Car damage image"
                   loading="lazy"
                   format="webp"
                   quality="80"
@@ -54,9 +62,9 @@ const props = defineProps({
                 <div class="position-relative">
                   <div class="schematic-image-container">
                     <NuxtImg 
-                      :src="image.schematicPath" 
+                      :src="getSchematicPath(image.side)" 
                       class="schematic-image" 
-                      :alt="'Schematic for ' + image.title"
+                      :alt="'Schematic for ' + props.carModel  + ' ' + image.side + ' side'"
                       loading="lazy"
                       format="webp"
                       quality="60"
