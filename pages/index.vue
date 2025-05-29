@@ -1,6 +1,7 @@
 <template>
   <div>
-    <p>This is the index page of your Nuxt application.</p>
+    <p>This is the index page of your Nuxt application. <br>
+      <b>Hello World</b> in base64 is {{ encoded }}</p>
     <img src="~/assets/duckling.jpg" alt="Duckling" class="img-fluid mt-0 mb-4" />
     <!-- Using the Alert component -->
     <Alert type="success" message="This is a success alert from the component!" />
@@ -17,7 +18,7 @@
 </template>
 
 <script setup>
-// The component is auto-imported by Nuxt
+const encoded = ref(useBase64('Hello World').base64)
 </script>
 
 <style scoped lang="scss">
