@@ -20,10 +20,7 @@ const props = defineProps({
     required: true,
     description: 'The model of the car (e.g., kona, tucson, etc.)'
   },
-  title: {
-    type: String,
-    default: 'Car Damage Inspection'
-  }
+
 })
 
 // Generate schematic path based on car model and side
@@ -34,8 +31,6 @@ const getSchematicPath = (side) => {
 
 <template>
   <div class="container py-4">
-    <h1 class="text-center mb-4">{{ title }}</h1>
-    
     <div class="row">
       <div class="col-12 mx-auto">
         <!-- All Damage Images -->

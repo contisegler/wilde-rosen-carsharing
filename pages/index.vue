@@ -2,9 +2,14 @@
 </script>
 
 <template>
-  <div>
-    <div class="mt-4">
-      <NuxtLink to="/kona" class="btn btn-outline-success me-2">View Kona Damages</NuxtLink>
+  <div class="container mt-5">
+    <div class="text-center">
+      <h1 class="mb-5">Welcome to Car Damage Inspector</h1>
+      <div class="d-flex flex-column gap-3 align-items-center">
+        <NuxtLink to="/kangoo" class="btn btn-primary btn-lg w-50">Kangoo Damage Inspection</NuxtLink>
+        <NuxtLink to="/kona" class="btn btn-primary btn-lg w-50">Kona Damage Inspection</NuxtLink>
+        <NuxtLink to="/zow" class="btn btn-primary btn-lg w-50">Zow Damage Inspection</NuxtLink>
+      </div>
     </div>
   </div>
 </template>
