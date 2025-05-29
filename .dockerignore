@@ -1,0 +1,36 @@
+# .dockerignore
+# Build artifacts
+/.nuxt
+/.output
+/node_modules
+
+# Git files
+.git
+.gitignore
+
+# Documentation and config files
+README.md
+LICENSE
+*.md
+
+# Development files
+.vscode
+.idea
+.editorconfig
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Test files
+/test
+/tests
+/__tests__
+/coverage
+
+# Environment files
+.env*
+!.env.example
+
+# Deploy scripts (not needed in container)
+deploy*.sh
