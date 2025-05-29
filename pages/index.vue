@@ -13,7 +13,7 @@ const encoded = ref(useBase64('Hello World').base64)
     </Alert>
 
     <!-- Using the Alert component with slot content -->
-    <Alert type="invalid">
+    <Alert type="primary">
       This is a custom alert message using slots!
     </Alert>
 
