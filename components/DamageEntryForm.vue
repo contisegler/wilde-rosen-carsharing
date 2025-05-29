@@ -228,13 +228,14 @@ const resetForm = () => {
                 <!-- Description -->
                 <div class="mb-3">
                   <label for="description" class="form-label">Description</label>
-                  <input
-                    type="text"
+                  <textarea
                     class="form-control"
                     id="description"
                     v-model="formData.description"
+                    rows="3"
+                    style="width: 100%;"
                     required
-                  />
+                  ></textarea>
                 </div>
               </div>
               
