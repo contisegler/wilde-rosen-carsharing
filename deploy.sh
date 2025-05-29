@@ -7,7 +7,7 @@ APP_NAME="wilde-rosen-carsharing"
 IMAGE_NAME="wilde-rosen-carsharing"
 
 # Extract version from app.config.ts
-VERSION=$(grep "version:" app.config.ts | sed -E "s/.*version: '([^']+)'.*/\1/")
+VERSION=$(grep "version:" nuxt.config.ts | sed -E "s/.*version: '([^']+)'.*/\1/")
 
 echo "###################################################"
 echo "# Building version: $VERSION"
