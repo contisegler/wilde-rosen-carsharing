@@ -1,15 +1,9 @@
-<template>
-  <div class="alert" :class="'alert-' + type" role="alert">
-    <slot>{{ message }}</slot>
-  </div>
-</template>
-
-<script setup>
+<script setup lang="ts">
 defineProps({
   type: {
     type: String,
     default: 'primary',
-    validator: (value) => [
+    validator: (value: string) => [
       'primary',
       'secondary',
       'success',
@@ -19,14 +13,15 @@ defineProps({
       'light',
       'dark'
     ].includes(value)
-  },
-  message: {
-    type: String,
-    default: ''
   }
 });
 </script>
 
+<template>
+  <div class="alert" :class="'alert-' + type" role="alert">
+    <slot></slot>
+  </div>
+</template>
+
 <style scoped lang="scss">
-// Additional styling for the alert component can be added here
 </style>
