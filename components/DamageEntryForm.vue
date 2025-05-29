@@ -89,25 +89,22 @@ const copyToClipboard = () => {
   alert('Copied to clipboard!')
 }
 
-// Reference to the schematic image element
+// References for positioning
 const schematicImage = ref<HTMLElement | null>(null)
+const schematicContainer = ref<HTMLElement | null>(null)
 
 const handleSchematicClick = (event: MouseEvent) => {
-  // Only handle clicks on the image itself
+  // Get the target element and its dimensions
   const target = event.currentTarget as HTMLElement
-  const container = target.parentElement
-  
-  if (!container) return
-  
-  // Get the bounding rectangle of the image
   const rect = target.getBoundingClientRect()
   
-  // Calculate position relative to the image dimensions only
-  const x = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100))
-  const y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100))
+  // Calculate position relative to the image
+  const x = ((event.clientX - rect.left) / rect.width) * 100
+  const y = ((event.clientY - rect.top) / rect.height) * 100
   
-  formData.x = Math.round(x)
-  formData.y = Math.round(y)
+  // Set the position values, ensuring they stay within 0-100%
+  formData.x = Math.max(0, Math.min(100, Math.round(x)))
+  formData.y = Math.max(0, Math.min(100, Math.round(y)))
 }
 
 const resetForm = () => {
@@ -197,26 +194,23 @@ const resetForm = () => {
               </div>
               
               <div class="col-md-8">
-                <div class="schematic-preview position-relative" style="min-height: 400px; background-color: #f8f9fa;">
-                  <div class="position-relative" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center;">
+                <div class="schematic-preview" style="background-color: #f8f9fa;">
+                  <div class="position-relative" style="display: inline-block;">
                     <NuxtImg 
                       :src="getSchematicPath(formData.side)" 
-                      class="img-fluid schematic-img" 
+                      class="schematic-img" 
                       alt="Car side schematic"
-                      style="max-height: 400px; width: auto; object-fit: contain; position: relative;"
                       loading="lazy"
                       format="webp"
                       quality="90"
                       sizes="sm:100vw md:80vw lg:60vw"
                       @click="handleSchematicClick"
-                      ref="schematicImage"
                     />
                     <div 
                       class="damage-x-marker"
                       :style="{
                         left: `${formData.x}%`,
-                        top: `${formData.y}%`,
-                        position: 'absolute'
+                        top: `${formData.y}%`
                       }"
                     >
                       X
@@ -238,7 +232,7 @@ const resetForm = () => {
     </div>
 
     <!-- JSON Output -->
-    <div v-else class="row justify-content-center">
+    <div v-if="showJson" class="row justify-content-center">
       <div class="col-12">
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
@@ -266,22 +260,17 @@ const resetForm = () => {
 
 <style scoped>
 .schematic-preview {
-  position: relative;
-  width: 100%;
-  min-height: 400px;
+  text-align: center;
+  padding: 15px;
   border: 1px solid #dee2e6;
   border-radius: 0.25rem;
-  overflow: hidden;
   background-color: #f8f9fa;
-  display: flex;
-  justify-content: center;
-  align-items: center;
 }
 
 .schematic-img {
   cursor: crosshair;
-  display: block;
-  margin: 0 auto;
+  max-height: 400px;
+  max-width: 100%;
 }
 
 .damage-x-marker {
