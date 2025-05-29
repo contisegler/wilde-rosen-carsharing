@@ -1,5 +1,4 @@
 <script setup lang="ts">
-const encoded = ref(useBase64('Hello World').base64)
 </script>
 
 <template>

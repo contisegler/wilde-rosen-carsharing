@@ -1,21 +1,11 @@
 <script setup lang="ts">
 // Page for displaying Kona damage images with schematics
 
-// Import damage images
-import frontDamage30_100 from '~/assets/damages/kona/kona_front_30_100.jpg'
-import frontDamage100_100 from '~/assets/damages/kona/kona_front_100_100.jpg'
-import backDamage100_150 from '~/assets/damages/kona/kona_back_100_150.jpg'
-import rightDamage20_120 from '~/assets/damages/kona/kona_right_20_120.jpg'
-
-// Import schematic images
-import frontSchematic from '~/assets/car_line_drawings/kona_front.png'
-import backSchematic from '~/assets/car_line_drawings/kona_back.png'
-import rightSchematic from '~/assets/car_line_drawings/kona_right.png'
-
+// Define image paths
 const konaDamageImages = [
   { 
-    damagePath: frontDamage30_100,
-    schematicPath: frontSchematic, 
+    damagePath: '/damages/kona/kona_front_30_100.jpg',
+    schematicPath: '/car_line_drawings/kona_front.png',
     title: 'Front Damage',
     description: 'Damage on the front side at 30% from left, 70% from top',
     x: 30,
@@ -23,8 +13,8 @@ const konaDamageImages = [
     side: 'front'
   },
   { 
-    damagePath: frontDamage100_100,
-    schematicPath: frontSchematic, 
+    damagePath: '/damages/kona/kona_front_100_100.jpg',
+    schematicPath: '/car_line_drawings/kona_front.png',
     title: 'Front Damage',
     description: 'Damage on the front side at 100% from left, 100% from top',
     x: 100,
@@ -32,8 +22,8 @@ const konaDamageImages = [
     side: 'front'
   },
   { 
-    damagePath: backDamage100_150,
-    schematicPath: backSchematic, 
+    damagePath: '/damages/kona/kona_back_100_150.jpg',
+    schematicPath: '/car_line_drawings/kona_back.png',
     title: 'Back Damage',
     description: 'Damage on the back side at 100% from left, 50% from top',
     x: 100,
@@ -41,15 +31,15 @@ const konaDamageImages = [
     side: 'back'
   },
   { 
-    damagePath: rightDamage20_120,
-    schematicPath: rightSchematic, 
+    damagePath: '/damages/kona/kona_right_20_120.jpg',
+    schematicPath: '/car_line_drawings/kona_right.png',
     title: 'Right Side Damage',
     description: 'Damage on the right side at 20% from left, 80% from top',
     x: 20,
     y: 80,
     side: 'right'
   }
-];
+]
 </script>
 
 <template>

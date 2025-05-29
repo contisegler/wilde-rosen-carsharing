@@ -34,13 +34,37 @@ const props = defineProps({
         <div class="damage-list">
           <div v-for="(image, index) in damageImages" :key="index" class="damage-item mb-5">
             <div class="position-relative damage-container">
-              <!-- Main Damage Image -->
-              <img :src="image.damagePath" class="img-fluid damage-image" :alt="image.title">
+              <!-- Main Damage Image with NuxtImg -->
+              <div class="damage-image-container">
+                <NuxtImg 
+                  :src="image.damagePath" 
+                  class="damage-image" 
+                  :alt="image.title"
+                  loading="lazy"
+                  format="webp"
+                  quality="80"
+                  sizes="sm:100vw md:80vw lg:600px"
+                  provider="ipx"
+                  fit="contain"
+                />
+              </div>
               
               <!-- Schematic Overlay -->
               <div class="schematic-overlay">
                 <div class="position-relative">
-                  <img :src="image.schematicPath" class="schematic-image" :alt="'Schematic for ' + image.title">
+                  <div class="schematic-image-container">
+                    <NuxtImg 
+                      :src="image.schematicPath" 
+                      class="schematic-image" 
+                      :alt="'Schematic for ' + image.title"
+                      loading="lazy"
+                      format="webp"
+                      quality="60"
+                      sizes="sm:30vw md:20vw lg:200px"
+                      provider="ipx"
+                      fit="contain"
+                    />
+                  </div>
                   <div class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
                     X
                   </div>
@@ -72,30 +96,49 @@ const props = defineProps({
   margin-bottom: 2rem;
 }
 
-.damage-image {
-  object-fit: contain;
+.damage-image-container {
   width: 100%;
   max-height: 600px;
-  display: block;
   margin: 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+
+.damage-image {
+  width: 100%;
+  height: auto;
+  max-height: 600px;
+  object-fit: contain;
+}
+
+.schematic-image-container {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.schematic-image {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
 }
 
 .schematic-overlay {
   position: absolute;
   top: 10px;
   right: 10px;
-  background-color: transparent;
-  border-radius: 5px;
-  padding: 5px;
-  z-index: 10;
   max-width: 30%;
-  opacity: 0.8;
+  z-index: 10;
 }
 
 .schematic-image {
   width: 100%;
   display: block;
-  opacity: 0.9;
+  opacity: 0.7;
 }
 
 .damage-x-marker {
@@ -109,12 +152,6 @@ const props = defineProps({
     1px -1px 0 #fff,
     -1px 1px 0 #fff,
     1px 1px 0 #fff;
-  animation: blink 1s infinite;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.5; }
 }
 
 .damage-description {
