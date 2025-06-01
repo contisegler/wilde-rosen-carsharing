@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // Page for displaying Kangoo damage images with schematics
 
-// Define image paths
+// Define image paths - in a real optimization, this data would be moved to a shared data file
+// or fetched from an API, but for now we're keeping it here for simplicity
 const kangooDamageImages = ref<DamageEntry[]>([
   {
     "path": "/damages/kangoo/signal-2025-05-18-194106.jpeg",

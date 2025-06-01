@@ -12,7 +12,8 @@ export default defineNuxtConfig({
 
   // TypeScript configuration
   typescript: {
-    typeCheck: true
+    typeCheck: true,
+    strict: true
   },
 
   // App configuration
@@ -36,12 +37,53 @@ export default defineNuxtConfig({
           quietDeps: true
         }
       }
+    },
+    // Optimize dependencies
+    optimizeDeps: {
+      include: ['bootstrap']
+    },
+    // Enable build optimizations
+    build: {
+      cssCodeSplit: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            bootstrap: ['bootstrap']
+          }
+        }
+      }
     }
+  },
+  
+  // Build optimization
+  build: {
+    transpile: []
   },
   
   // Modules
   modules: ['@nuxt/image'],
   
   // Image module configuration
-  image: {}
+  image: {
+    // Optimize image loading
+    provider: 'ipx',
+    quality: 80,
+    format: ['webp', 'jpg', 'png'],
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536
+    }
+  },
+  
+  // Nitro configuration for optimized server
+  nitro: {
+    compressPublicAssets: true,
+    minify: true,
+    // Optimize Firebase hosting
+    preset: 'firebase'
+  }
 })

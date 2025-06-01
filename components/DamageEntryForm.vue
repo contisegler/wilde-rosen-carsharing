@@ -1,17 +1,10 @@
 <script setup lang="ts">
-interface FormData {
-  path: string
-  side: string
-  x: number
-  y: number
-  description: string
-}
 
 const props = defineProps<{
   carModel: string
 }>()
 
-const formData = reactive<FormData>({
+const damageData = reactive<DamageEntry>({
   path: '',
   side: 'front',
   x: 50,
@@ -19,90 +12,67 @@ const formData = reactive<FormData>({
   description: ''
 })
 
-const entries = ref<FormData[]>([])
+const entries = ref<DamageEntry[]>([])
 const currentImageIndex = ref(0)
 const showJson = ref(false)
 const jsonOutput = ref('')
 
-// List of damage images based on car model
-const getImagesForModel = (model: string) => {
-  if (model === 'kangoo') {
-    // Actual Kangoo images
-    return [
-      '/damages/kangoo/signal-2025-05-18-194106.jpeg',
-      '/damages/kangoo/signal-2025-05-18-194231.jpeg',
-      '/damages/kangoo/signal-2025-05-18-194245.jpeg'
-    ]
-  } else {
-    // Default to Zoe images
-    return [
-      '/damages/zoe/signal-2025-05-18-193248.jpeg',
-      '/damages/zoe/signal-2025-05-18-193335.jpeg',
-      '/damages/zoe/signal-2025-05-18-193348.jpeg',
-      '/damages/zoe/signal-2025-05-18-193431.jpeg',
-      '/damages/zoe/signal-2025-05-18-193504.jpeg',
-      '/damages/zoe/signal-2025-05-18-193556.jpeg',
-      '/damages/zoe/signal-2025-05-18-193635.jpeg',
-      '/damages/zoe/signal-2025-05-18-193703.jpeg',
-      '/damages/zoe/signal-2025-05-18-193723.jpeg',
-      '/damages/zoe/signal-2025-05-18-193734.jpeg',
-      '/damages/zoe/signal-2025-05-18-193750.jpeg',
-      '/damages/zoe/signal-2025-05-18-193851.jpeg',
-      '/damages/zoe/signal-2025-05-18-193929.jpeg'
-    ]
-  }
+// Use the shared helper function to get damage images
+const damageImages = ref<string[]>(getDamageImagesForModel(props.carModel))
+
+// Use the shared car sides constant
+const carSides = CAR_SIDES
+
+// Use the shared helper function to get schematic path
+const getCarSchematicPath = (side: string) => {
+  return getSchematicPath(props.carModel, side)
 }
 
-const damageImages = ref<string[]>(getImagesForModel(props.carModel))
+// This component doesn't use the modal functionality
 
-const carSides = [
-  { value: 'front', label: 'Front' },
-  { value: 'back', label: 'Back' },
-  { value: 'left', label: 'Left Side' },
-  { value: 'right', label: 'Right Side' },
-  { value: 'top', label: 'Top' },
-  { value: 'bottom', label: 'Bottom' }
-]
+// Use the image optimization composable
+const { getOptimizedImageProps } = useImageOptimization()
 
-const getSchematicPath = (side: string) => {
-  return `/car_line_drawings/${props.carModel}_${side}.png`
-}
+// Get optimized image props for different sizes
+const thumbnailProps = getOptimizedImageProps('thumbnail')
+const mediumImageProps = getOptimizedImageProps('medium')
+const largeImageProps = getOptimizedImageProps('large')
 
 // Initialize with first image
 onMounted(() => {
   if (damageImages.value.length > 0) {
-    formData.path = damageImages.value[0]
+    damageData.path = damageImages.value[0]
   }
 })
 
 // Store temporary data for each image
-const tempData = ref<Record<number, FormData>>({})
+const tempData = ref<Record<number, DamageEntry>>({})
 
 const nextImage = () => {
   // Save current data to temp storage
-  tempData.value[currentImageIndex.value] = { ...formData }
+  tempData.value[currentImageIndex.value] = { ...damageData }
   
   // Move to next image
   currentImageIndex.value++
   
   if (currentImageIndex.value < damageImages.value.length) {
     // Set path to current image
-    formData.path = damageImages.value[currentImageIndex.value]
+    damageData.path = damageImages.value[currentImageIndex.value]
     
     // Check if we have saved data for this image
     if (tempData.value[currentImageIndex.value]) {
       // Restore saved data
       const savedData = tempData.value[currentImageIndex.value]
-      formData.side = savedData.side
-      formData.x = savedData.x
-      formData.y = savedData.y
-      formData.description = savedData.description
+      damageData.side = savedData.side
+      damageData.x = savedData.x
+      damageData.y = savedData.y
+      damageData.description = savedData.description
     } else {
       // Set default values for new image
-      formData.side = 'front'
-      formData.x = 50
-      formData.y = 50
-      formData.description = ''
+      damageData.side = 'front'
+      damageData.x = 50
+      damageData.y = 50
+      damageData.description = ''
     }
   } else {
     // All images processed, prepare entries for JSON output
@@ -121,26 +91,26 @@ const nextImage = () => {
 
 const previousImage = () => {
   // Save current data to temp storage
-  tempData.value[currentImageIndex.value] = { ...formData }
+  tempData.value[currentImageIndex.value] = { ...damageData }
   
   // Move to previous image
   if (currentImageIndex.value > 0) {
     currentImageIndex.value--
-    formData.path = damageImages.value[currentImageIndex.value]
+    damageData.path = damageImages.value[currentImageIndex.value]
     
     // Restore saved data for the previous image
     if (tempData.value[currentImageIndex.value]) {
       const savedData = tempData.value[currentImageIndex.value]
-      formData.side = savedData.side
-      formData.x = savedData.x
-      formData.y = savedData.y
-      formData.description = savedData.description
+      damageData.side = savedData.side
+      damageData.x = savedData.x
+      damageData.y = savedData.y
+      damageData.description = savedData.description
     } else {
       // Default values if no saved data exists (shouldn't happen)
-      formData.side = 'front'
-      formData.x = 50
-      formData.y = 50
-      formData.description = ''
+      damageData.side = 'front'
+      damageData.x = 50
+      damageData.y = 50
+      damageData.description = ''
     }
   }
 }
@@ -168,17 +138,17 @@ const handleSchematicClick = (event: MouseEvent) => {
   const y = ((event.clientY - rect.top) / rect.height) * 100
   
   // Set the position values, ensuring they stay within 0-100%
-  formData.x = Math.max(0, Math.min(100, Math.round(x)))
-  formData.y = Math.max(0, Math.min(100, Math.round(y)))
+  damageData.x = Math.max(0, Math.min(100, Math.round(x)))
+  damageData.y = Math.max(0, Math.min(100, Math.round(y)))
 }
 
 const resetForm = () => {
   currentImageIndex.value = 0
-  formData.path = damageImages.value.length > 0 ? damageImages.value[0] : ''
-  formData.side = 'front'
-  formData.x = 50
-  formData.y = 50
-  formData.description = ''
+  damageData.path = damageImages.value.length > 0 ? damageImages.value[0] : ''
+  damageData.side = 'front'
+  damageData.x = 50
+  damageData.y = 50
+  damageData.description = ''
   entries.value = []
   tempData.value = {} // Clear all temporary data
   showJson.value = false
@@ -200,14 +170,11 @@ const resetForm = () => {
             <!-- Current Image -->
             <div class="mb-4 text-center">
               <NuxtImg 
-                :src="formData.path" 
+                :src="damageData.path" 
                 class="img-fluid" 
                 style="max-height: 500px; max-width: 100%; object-fit: contain;" 
                 :alt="`Damage image ${currentImageIndex + 1}`"
-                loading="lazy"
-                format="webp"
-                quality="90"
-                sizes="sm:100vw md:90vw lg:70vw"
+                v-bind="largeImageProps"
               />
             </div>
 
@@ -216,7 +183,7 @@ const resetForm = () => {
               <div class="col-md-4">
                 <div class="mb-3">
                   <label class="form-label">Car Side</label>
-                  <select v-model="formData.side" class="form-select">
+                  <select v-model="damageData.side" class="form-select">
                     <option v-for="side in carSides" :key="side.value" :value="side.value">
                       {{ side.label }}
                     </option>
@@ -225,24 +192,24 @@ const resetForm = () => {
                 
                 <!-- Position Controls -->
                 <div class="mb-3">
-                  <label class="form-label">X Position: {{ formData.x }}%</label>
+                  <label class="form-label">X Position: {{ damageData.x }}%</label>
                   <input 
                     type="range" 
                     class="form-range" 
                     min="0" 
                     max="100" 
-                    v-model.number="formData.x"
+                    v-model.number="damageData.x"
                   >
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label">Y Position: {{ formData.y }}%</label>
+                  <label class="form-label">Y Position: {{ damageData.y }}%</label>
                   <input 
                     type="range" 
                     class="form-range" 
                     min="0" 
                     max="100" 
-                    v-model.number="formData.y"
+                    v-model.number="damageData.y"
                   >
                 </div>
                 
@@ -252,7 +219,7 @@ const resetForm = () => {
                   <textarea
                     class="form-control"
                     id="description"
-                    v-model="formData.description"
+                    v-model="damageData.description"
                     rows="3"
                     style="width: 100%;"
                     required
@@ -264,7 +231,7 @@ const resetForm = () => {
                 <div class="schematic-preview" style="background-color: #f8f9fa;">
                   <div class="position-relative" style="display: inline-block;">
                     <NuxtImg 
-                      :src="getSchematicPath(formData.side)" 
+                      :src="getCarSchematicPath(damageData.side)" 
                       class="schematic-img" 
                       alt="Car side schematic"
                       loading="lazy"
@@ -276,8 +243,8 @@ const resetForm = () => {
                     <div 
                       class="damage-x-marker"
                       :style="{
-                        left: `${formData.x}%`,
-                        top: `${formData.y}%`
+                        left: `${damageData.x}%`,
+                        top: `${damageData.y}%`
                       }"
                     >
                       X
