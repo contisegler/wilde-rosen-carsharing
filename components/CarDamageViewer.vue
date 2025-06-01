@@ -135,7 +135,6 @@ watchEffect(() => {
   z-index: 10;
 }
 
-
 .schematic-image {
   width: 100%;
   display: block;
@@ -153,6 +152,24 @@ watchEffect(() => {
     1px -1px 0 #fff,
     -1px 1px 0 #fff,
     1px 1px 0 #fff;
+}
+
+/* Responsive adjustments for the damage marker */
+@media (max-width: 576px) {
+  .damage-x-marker {
+    font-size: 16px;
+    text-shadow:
+      -0.5px -0.5px 0 #fff,
+      0.5px -0.5px 0 #fff,
+      -0.5px 0.5px 0 #fff,
+      0.5px 0.5px 0 #fff;
+  }
+}
+
+@media (max-width: 375px) {
+  .damage-x-marker {
+    font-size: 14px;
+  }
 }
 
 .damage-description {
@@ -180,36 +197,4 @@ watchEffect(() => {
 .clickable:hover {
   transform: scale(1.02);
 }
-/* 
-@media (max-width: 768px) {
-  .damage-image {
-    max-height: 450px;
-  }
-
-  .schematic-overlay {
-    max-width: 40%;
-    top: 5px;
-    right: 5px;
-    padding: 3px;
-  }
-
-  .damage-x-marker {
-    font-size: 16px;
-  }
-
-  .damage-description {
-    padding: 8px 10px;
-    font-size: 12px;
-  }
-
-  .modal-content {
-    width: 100%;
-    height: 100%;
-  }
-
-  .close-button {
-    top: 10px;
-    right: 10px;
-  }
-} */
 </style>
