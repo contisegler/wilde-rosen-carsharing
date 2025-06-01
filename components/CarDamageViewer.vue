@@ -3,23 +3,18 @@
 // Using Nuxt's auto-generated types for components
 
 // Easy Lightbox state
-const visibleRef = ref(false)
-const indexRef = ref(0)
-const lightboxImages = ref<string[]>([])
+const visibleRef = ref<boolean[]>([])
+// const lightboxImages = ref<{ src: string; title: string }[]>([])
 
 // Show image in lightbox
 const showImg = (index: number) => {
-  indexRef.value = index
-  visibleRef.value = true
+  visibleRef.value[index] = true
 }
 
 // Hide lightbox
 const onHide = () => {
-  visibleRef.value = false
+  visibleRef.value = visibleRef.value.map(() => false)
 }
-
-// Use the image optimization composable
-const { getOptimizedImageProps } = useImageOptimization()
 
 interface Props {
   damageImages: DamageEntry[]
@@ -36,17 +31,19 @@ const getCarSchematicPath = (side: string) => {
 // Initialize lightbox images from damage entries
 watchEffect(() => {
   if (props.damageImages && props.damageImages.length > 0) {
-    lightboxImages.value = props.damageImages.map(entry => entry.path)
+    // lightboxImages.value = props.damageImages.map(entry => {
+    //   return {
+    //     src: entry.path,
+    //     title: entry.description
+    //   }
+    // })
+    visibleRef.value = new Array(props.damageImages.length).fill(false)
   }
 })
-
-// Get optimized image props for different sizes
-const thumbnailProps = getOptimizedImageProps('thumbnail')
-const largeImageProps = getOptimizedImageProps('large')
 </script>
 
 <template>
-  <div class="container py-4">
+  <div class="py-4">
     <div class="row">
       <div class="col-12 mx-auto">
         <!-- All Damage Images -->
@@ -55,61 +52,55 @@ const largeImageProps = getOptimizedImageProps('large')
             <div class="position-relative damage-container">
               <!-- Main Damage Image with NuxtImg -->
               <div class="damage-image-container">
-                <NuxtImg 
-                  :src="image.path" 
-                  class="damage-image clickable" 
-                  alt="Car damage image"
-                  loading="lazy"
-                  format="webp"
-                  quality="80"
-                  sizes="sm:100vw md:80vw lg:600px"
-                  provider="ipx"
-                  fit="contain"
-                  @click="() => showImg(index)"
-                />
+                <NuxtImg
+                  :src="image.path"
+                  class="damage-image clickable"
+                  :alt="'Car damage: ' + image.description"
+                  sizes="sm:95vw md:744px"
+                  @click="() => showImg(index)" />
               </div>
-              
+
               <!-- Schematic Overlay -->
               <div class="schematic-overlay">
                 <div class="position-relative">
-                  <div class="schematic-image-container">
-                    <NuxtImg 
-                      :src="getCarSchematicPath(image.side)" 
-                      class="schematic-image" 
-                      :alt="'Schematic for ' + props.carModel  + ' ' + image.side + ' side'"
-                      v-bind="getOptimizedImageProps('thumbnail')"
-                    />
-                  </div>
+                  <NuxtImg 
+                    :src="getCarSchematicPath(image.side)" 
+                    class="schematic-image"
+                    :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'"
+                    sizes="sm:30vw md:225px"
+                  />
                   <div class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
                     X
                   </div>
                 </div>
               </div>
-              
+
               <!-- Description directly in the container -->
               <div class="damage-description">
                 <p>{{ image.description }}</p>
               </div>
             </div>
+            <!-- Use VueEasyLightbox -->
+            <VueEasyLightbox 
+              :visible="visibleRef[index]"
+              :imgs="[{ src: image.path, title: image.description }]"
+              :index="index"
+              @hide="onHide"
+              :rotateDisabled="true" 
+              :zoomScale="0.5"
+              :minZoom="0.5"
+              />
           </div>
         </div>
       </div>
     </div>
   </div>
-  
-  <!-- Use VueEasyLightbox -->
-  <VueEasyLightbox
-    :visible="visibleRef"
-    :imgs="lightboxImages"
-    :index="indexRef"
-    @hide="onHide"
-  />
 </template>
 
 <style scoped>
 .card {
   transition: transform 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 1rem;
 }
 
@@ -136,27 +127,14 @@ const largeImageProps = getOptimizedImageProps('large')
   object-fit: contain;
 }
 
-.schematic-image-container {
-  width: 100%;
-  max-width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.schematic-image {
-  max-width: 100%;
-  height: auto;
-  object-fit: contain;
-}
-
 .schematic-overlay {
   position: absolute;
   top: 10px;
   right: 10px;
-  max-width: 30%;
+  width: 30%;
   z-index: 10;
 }
+
 
 .schematic-image {
   width: 100%;
@@ -170,7 +148,7 @@ const largeImageProps = getOptimizedImageProps('large')
   color: red;
   font-weight: bold;
   font-size: 24px;
-  text-shadow: 
+  text-shadow:
     -1px -1px 0 #fff,
     1px -1px 0 #fff,
     -1px 1px 0 #fff,
@@ -202,39 +180,36 @@ const largeImageProps = getOptimizedImageProps('large')
 .clickable:hover {
   transform: scale(1.02);
 }
-
-/* Modal/Lightbox styles */
-/* Modal styles moved to ImageModal.vue component */
-
+/* 
 @media (max-width: 768px) {
   .damage-image {
     max-height: 450px;
   }
-  
+
   .schematic-overlay {
     max-width: 40%;
     top: 5px;
     right: 5px;
     padding: 3px;
   }
-  
+
   .damage-x-marker {
     font-size: 16px;
   }
-  
+
   .damage-description {
     padding: 8px 10px;
     font-size: 12px;
   }
-  
+
   .modal-content {
     width: 100%;
     height: 100%;
   }
-  
+
   .close-button {
     top: 10px;
     right: 10px;
   }
-}
+} */
 </style>

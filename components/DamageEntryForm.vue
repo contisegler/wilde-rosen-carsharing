@@ -28,16 +28,6 @@ const getCarSchematicPath = (side: string) => {
   return getSchematicPath(props.carModel, side)
 }
 
-// This component doesn't use the modal functionality
-
-// Use the image optimization composable
-const { getOptimizedImageProps } = useImageOptimization()
-
-// Get optimized image props for different sizes
-const thumbnailProps = getOptimizedImageProps('thumbnail')
-const mediumImageProps = getOptimizedImageProps('medium')
-const largeImageProps = getOptimizedImageProps('large')
-
 // Initialize with first image
 onMounted(() => {
   if (damageImages.value.length > 0) {
@@ -174,7 +164,6 @@ const resetForm = () => {
                 class="img-fluid" 
                 style="max-height: 500px; max-width: 100%; object-fit: contain;" 
                 :alt="`Damage image ${currentImageIndex + 1}`"
-                v-bind="largeImageProps"
               />
             </div>
 

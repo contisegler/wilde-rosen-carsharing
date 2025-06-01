@@ -38,46 +38,29 @@ export default defineNuxtConfig({
         }
       }
     },
-    // Optimize dependencies
-    optimizeDeps: {
-      include: ['bootstrap']
-    },
-    // Enable build optimizations
-    build: {
-      cssCodeSplit: true,
-      rollupOptions: {
-        output: {
-          manualChunks: {
-            bootstrap: ['bootstrap']
-          }
-        }
-      }
-    }
   },
   
-  // Build optimization
-  build: {
-    transpile: []
-  },
   
   // Modules
   modules: ['@nuxt/image', 'nuxt-easy-lightbox'],
   
   // Image module configuration
-  // image: {
-  //   // Optimize image loading
-  //   provider: 'ipx',
-  //   quality: 80,
-  //   format: ['webp', 'jpg', 'png'],
-  //   screens: {
-  //     xs: 320,
-  //     sm: 640,
-  //     md: 768,
-  //     lg: 1024,
-  //     xl: 1280,
-  //     xxl: 1536
-  //   }
-  // },
+  image: {
+    // Optimize image loading
+    provider: 'ipx',
+    quality: 80,
+    format: ['webp', 'jpg', 'png'],
+    screens: {
+      xs: 320,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+      xxl: 1536
+    },
+    loading: "lazy",
+    fit: "contain"
+  },
   
   // // Nitro configuration for optimized server
   // nitro: {
