@@ -30,10 +30,9 @@ const kangooDamageImages = ref<DamageEntry[]>([
 
 <template>
   <div>
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <NuxtLink to="/" class="btn btn-outline-secondary">Zurück zur Startseite</NuxtLink>
-      <h1>Kangoo Schäden</h1>
-      <div style="width: 120px"></div> <!-- Spacer to balance the layout -->
+    <div class="d-flex align-items-center mb-4 position-relative">
+      <NuxtLink to="/" class="btn btn-outline-secondary position-absolute start-0">Zurück</NuxtLink>
+      <h1 class="w-100 text-center">Kangoo Schäden</h1>
     </div>
 
     <CarDamageViewer 

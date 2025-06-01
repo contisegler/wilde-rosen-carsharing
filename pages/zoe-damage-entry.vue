@@ -4,10 +4,9 @@
 
 <template>
   <div class="damage-entry-page">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <NuxtLink to="/" class="btn btn-outline-secondary">Back to Home</NuxtLink>
-      <h1>Create Zoe Damage Report</h1>
-      <div style="width: 120px"></div> <!-- Spacer for alignment -->
+    <div class="d-flex align-items-center mb-4 position-relative">
+      <NuxtLink to="/" class="btn btn-outline-secondary position-absolute start-0">Back</NuxtLink>
+      <h1 class="w-100 text-center">Create Zoe Damage Report</h1>
     </div>
     <DamageEntryForm car-model="zoe" />
   </div>

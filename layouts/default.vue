@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="container-fluid mt-11">
+  <div class="container-fluid mt-3">
     <slot />
   </div>
 </template>
