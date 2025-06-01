@@ -2,13 +2,21 @@
 // Component for displaying car damage images with schematics
 // Using Nuxt's auto-generated types for components
 
-// Use the simplified image handling for modal state
-const {
-  showModal,
-  currentImagePath,
-  openModal,
-  closeModal
-} = useImageHandling()
+// Easy Lightbox state
+const visibleRef = ref(false)
+const indexRef = ref(0)
+const lightboxImages = ref<string[]>([])
+
+// Show image in lightbox
+const showImg = (index: number) => {
+  indexRef.value = index
+  visibleRef.value = true
+}
+
+// Hide lightbox
+const onHide = () => {
+  visibleRef.value = false
+}
 
 // Use the image optimization composable
 const { getOptimizedImageProps } = useImageOptimization()
@@ -24,6 +32,13 @@ const props = defineProps<Props>()
 const getCarSchematicPath = (side: string) => {
   return getSchematicPath(props.carModel, side)
 }
+
+// Initialize lightbox images from damage entries
+watchEffect(() => {
+  if (props.damageImages && props.damageImages.length > 0) {
+    lightboxImages.value = props.damageImages.map(entry => entry.path)
+  }
+})
 
 // Get optimized image props for different sizes
 const thumbnailProps = getOptimizedImageProps('thumbnail')
@@ -50,7 +65,7 @@ const largeImageProps = getOptimizedImageProps('large')
                   sizes="sm:100vw md:80vw lg:600px"
                   provider="ipx"
                   fit="contain"
-                  @click="openModal(image.path)"
+                  @click="() => showImg(index)"
                 />
               </div>
               
@@ -82,11 +97,12 @@ const largeImageProps = getOptimizedImageProps('large')
     </div>
   </div>
   
-  <!-- Use the new ImageModal component -->
-  <ImageModal
-    :is-open="showModal"
-    :image-path="currentImagePath"
-    @close="closeModal"
+  <!-- Use VueEasyLightbox -->
+  <VueEasyLightbox
+    :visible="visibleRef"
+    :imgs="lightboxImages"
+    :index="indexRef"
+    @hide="onHide"
   />
 </template>
 
