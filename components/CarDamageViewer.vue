@@ -43,54 +43,61 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="py-4">
-    <div class="row">
-      <div class="col-12 mx-auto">
-        <!-- All Damage Images -->
-        <div class="damage-list">
-          <div v-for="(image, index) in damageImages" :key="index" class="damage-item mb-5">
-            <div class="position-relative damage-container">
-              <!-- Main Damage Image with NuxtImg -->
-              <div class="damage-image-container">
-                <NuxtImg
-                  :src="image.path"
-                  class="damage-image clickable"
-                  :alt="'Car damage: ' + image.description"
-                  sizes="sm:95vw md:744px"
-                  @click="() => showImg(index)" />
-              </div>
+  <div class="row">
+    <div class="col-12 mx-auto">
+      <!-- All Damage Images -->
+      <div class="damage-list">
+        <div v-for="(image, index) in damageImages" :key="index" class="damage-item mb-2">
+          <div class="position-relative damage-container">
+            <!-- Main Damage Image with NuxtImg -->
+            <div class="damage-image-container">
+              <NuxtImg
+                :src="image.path"
+                class="damage-image clickable"
+                :alt="'Car damage: ' + image.description"
+                @click="() => showImg(index)"
+                sizes="sm:100vw md:80vw lg:600px"
+                format="webp"
+                quality="70"
+                loading="lazy"
+                fit="inside"
+              />
+            </div>
 
-              <!-- Schematic Overlay -->
-              <div class="schematic-overlay">
-                <div class="position-relative">
-                  <NuxtImg 
-                    :src="getCarSchematicPath(image.side)" 
-                    class="schematic-image"
-                    :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'"
-                    sizes="sm:30vw md:225px"
-                  />
-                  <div class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
-                    X
-                  </div>
+            <!-- Schematic Overlay -->
+            <div class="schematic-overlay">
+              <div class="position-relative">
+                <NuxtImg 
+                  :src="getCarSchematicPath(image.side)" 
+                  class="schematic-image"
+                  :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'"
+                  sizes="sm:30vw md:225px"
+                  loading="lazy"
+                  format="webp"
+                  quality="60"
+                  fit="contain"
+                />
+                <div class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
+                  X
                 </div>
               </div>
-
-              <!-- Description directly in the container -->
-              <div class="damage-description">
-                <p>{{ image.description }}</p>
-              </div>
             </div>
-            <!-- Use VueEasyLightbox -->
-            <VueEasyLightbox 
-              :visible="visibleRef[index]"
-              :imgs="[{ src: image.path, title: image.description }]"
-              :index="index"
-              @hide="onHide"
-              :rotateDisabled="true" 
-              :zoomScale="0.5"
-              :minZoom="0.5"
-              />
+
+            <!-- Description directly in the container -->
+            <div class="damage-description">
+              <p>{{ image.description }}</p>
+            </div>
           </div>
+          <!-- Use VueEasyLightbox -->
+          <VueEasyLightbox 
+            :visible="visibleRef[index]"
+            :imgs="[{ src: image.path, title: image.description }]"
+            :index="index"
+            @hide="onHide"
+            :rotateDisabled="true" 
+            :zoomScale="0.5"
+            :minZoom="0.5"
+            />
         </div>
       </div>
     </div>
@@ -107,7 +114,6 @@ watchEffect(() => {
 .damage-container {
   position: relative;
   overflow: hidden;
-  margin-bottom: 2rem;
 }
 
 .damage-image-container {
