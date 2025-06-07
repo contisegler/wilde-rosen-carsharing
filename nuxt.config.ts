@@ -12,7 +12,8 @@ export default defineNuxtConfig({
 
   // TypeScript configuration
   typescript: {
-    typeCheck: true
+    typeCheck: true,
+    strict: true
   },
 
   // App configuration
@@ -36,12 +37,21 @@ export default defineNuxtConfig({
           quietDeps: true
         }
       }
-    }
+    },
   },
   
+  
   // Modules
-  modules: ['@nuxt/image'],
+  modules: ['@nuxt/image', 'nuxt-easy-lightbox'],
   
   // Image module configuration
   image: {}
+  
+  // // Nitro configuration for optimized server
+  // nitro: {
+  //   compressPublicAssets: true,
+  //   minify: true,
+  //   // Optimize Firebase hosting
+  //   preset: 'firebase'
+  // }
 })

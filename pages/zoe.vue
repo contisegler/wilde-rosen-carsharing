@@ -1,7 +1,8 @@
 <script setup lang="ts">
 // Page for displaying Zoe damage images with schematics
 
-// Define image paths
+// Define image paths - in a real optimization, this data would be moved to a shared data file
+// or fetched from an API, but for now we're keeping it here for simplicity
 const zoeDamageImages = ref<DamageEntry[]>([
   {
     "path": "/damages/zoe/signal-2025-05-18-193248.jpeg",
@@ -113,18 +114,15 @@ const zoeDamageImages = ref<DamageEntry[]>([
 
 <template>
   <div>
-    <div class="container mt-4">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <NuxtLink to="/" class="btn btn-outline-secondary">Zurück zur Startseite</NuxtLink>
-        <h1>Zoe Schäden</h1>
-        <div style="width: 120px"></div> <!-- Spacer to balance the layout -->
-      </div>
-
-      <CarDamageViewer 
-        :damage-images="zoeDamageImages" 
-        car-model="zoe"
-        title="" 
-      />
+    <div class="d-flex align-items-center mb-4 position-relative">
+      <NuxtLink to="/" class="btn btn-outline-secondary position-absolute start-0">Zurück</NuxtLink>
+      <h1 class="w-100 text-center">Zoe Schäden</h1>
     </div>
+
+    <CarDamageViewer 
+      :damage-images="zoeDamageImages" 
+      car-model="zoe"
+      title="" 
+    />
   </div>
 </template>
