@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const props = defineProps<{
   carModel: string
 }>()
@@ -16,6 +15,19 @@ const entries = ref<DamageEntry[]>([])
 const currentImageIndex = ref(0)
 const showJson = ref(false)
 const jsonOutput = ref('')
+
+// Reactive arrays for sliders
+const xPosition = ref([damageData.x])
+const yPosition = ref([damageData.y])
+
+// Watch for slider changes
+watch(xPosition, (newVal) => {
+  damageData.x = newVal[0]
+})
+
+watch(yPosition, (newVal) => {
+  damageData.y = newVal[0]
+})
 
 // Use the shared helper function to get damage images
 const damageImages = ref<string[]>(getDamageImagesForModel(props.carModel))
@@ -171,48 +183,55 @@ const resetForm = () => {
             <div class="row mb-4">
               <div class="col-md-4">
                 <div class="mb-3">
-                  <label class="form-label">Car Side</label>
-                  <select v-model="damageData.side" class="form-select">
-                    <option v-for="side in carSides" :key="side.value" :value="side.value">
-                      {{ side.label }}
-                    </option>
-                  </select>
+                  <Label class="mb-2 block">Car Side</Label>
+                  <Select v-model="damageData.side">
+                    <SelectTrigger class="w-full">
+                      <SelectValue placeholder="Select car side" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectLabel>Car Sides</SelectLabel>
+                        <SelectItem v-for="side in carSides" :key="side.value" :value="side.value">
+                          {{ side.label }}
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <!-- Position Controls -->
                 <div class="mb-3">
-                  <label class="form-label">X Position: {{ damageData.x }}%</label>
-                  <input 
-                    type="range" 
-                    class="form-range" 
-                    min="0" 
-                    max="100" 
-                    v-model.number="damageData.x"
-                  >
+                  <Label class="mb-2 block">X Position: {{ xPosition[0] }}%</Label>
+                  <Slider
+                    v-model="xPosition"
+                    :min="0"
+                    :max="100"
+                    :step="1"
+                    class="w-full"
+                  />
                 </div>
 
                 <div class="mb-3">
-                  <label class="form-label">Y Position: {{ damageData.y }}%</label>
-                  <input 
-                    type="range" 
-                    class="form-range" 
-                    min="0" 
-                    max="100" 
-                    v-model.number="damageData.y"
-                  >
+                  <Label class="mb-2 block">Y Position: {{ yPosition[0] }}%</Label>
+                  <Slider
+                    v-model="yPosition"
+                    :min="0"
+                    :max="100"
+                    :step="1"
+                    class="w-full"
+                  />
                 </div>
                 
                 <!-- Description -->
                 <div class="mb-3">
-                  <label for="description" class="form-label">Description</label>
-                  <textarea
-                    class="form-control"
+                  <Label for="description" class="mb-2 block">Description</Label>
+                  <Textarea
                     id="description"
                     v-model="damageData.description"
                     rows="3"
-                    style="width: 100%;"
+                    class="w-full"
                     required
-                  ></textarea>
+                  />
                 </div>
               </div>
               
@@ -243,18 +262,13 @@ const resetForm = () => {
               </div>
             </div>
 
-            <div class="d-flex justify-content-between">
-              <button 
-                type="button" 
-                class="btn btn-outline-secondary" 
-                @click="previousImage"
-                :disabled="currentImageIndex === 0"
-              >
+            <div class="flex justify-between mt-4">
+              <Button variant="outline" type="button" @click="previousImage" :disabled="currentImageIndex === 0">
                 Previous Image
-              </button>
-              <button type="button" class="btn btn-primary" @click="nextImage">
+              </Button>
+              <Button variant="default" type="button" @click="nextImage">
                 {{ currentImageIndex < damageImages.length - 1 ? 'Next Image' : 'Finish' }}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

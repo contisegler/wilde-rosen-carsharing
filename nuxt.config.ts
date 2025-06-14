@@ -1,8 +1,10 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
+import tailwindcss from '@tailwindcss/vite'
+
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-01',
   devtools: { enabled: false },
-  css: ['~/assets/main.scss'],
+  css: ['~/assets/main.scss', '~/assets/css/tailwind.css'],
   
   // App configuration
   appConfig: {
@@ -31,6 +33,9 @@ export default defineNuxtConfig({
     
   // Vite configuration
   vite: {
+    plugins: [
+      tailwindcss(),
+    ],
     css: {
       preprocessorOptions: {
         scss: {
@@ -42,10 +47,16 @@ export default defineNuxtConfig({
   
   
   // Modules
-  modules: ['@nuxt/image', 'nuxt-easy-lightbox'],
+  modules: ['@nuxt/image', 'nuxt-easy-lightbox', 'shadcn-nuxt'],
   
   // Image module configuration
-  image: {}
+  image: {},
+  
+  // shadcn-nuxt configuration
+  shadcn: {
+    prefix: '',
+    componentDir: './components/ui'
+  }
   
   // // Nitro configuration for optimized server
   // nitro: {
