@@ -4,9 +4,11 @@
 
 <template>
   <div class="damage-entry-page">
-    <div class="d-flex align-items-center mb-4 position-relative">
-      <NuxtLink to="/" class="btn btn-outline-secondary position-absolute start-0">Back</NuxtLink>
-      <h1 class="w-100 text-center">Create Kangoo Damage Report</h1>
+    <div class="flex items-center mb-4 relative">
+      <NuxtLink to="/" class="absolute left-0">
+        <Button variant="outline">Zurück</Button>
+      </NuxtLink>
+      <h1 class="w-full text-center">Bearbeite Kangoo Schäden</h1>
     </div>
     
     <DamageEntryForm car-model="kangoo" />

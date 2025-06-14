@@ -164,9 +164,9 @@ const resetForm = () => {
         <div class="card">
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Damage Entry ({{ currentImageIndex + 1 }} of {{ damageImages.length }})</h5>
-            <button type="button" class="btn btn-sm btn-outline-secondary" @click="resetForm">
+            <Button variant="outline" size="sm" type="button" @click="resetForm">
               Start Over
-            </button>
+            </Button>
           </div>
           <div class="card-body">
             <!-- Current Image -->
@@ -282,18 +282,20 @@ const resetForm = () => {
           <div class="card-header d-flex justify-content-between align-items-center">
             <h5 class="mb-0">Damage Entries JSON</h5>
             <div>
-              <button type="button" class="btn btn-sm btn-primary me-2" @click="copyToClipboard">
+              <Button variant="default" size="sm" type="button" class="mr-2" @click="copyToClipboard">
                 Copy to Clipboard
-              </button>
-              <button type="button" class="btn btn-sm btn-outline-secondary" @click="resetForm">
+              </Button>
+              <Button variant="outline" size="sm" type="button" @click="resetForm">
                 Start Over
-              </button>
+              </Button>
             </div>
           </div>
           <div class="card-body">
             <pre class="bg-light p-3 rounded" style="max-height: 500px; overflow: auto;">{{ jsonOutput }}</pre>
             <div class="mt-3">
-              <NuxtLink to="/" class="btn btn-outline-secondary">Back to Home</NuxtLink>
+              <NuxtLink to="/">
+                <Button variant="outline">Back to Home</Button>
+              </NuxtLink>
             </div>
           </div>
         </div>
