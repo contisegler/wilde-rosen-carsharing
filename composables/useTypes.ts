@@ -14,8 +14,7 @@ export const CAR_SIDES = [
   { value: 'back', label: 'Back' },
   { value: 'left', label: 'Left Side' },
   { value: 'right', label: 'Right Side' },
-  { value: 'top', label: 'Top' },
-  { value: 'bottom', label: 'Bottom' }
+  { value: 'top', label: 'Top' }
 ]
 
 // Shared constants for car models

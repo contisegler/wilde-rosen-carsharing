@@ -126,11 +126,45 @@ const copyToClipboard = () => {
   alert('Copied to clipboard!')
 }
 
-// References for positioning
+// References for positioning and sizing
 const schematicImage = ref<HTMLElement | null>(null)
 const schematicContainer = ref<HTMLElement | null>(null)
+const schematicHeight = ref(400) // Default height
+const schematicWidth = ref(600) // Default width
+const isSliderDragging = ref(false) // Flag to track if a slider is being dragged
+
+// Update dimensions when image loads
+onMounted(() => {
+  // Wait for the image to load
+  nextTick(() => {
+    if (schematicImage.value) {
+      // Set a small timeout to ensure image is fully rendered
+      setTimeout(() => {
+        if (schematicImage.value) {
+          schematicHeight.value = schematicImage.value.offsetHeight
+          schematicWidth.value = schematicImage.value.offsetWidth
+          console.log(`Schematic dimensions: ${schematicWidth.value}x${schematicHeight.value}`)
+        }
+      }, 100)
+    }
+  })
+  
+  // Add global event listeners to ensure slider dragging state is reset
+  window.addEventListener('pointerup', () => {
+    isSliderDragging.value = false
+  })
+  
+  window.addEventListener('pointercancel', () => {
+    isSliderDragging.value = false
+  })
+})
 
 const handleSchematicClick = (event: MouseEvent) => {
+  // Skip if we're in the middle of a slider drag operation
+  if (isSliderDragging.value) {
+    return
+  }
+  
   // Get the target element and its dimensions
   const target = event.currentTarget as HTMLElement
   const rect = target.getBoundingClientRect()
@@ -140,8 +174,16 @@ const handleSchematicClick = (event: MouseEvent) => {
   const y = ((event.clientY - rect.top) / rect.height) * 100
   
   // Set the position values, ensuring they stay within 0-100%
-  damageData.x = Math.max(0, Math.min(100, Math.round(x)))
-  damageData.y = Math.max(0, Math.min(100, Math.round(y)))
+  const roundedX = Math.max(0, Math.min(100, Math.round(x)))
+  const roundedY = Math.max(0, Math.min(100, Math.round(y)))
+  
+  // Update both the damageData and the slider position arrays
+  damageData.x = roundedX
+  damageData.y = roundedY
+  
+  // Update the slider position arrays to keep them in sync
+  xPosition.value = [roundedX]
+  yPosition.value = [roundedY]
 }
 
 const resetForm = () => {
@@ -158,17 +200,17 @@ const resetForm = () => {
 </script>
 
 <template>
-  <div class="w-100">
-    <div v-if="!showJson" class="row justify-content-center">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
+  <div class="w-full">
+    <div v-if="!showJson" class="flex flex-wrap justify-center">
+      <div class="w-full max-w-4xl">
+        <div class="border rounded shadow">
+          <div class="p-4 border-b flex justify-between items-center">
             <h5 class="mb-0">Damage Entry ({{ currentImageIndex + 1 }} of {{ damageImages.length }})</h5>
             <Button variant="outline" size="sm" type="button" @click="resetForm">
               Start Over
             </Button>
           </div>
-          <div class="card-body">
+          <div class="p-4">
             <!-- Current Image -->
             <div class="mb-4 text-center">
               <NuxtImg 
@@ -199,28 +241,8 @@ const resetForm = () => {
                   </Select>
                 </div>
                 
-                <!-- Position Controls -->
-                <div class="mb-3">
-                  <Label class="mb-2 block">X Position: {{ xPosition[0] }}%</Label>
-                  <Slider
-                    v-model="xPosition"
-                    :min="0"
-                    :max="100"
-                    :step="1"
-                    class="w-full"
-                  />
-                </div>
-
-                <div class="mb-3">
-                  <Label class="mb-2 block">Y Position: {{ yPosition[0] }}%</Label>
-                  <Slider
-                    v-model="yPosition"
-                    :min="0"
-                    :max="100"
-                    :step="1"
-                    class="w-full"
-                  />
-                </div>
+                <!-- Car Side Selection Only -->
+                <!-- Position Controls moved to schematic area -->
                 
                 <!-- Description -->
                 <div class="mb-3">
@@ -235,27 +257,71 @@ const resetForm = () => {
                 </div>
               </div>
               
-              <div class="col-md-8">
-                <div class="schematic-preview" style="background-color: #f8f9fa;">
-                  <div class="position-relative" style="display: inline-block;">
-                    <NuxtImg 
-                      :src="getCarSchematicPath(damageData.side)" 
-                      class="schematic-img" 
-                      alt="Car side schematic"
-                      loading="lazy"
-                      format="webp"
-                      quality="90"
-                      sizes="sm:100vw md:80vw lg:60vw"
-                      @click="handleSchematicClick"
-                    />
-                    <div 
-                      class="damage-x-marker"
-                      :style="{
-                        left: `${damageData.x}%`,
-                        top: `${damageData.y}%`
-                      }"
-                    >
-                      X
+              <div class="w-full md:w-2/3">
+                <!-- Combined Schematic and Sliders Container -->
+                <div class="flex justify-center">
+                  <!-- Y Label -->
+                  <div class="w-8 text-center mr-2 flex items-center justify-center">
+                    <Label class="transform -rotate-90 whitespace-nowrap">Y: {{ yPosition[0] }}%</Label>
+                  </div>
+                  
+                  <!-- Main Schematic with Sliders -->
+                  <div class="relative">
+                    <!-- Y Slider (Left) -->
+                    <div class="absolute left-0 top-0 h-full flex items-center">
+                        <Slider
+                          v-model="yPosition"
+                          :min="0"
+                          :max="100"
+                          :step="1"
+                          class="h-full w-2"
+                          orientation="vertical"
+                          :inverted="true"
+                        />
+                    </div>
+                    
+                    <!-- Schematic Image -->
+                    <div class="schematic-preview pl-6">
+                      <div class="relative inline-block" ref="schematicContainer">
+                        <NuxtImg 
+                          ref="schematicImage"
+                          :src="getCarSchematicPath(damageData.side)" 
+                          class="schematic-img" 
+                          alt="Car side schematic"
+                          loading="lazy"
+                          format="webp"
+                          quality="90"
+                          sizes="sm:100vw md:80vw lg:60vw"
+                          @mousedown="handleSchematicClick"
+                        />
+                        <div 
+                          class="damage-x-marker"
+                          :style="{
+                            left: `${damageData.x}%`,
+                            top: `${damageData.y}%`
+                          }"
+                        >
+                          X
+                        </div>
+                        
+                        <!-- X Slider (Bottom) -->
+                        <div class="absolute bottom-0 left-0 w-full transform translate-y-6">
+                          <div @mousedown.stop @click.stop>
+                            <Slider
+                              v-model="xPosition"
+                              :min="0"
+                              :max="100"
+                              :step="1"
+                              class="w-full"
+                            />
+                          </div>
+                        </div>
+                        
+                        <!-- X Label -->
+                        <div class="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-12">
+                          <Label>X: {{ xPosition[0] }}%</Label>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -276,10 +342,10 @@ const resetForm = () => {
     </div>
 
     <!-- JSON Output -->
-    <div v-if="showJson" class="row justify-content-center">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
+    <div v-if="showJson" class="flex flex-wrap justify-center">
+      <div class="w-full max-w-4xl">
+        <div class="border rounded shadow">
+          <div class="p-4 border-b flex justify-between items-center">
             <h5 class="mb-0">Damage Entries JSON</h5>
             <div>
               <Button variant="default" size="sm" type="button" class="mr-2" @click="copyToClipboard">
@@ -290,8 +356,8 @@ const resetForm = () => {
               </Button>
             </div>
           </div>
-          <div class="card-body">
-            <pre class="bg-light p-3 rounded" style="max-height: 500px; overflow: auto;">{{ jsonOutput }}</pre>
+          <div class="p-4">
+            <pre class="bg-gray-100 p-3 rounded" style="max-height: 500px; overflow: auto;">{{ jsonOutput }}</pre>
             <div class="mt-3">
               <NuxtLink to="/">
                 <Button variant="outline">Back to Home</Button>
@@ -307,10 +373,6 @@ const resetForm = () => {
 <style scoped>
 .schematic-preview {
   text-align: center;
-  padding: 15px;
-  border: 1px solid #dee2e6;
-  border-radius: 0.25rem;
-  background-color: #f8f9fa;
 }
 
 .schematic-img {
