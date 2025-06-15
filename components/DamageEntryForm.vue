@@ -126,44 +126,8 @@ const copyToClipboard = () => {
   alert('Copied to clipboard!')
 }
 
-// References for positioning and sizing
-const schematicImage = ref<HTMLElement | null>(null)
-const schematicHeight = ref(400) // Default height
-const schematicWidth = ref(600) // Default width
-const isSliderDragging = ref(false) // Flag to track if a slider is being dragged
-
-// Update dimensions when image loads
-onMounted(() => {
-  // Wait for the image to load
-  nextTick(() => {
-    if (schematicImage.value) {
-      // Set a small timeout to ensure image is fully rendered
-      setTimeout(() => {
-        if (schematicImage.value) {
-          schematicHeight.value = schematicImage.value.offsetHeight
-          schematicWidth.value = schematicImage.value.offsetWidth
-          console.log(`Schematic dimensions: ${schematicWidth.value}x${schematicHeight.value}`)
-        }
-      }, 100)
-    }
-  })
-
-  // Add global event listeners to ensure slider dragging state is reset
-  window.addEventListener('pointerup', () => {
-    isSliderDragging.value = false
-  })
-
-  window.addEventListener('pointercancel', () => {
-    isSliderDragging.value = false
-  })
-})
 
 const handleSchematicClick = (event: MouseEvent) => {
-  // Skip if we're in the middle of a slider drag operation
-  if (isSliderDragging.value) {
-    return
-  }
-
   // Get the target element and its dimensions
   const target = event.currentTarget as HTMLElement
   const rect = target.getBoundingClientRect()
@@ -232,35 +196,29 @@ const resetForm = () => {
                 </div>
               </div>
 
-              <div class="w-full mb-4">
-                <!-- Combined Schematic and Sliders Container -->
-                <div class="flex justify-center">
-                  <!-- Main Schematic with Sliders -->
-                  <div class="relative pr-6">
-                    <!-- Y Slider (Left) -->
-                    <div class="absolute right-0 top-0 h-full transform translate-x-0">
+              <!-- Combined Schematic and Sliders -->
+              <div class="w-full">
+                <div class="flex justify-center pb-6 pr-6">
+
+                  <div class="relative">
+                    <!-- Y Slider (Right) -->
+                    <div class="absolute right-0 top-0 h-full transform translate-x-6">
                       <Slider v-model="yPosition" :min="0" :max="100" :step="1" class="h-full" orientation="vertical"
                         :inverted="true" />
                     </div>
-
                     <!-- Schematic Image -->
-                    <div class="schematic-preview">
-                      <div class="relative inline-block">
-                        <NuxtImg ref="schematicImage" :src="getCarSchematicPath(damageData.side)" class="cursor-crosshair"
-                          alt="Car side schematic" loading="lazy" format="webp" quality="90"
-                          sizes="sm:100vw md:80vw lg:60vw" @mousedown="handleSchematicClick" />
-                        <div class="damage-x-marker" :style="{
-                          left: `${damageData.x}%`,
-                          top: `${damageData.y}%`
-                        }">
-                          X
-                        </div>
-
-                        <!-- X Slider (Bottom) -->
-                        <div class="absolute bottom-0 left-0 w-full transform translate-y-6">
-                          <Slider v-model="xPosition" :min="0" :max="100" :step="1" class="w-full" />
-                        </div>
-                      </div>
+                    <NuxtImg :src="getCarSchematicPath(damageData.side)" class="cursor-crosshair"
+                      alt="Car side schematic" loading="lazy" format="webp" quality="90"
+                      sizes="sm:100vw md:80vw lg:60vw" @mousedown="handleSchematicClick" />
+                    <div class="damage-x-marker" :style="{
+                      left: `${damageData.x}%`,
+                      top: `${damageData.y}%`
+                    }">
+                      X
+                    </div>
+                    <!-- X Slider (Bottom) -->
+                    <div class="absolute bottom-0 left-0 w-full transform translate-y-6">
+                      <Slider v-model="xPosition" :min="0" :max="100" :step="1" class="w-full" />
                     </div>
                   </div>
                 </div>

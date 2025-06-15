@@ -2,13 +2,11 @@
 </script>
 
 <template>
-  <div class="container-fluid mt-3">
+  <div class="w-full max-w-3xl mx-auto px-4 py-3">
     <slot />
   </div>
 </template>
 
 <style scoped lang="scss">
-.container-fluid {
-  max-width: 768px;
-}
+/* Styles moved to Tailwind classes in template */
 </style>

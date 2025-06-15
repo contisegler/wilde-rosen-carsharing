@@ -1,10 +1,8 @@
 <script setup lang="ts">
 // Component for displaying car damage images with schematics
-// Using Nuxt's auto-generated types for components
 
 // Easy Lightbox state
 const visibleRef = ref<boolean[]>([])
-// const lightboxImages = ref<{ src: string; title: string }[]>([])
 
 // Show image in lightbox
 const showImg = (index: number) => {
@@ -31,52 +29,32 @@ const getCarSchematicPath = (side: string) => {
 // Initialize lightbox images from damage entries
 watchEffect(() => {
   if (props.damageImages && props.damageImages.length > 0) {
-    // lightboxImages.value = props.damageImages.map(entry => {
-    //   return {
-    //     src: entry.path,
-    //     title: entry.description
-    //   }
-    // })
     visibleRef.value = new Array(props.damageImages.length).fill(false)
   }
 })
 </script>
 
 <template>
-  <div class="row">
-    <div class="col-12 mx-auto">
+  <div class="flex flex-wrap w-full">
+    <div class="w-full mx-auto">
       <!-- All Damage Images -->
       <div class="damage-list">
         <div v-for="(image, index) in damageImages" :key="index" class="damage-item mb-2">
-          <div class="position-relative damage-container">
+          <div class="relative">
             <!-- Main Damage Image with NuxtImg -->
-            <div class="damage-image-container">
-              <NuxtImg
-                :src="image.path"
-                class="damage-image clickable"
-                :alt="'Car damage: ' + image.description"
-                @click="() => showImg(index)"
-                sizes="sm:100vw md:80vw lg:600px"
-                format="webp"
-                quality="70"
-                loading="lazy"
-                fit="inside"
-              />
+            <div class="overflow-hidden">
+              <NuxtImg :src="image.path"
+                class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer hover:scale-102 transition-all"
+                :alt="'Car damage: ' + image.description" @click="() => showImg(index)"
+                sizes="sm:100vw md:80vw lg:600px" format="webp" quality="70" loading="lazy" fit="inside" />
             </div>
 
             <!-- Schematic Overlay -->
-            <div class="schematic-overlay">
-              <div class="position-relative">
-                <NuxtImg 
-                  :src="getCarSchematicPath(image.side)" 
-                  class="schematic-image"
-                  :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'"
-                  sizes="sm:30vw md:225px"
-                  loading="lazy"
-                  format="webp"
-                  quality="60"
-                  fit="contain"
-                />
+            <div class="schematic-overlay absolute top-2 right-2">
+              <div class="relative">
+                <NuxtImg :src="getCarSchematicPath(image.side)" class="schematic-image opacity-70"
+                  :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'" sizes="sm:30vw md:225px"
+                  loading="lazy" format="webp" quality="60" fit="contain" />
                 <div class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
                   X
                 </div>
@@ -85,19 +63,12 @@ watchEffect(() => {
 
             <!-- Description directly in the container -->
             <div class="damage-description">
-              <p>{{ image.description }}</p>
+              {{ image.description }}
             </div>
           </div>
           <!-- Use VueEasyLightbox -->
-          <VueEasyLightbox 
-            :visible="visibleRef[index]"
-            :imgs="[{ src: image.path, title: image.description }]"
-            :index="index"
-            @hide="onHide"
-            :rotateDisabled="true" 
-            :zoomScale="0.5"
-            :minZoom="0.5"
-            />
+          <VueEasyLightbox :visible="visibleRef[index]" :imgs="[{ src: image.path, title: image.description }]"
+            :index="index" @hide="onHide" :rotateDisabled="true" :zoomScale="0.5" :minZoom="0.5" />
         </div>
       </div>
     </div>
@@ -105,49 +76,7 @@ watchEffect(() => {
 </template>
 
 <style scoped>
-.card {
-  transition: transform 0.3s ease;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 1rem;
-}
-
-.damage-container {
-  position: relative;
-  overflow: hidden;
-}
-
-.damage-image-container {
-  width: 100%;
-  max-height: 600px;
-  margin: 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  overflow: hidden;
-}
-
-.damage-image {
-  width: 100%;
-  height: auto;
-  max-height: 600px;
-  object-fit: contain;
-}
-
-.schematic-overlay {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 30%;
-  z-index: 10;
-}
-
-.schematic-image {
-  width: 100%;
-  display: block;
-  opacity: 0.7;
-}
-
-.damage-x-marker {
+ .damage-x-marker {
   position: absolute;
   transform: translate(-50%, -50%);
   color: red;
@@ -192,15 +121,5 @@ watchEffect(() => {
 
 .damage-description p {
   margin: 0;
-}
-
-/* Clickable image styles */
-.clickable {
-  cursor: pointer;
-  transition: transform 0.2s ease;
-}
-
-.clickable:hover {
-  transform: scale(1.02);
 }
 </style>
