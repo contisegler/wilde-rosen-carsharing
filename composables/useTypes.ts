@@ -14,8 +14,7 @@ export const CAR_SIDES = [
   { value: 'back', label: 'Back' },
   { value: 'left', label: 'Left Side' },
   { value: 'right', label: 'Right Side' },
-  { value: 'top', label: 'Top' },
-  { value: 'bottom', label: 'Bottom' }
+  { value: 'top', label: 'Top' }
 ]
 
 // Shared constants for car models
@@ -27,7 +26,22 @@ export const CAR_MODELS = {
 
 // Helper function to generate schematic path
 export function getSchematicPath(carModel: string, side: string): string {
-  return `/car_line_drawings/${carModel}_${side}.png`
+  // Validate inputs
+  if (!carModel || !side) {
+    console.warn('Invalid car model or side provided to getSchematicPath', { carModel, side });
+    return ''; // Return empty string or a default image path
+  }
+  
+  // Clean up the model and side to ensure valid path segments
+  const cleanModel = carModel.toLowerCase().trim();
+  const cleanSide = side.toLowerCase().trim();
+  
+  // Only return a path if both model and side are valid
+  if (cleanModel && cleanSide) {
+    return `/car_line_drawings/${cleanModel}_${cleanSide}.png`;
+  }
+  
+  return ''; // Fallback to empty string if validation fails
 }
 
 // Helper function to get damage images for a specific car model

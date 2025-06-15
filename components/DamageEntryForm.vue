@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 const props = defineProps<{
   carModel: string
 }>()
@@ -16,6 +15,19 @@ const entries = ref<DamageEntry[]>([])
 const currentImageIndex = ref(0)
 const showJson = ref(false)
 const jsonOutput = ref('')
+
+// Reactive arrays for sliders
+const xPosition = ref([damageData.x])
+const yPosition = ref([damageData.y])
+
+// Watch for slider changes
+watch(xPosition, (newVal) => {
+  damageData.x = newVal[0]
+})
+
+watch(yPosition, (newVal) => {
+  damageData.y = newVal[0]
+})
 
 // Use the shared helper function to get damage images
 const damageImages = ref<string[]>(getDamageImagesForModel(props.carModel))
@@ -41,14 +53,14 @@ const tempData = ref<Record<number, DamageEntry>>({})
 const nextImage = () => {
   // Save current data to temp storage
   tempData.value[currentImageIndex.value] = { ...damageData }
-  
+
   // Move to next image
   currentImageIndex.value++
-  
+
   if (currentImageIndex.value < damageImages.value.length) {
     // Set path to current image
     damageData.path = damageImages.value[currentImageIndex.value]
-    
+
     // Check if we have saved data for this image
     if (tempData.value[currentImageIndex.value]) {
       // Restore saved data
@@ -82,12 +94,12 @@ const nextImage = () => {
 const previousImage = () => {
   // Save current data to temp storage
   tempData.value[currentImageIndex.value] = { ...damageData }
-  
+
   // Move to previous image
   if (currentImageIndex.value > 0) {
     currentImageIndex.value--
     damageData.path = damageImages.value[currentImageIndex.value]
-    
+
     // Restore saved data for the previous image
     if (tempData.value[currentImageIndex.value]) {
       const savedData = tempData.value[currentImageIndex.value]
@@ -114,22 +126,23 @@ const copyToClipboard = () => {
   alert('Copied to clipboard!')
 }
 
-// References for positioning
-const schematicImage = ref<HTMLElement | null>(null)
-const schematicContainer = ref<HTMLElement | null>(null)
 
 const handleSchematicClick = (event: MouseEvent) => {
   // Get the target element and its dimensions
   const target = event.currentTarget as HTMLElement
   const rect = target.getBoundingClientRect()
-  
+
   // Calculate position relative to the image
   const x = ((event.clientX - rect.left) / rect.width) * 100
   const y = ((event.clientY - rect.top) / rect.height) * 100
-  
-  // Set the position values, ensuring they stay within 0-100%
-  damageData.x = Math.max(0, Math.min(100, Math.round(x)))
-  damageData.y = Math.max(0, Math.min(100, Math.round(y)))
+
+  // Update both the damageData and the slider position arrays
+  damageData.x = x
+  damageData.y = y
+
+  // Update the slider position arrays to keep them in sync
+  xPosition.value = [x]
+  yPosition.value = [y]
 }
 
 const resetForm = () => {
@@ -146,115 +159,84 @@ const resetForm = () => {
 </script>
 
 <template>
-  <div class="w-100">
-    <div v-if="!showJson" class="row justify-content-center">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
+  <div class="w-full">
+    <div v-if="!showJson" class="flex flex-wrap justify-center">
+      <div class="w-full max-w-4xl">
+        <div class="border rounded shadow">
+          <div class="p-4 border-b flex justify-between items-center">
             <h5 class="mb-0">Damage Entry ({{ currentImageIndex + 1 }} of {{ damageImages.length }})</h5>
-            <button type="button" class="btn btn-sm btn-outline-secondary" @click="resetForm">
+            <Button variant="outline" size="sm" type="button" @click="resetForm">
               Start Over
-            </button>
+            </Button>
           </div>
-          <div class="card-body">
+          <div class="p-4">
             <!-- Current Image -->
             <div class="mb-4 text-center">
-              <NuxtImg 
-                :src="damageData.path" 
-                class="img-fluid" 
-                style="max-height: 500px; max-width: 100%; object-fit: contain;" 
-                :alt="`Damage image ${currentImageIndex + 1}`"
-              />
+              <NuxtImg :src="damageData.path" class="max-w-full h-auto max-h-[500px] object-contain"
+                :alt="`Damage image ${currentImageIndex + 1}`" />
             </div>
 
             <!-- Side Selection with Schematic Preview -->
-            <div class="row mb-4">
-              <div class="col-md-4">
+            <div class="flex flex-wrap mb-4">
+              <div class="w-full">
                 <div class="mb-3">
-                  <label class="form-label">Car Side</label>
-                  <select v-model="damageData.side" class="form-select">
-                    <option v-for="side in carSides" :key="side.value" :value="side.value">
-                      {{ side.label }}
-                    </option>
-                  </select>
-                </div>
-                
-                <!-- Position Controls -->
-                <div class="mb-3">
-                  <label class="form-label">X Position: {{ damageData.x }}%</label>
-                  <input 
-                    type="range" 
-                    class="form-range" 
-                    min="0" 
-                    max="100" 
-                    v-model.number="damageData.x"
-                  >
-                </div>
-
-                <div class="mb-3">
-                  <label class="form-label">Y Position: {{ damageData.y }}%</label>
-                  <input 
-                    type="range" 
-                    class="form-range" 
-                    min="0" 
-                    max="100" 
-                    v-model.number="damageData.y"
-                  >
-                </div>
-                
-                <!-- Description -->
-                <div class="mb-3">
-                  <label for="description" class="form-label">Description</label>
-                  <textarea
-                    class="form-control"
-                    id="description"
-                    v-model="damageData.description"
-                    rows="3"
-                    style="width: 100%;"
-                    required
-                  ></textarea>
+                  <Label class="mb-2 block">Car Side</Label>
+                  <Select v-model="damageData.side">
+                    <SelectTrigger class="w-full">
+                      <SelectValue placeholder="Select car side" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectGroup>
+                        <SelectItem v-for="side in carSides" :key="side.value" :value="side.value">
+                          {{ side.label }}
+                        </SelectItem>
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
-              
-              <div class="col-md-8">
-                <div class="schematic-preview" style="background-color: #f8f9fa;">
-                  <div class="position-relative" style="display: inline-block;">
-                    <NuxtImg 
-                      :src="getCarSchematicPath(damageData.side)" 
-                      class="schematic-img" 
-                      alt="Car side schematic"
-                      loading="lazy"
-                      format="webp"
-                      quality="90"
-                      sizes="sm:100vw md:80vw lg:60vw"
-                      @click="handleSchematicClick"
-                    />
-                    <div 
-                      class="damage-x-marker"
-                      :style="{
-                        left: `${damageData.x}%`,
-                        top: `${damageData.y}%`
-                      }"
-                    >
+
+              <!-- Combined Schematic and Sliders -->
+              <div class="w-full">
+                <div class="flex justify-center pb-6 pr-6">
+
+                  <div class="relative">
+                    <!-- Y Slider (Right) -->
+                    <div class="absolute right-0 top-0 h-full transform translate-x-6">
+                      <Slider v-model="yPosition" :min="0" :max="100" :step="1" class="h-full" orientation="vertical"
+                        :inverted="true" />
+                    </div>
+                    <!-- Schematic Image -->
+                    <NuxtImg :src="getCarSchematicPath(damageData.side)" class="cursor-crosshair"
+                      alt="Car side schematic" loading="lazy" format="webp" quality="90"
+                      sizes="sm:100vw md:80vw lg:60vw" @mousedown="handleSchematicClick" />
+                    <div class="damage-x-marker" :style="{
+                      left: `${damageData.x}%`,
+                      top: `${damageData.y}%`
+                    }">
                       X
+                    </div>
+                    <!-- X Slider (Bottom) -->
+                    <div class="absolute bottom-0 left-0 w-full transform translate-y-6">
+                      <Slider v-model="xPosition" :min="0" :max="100" :step="1" class="w-full" />
                     </div>
                   </div>
                 </div>
               </div>
             </div>
 
-            <div class="d-flex justify-content-between">
-              <button 
-                type="button" 
-                class="btn btn-outline-secondary" 
-                @click="previousImage"
-                :disabled="currentImageIndex === 0"
-              >
+            <!-- Description -->
+            <div class="mb-3">
+              <Label for="description" class="mb-2 block">Description</Label>
+              <Textarea id="description" v-model="damageData.description" rows="3" class="w-full" required />
+            </div>
+
+            <div class="flex justify-between mt-4">
+              <Button variant="outline" type="button" @click="previousImage" :disabled="currentImageIndex === 0">
                 Previous Image
-              </button>
-              <button type="button" class="btn btn-primary" @click="nextImage">
-                {{ currentImageIndex < damageImages.length - 1 ? 'Next Image' : 'Finish' }}
-              </button>
+              </Button>
+              <Button variant="default" type="button" @click="nextImage">
+                {{ currentImageIndex < damageImages.length - 1 ? 'Next Image' : 'Finish' }} </Button>
             </div>
           </div>
         </div>
@@ -262,24 +244,26 @@ const resetForm = () => {
     </div>
 
     <!-- JSON Output -->
-    <div v-if="showJson" class="row justify-content-center">
-      <div class="col-12">
-        <div class="card">
-          <div class="card-header d-flex justify-content-between align-items-center">
+    <div v-if="showJson" class="flex flex-wrap justify-center">
+      <div class="w-full max-w-4xl">
+        <div class="border rounded shadow">
+          <div class="p-4 border-b flex justify-between items-center">
             <h5 class="mb-0">Damage Entries JSON</h5>
             <div>
-              <button type="button" class="btn btn-sm btn-primary me-2" @click="copyToClipboard">
+              <Button variant="default" size="sm" type="button" class="mr-2" @click="copyToClipboard">
                 Copy to Clipboard
-              </button>
-              <button type="button" class="btn btn-sm btn-outline-secondary" @click="resetForm">
+              </Button>
+              <Button variant="outline" size="sm" type="button" @click="resetForm">
                 Start Over
-              </button>
+              </Button>
             </div>
           </div>
-          <div class="card-body">
-            <pre class="bg-light p-3 rounded" style="max-height: 500px; overflow: auto;">{{ jsonOutput }}</pre>
+          <div class="p-4">
+            <pre class="bg-gray-100 p-3 rounded" style="max-height: 500px; overflow: auto;">{{ jsonOutput }}</pre>
             <div class="mt-3">
-              <NuxtLink to="/" class="btn btn-outline-secondary">Back to Home</NuxtLink>
+              <NuxtLink to="/">
+                <Button variant="outline">Back to Home</Button>
+              </NuxtLink>
             </div>
           </div>
         </div>
@@ -289,32 +273,17 @@ const resetForm = () => {
 </template>
 
 <style scoped>
-.schematic-preview {
-  text-align: center;
-  padding: 15px;
-  border: 1px solid #dee2e6;
-  border-radius: 0.25rem;
-  background-color: #f8f9fa;
-}
-
-.schematic-img {
-  cursor: crosshair;
-  max-height: 400px;
-  max-width: 100%;
-}
-
 .damage-x-marker {
   position: absolute;
   transform: translate(-50%, -50%);
   color: red;
   font-weight: bold;
   font-size: 24px;
-  text-shadow: 
+  text-shadow:
     -1px -1px 0 #fff,
     1px -1px 0 #fff,
     -1px 1px 0 #fff,
     1px 1px 0 #fff;
-  cursor: pointer;
   z-index: 10;
   pointer-events: none;
 }
