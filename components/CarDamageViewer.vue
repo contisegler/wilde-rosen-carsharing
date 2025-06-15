@@ -17,6 +17,7 @@ const onHide = () => {
 interface Props {
   damageImages: DamageEntry[]
   carModel: string
+  title: string
 }
 
 const props = defineProps<Props>()
@@ -35,6 +36,14 @@ watchEffect(() => {
 </script>
 
 <template>
+  
+  <div class="flex items-center mb-4 relative">
+      <NuxtLink to="/" class="absolute left-0">
+        <Button variant="outline">Zurück</Button>
+      </NuxtLink>
+      <h2 class="w-full text-center text-l sm:text-xl md:text-2xl font-bold">{{ title }}</h2>
+    </div>
+
   <div class="flex flex-wrap w-full">
     <div class="w-full mx-auto">
       <!-- All Damage Images -->

@@ -114,17 +114,10 @@ const zoeDamageImages = ref<DamageEntry[]>([
 
 <template>
   <div>
-    <div class="flex items-center mb-4 relative">
-      <NuxtLink to="/" class="absolute left-0">
-        <Button variant="outline">Zurück</Button>
-      </NuxtLink>
-      <h1 class="w-full text-center">Zoe Schäden</h1>
-    </div>
-
     <CarDamageViewer 
       :damage-images="zoeDamageImages" 
       car-model="zoe"
-      title="" 
+      title="Zoe" 
     />
   </div>
 </template>
