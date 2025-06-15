@@ -40,17 +40,17 @@ watchEffect(() => {
       <!-- All Damage Images -->
       <div class="damage-list">
         <div v-for="(image, index) in damageImages" :key="index" class="damage-item mb-2">
-          <div class="relative">
+          <div class="relative group">
             <!-- Main Damage Image with NuxtImg -->
             <div class="overflow-hidden">
               <NuxtImg :src="image.path"
-                class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer hover:scale-102 transition-all"
+                class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
                 :alt="'Car damage: ' + image.description" @click="() => showImg(index)"
                 sizes="sm:100vw md:80vw lg:600px" format="webp" quality="70" loading="lazy" fit="inside" />
             </div>
 
             <!-- Schematic Overlay -->
-            <div class="schematic-overlay absolute top-2 right-2">
+            <div v-if="getCarSchematicPath(image.side)" class="schematic-overlay absolute top-2 right-2">
               <div class="relative">
                 <NuxtImg :src="getCarSchematicPath(image.side)" class="schematic-image opacity-70"
                   :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'" sizes="sm:30vw md:225px"
@@ -61,9 +61,9 @@ watchEffect(() => {
               </div>
             </div>
 
-            <!-- Description directly in the container -->
-            <div class="bg-gray-800 text-white p-4 text-sm shadow-md">
-              <p class="m-0">{{ image.description }}</p>
+            <!-- Description overlaid on the image -->
+            <div class="absolute bottom-0 left-0 right-0 bg-black/80 text-white p-2 text-sm opacity-50">
+              <p class="m-0 text-center">{{ image.description }}</p>
             </div>
           </div>
           <!-- Use VueEasyLightbox -->
