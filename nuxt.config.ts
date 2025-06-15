@@ -4,7 +4,7 @@ import tailwindcss from '@tailwindcss/vite'
 export default defineNuxtConfig({
   compatibilityDate: '2025-05-01',
   devtools: { enabled: false },
-  css: ['~/assets/main.scss', '~/assets/css/tailwind.css'],
+  css: ['~/assets/css/tailwind.css'],
   
   // App configuration
   appConfig: {
@@ -36,13 +36,6 @@ export default defineNuxtConfig({
     plugins: [
       tailwindcss(),
     ],
-    css: {
-      preprocessorOptions: {
-        scss: {
-          quietDeps: true
-        }
-      }
-    },
   },
   
   

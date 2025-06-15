@@ -14,13 +14,13 @@
       <NuxtLink to="/zoe" class="w-1/2">
         <Button variant="default" size="lg" class="w-full">Zoe</Button>
       </NuxtLink>
-      <!-- <div class="mt-4 pt-3 border-top w-50">
-        <div class="d-flex flex-column gap-3">
-          <NuxtLink to="/zoe-damage-entry" class="btn btn-outline-primary btn-lg">
-            Create Zoe Damage Report
+      <!-- <div class="mt-4 pt-3 border-t w-1/2">
+        <div class="flex flex-col gap-3">
+          <NuxtLink to="/zoe-damage-entry" class="w-full">
+            <Button variant="outline" size="lg" class="w-full">Create Zoe Damage Report</Button>
           </NuxtLink>
-          <NuxtLink to="/kangoo-damage-entry" class="btn btn-outline-primary btn-lg">
-            Create Kangoo Damage Report
+          <NuxtLink to="/kangoo-damage-entry" class="w-full">
+            <Button variant="outline" size="lg" class="w-full">Create Kangoo Damage Report</Button>
           </NuxtLink>
         </div>
       </div> -->

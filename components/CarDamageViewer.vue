@@ -62,8 +62,8 @@ watchEffect(() => {
             </div>
 
             <!-- Description directly in the container -->
-            <div class="damage-description">
-              {{ image.description }}
+            <div class="bg-gray-800 text-white p-4 text-sm shadow-md">
+              <p class="m-0">{{ image.description }}</p>
             </div>
           </div>
           <!-- Use VueEasyLightbox -->
@@ -76,7 +76,7 @@ watchEffect(() => {
 </template>
 
 <style scoped>
- .damage-x-marker {
+.damage-x-marker {
   position: absolute;
   transform: translate(-50%, -50%);
   color: red;
@@ -105,21 +105,5 @@ watchEffect(() => {
   .damage-x-marker {
     font-size: 14px;
   }
-}
-
-.damage-description {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background-color: rgba(0, 0, 0, 0.3);
-  color: white;
-  padding: 10px 15px;
-  font-size: 14px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
-}
-
-.damage-description p {
-  margin: 0;
 }
 </style>
