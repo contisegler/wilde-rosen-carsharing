@@ -7,15 +7,10 @@ const konaDamageImages = ref<DamageEntry[]>([])
 
 <template>
   <div>
-    <div class="d-flex align-items-center mb-4 position-relative">
-      <NuxtLink to="/" class="btn btn-outline-secondary position-absolute start-0">Zurück</NuxtLink>
-      <h1 class="w-100 text-center">Kona Schäden</h1>
-    </div>
-
     <CarDamageViewer 
       :damage-images="konaDamageImages" 
       car-model="kona"
-      title="" 
+      title="Kona"
     />
   </div>
 </template>
