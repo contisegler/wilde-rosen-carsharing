@@ -15,28 +15,10 @@
           src: "/damages/zoe/signal-2025-05-18-193248.jpeg",
           title: "Dellen und Kratzer an der Felge vorne links.",
         },
-      ],
-    },
-    {
-      path: "/damages/zoe/signal-2025-05-18-193335.jpeg",
-      side: "left",
-      x: 20,
-      y: 79,
-      description: "Delle an der Felge vorne links.",
-      detail_paths: [
         {
           src: "/damages/zoe/signal-2025-05-18-193335.jpeg",
           title: "Delle an der Felge vorne links.",
         },
-      ],
-    },
-    {
-      path: "/damages/zoe/signal-2025-05-18-193348.jpeg",
-      side: "left",
-      x: 20,
-      y: 80,
-      description: "Kratzer an der Felge vorne links.",
-      detail_paths: [
         {
           src: "/damages/zoe/signal-2025-05-18-193348.jpeg",
           title: "Kratzer an der Felge vorne links.",
@@ -119,41 +101,14 @@
           src: "/damages/zoe/signal-2025-05-18-193635.jpeg",
           title: "Korrosion und Kratzer an der Felge hinten rechts.",
         },
-      ],
-    },
-    {
-      path: "/damages/zoe/signal-2025-05-18-193703.jpeg",
-      side: "right",
-      x: 17,
-      y: 79,
-      description: "Korrosion und Kratzer an der Felge hinten rechts.",
-      detail_paths: [
         {
           src: "/damages/zoe/signal-2025-05-18-193703.jpeg",
           title: "Korrosion und Kratzer an der Felge hinten rechts.",
         },
-      ],
-    },
-    {
-      path: "/damages/zoe/signal-2025-05-18-193723.jpeg",
-      side: "right",
-      x: 17,
-      y: 80,
-      description: "Korrosion und Kratzer an der Felge hinten rechts.",
-      detail_paths: [
         {
           src: "/damages/zoe/signal-2025-05-18-193723.jpeg",
           title: "Korrosion und Kratzer an der Felge hinten rechts.",
         },
-      ],
-    },
-    {
-      path: "/damages/zoe/signal-2025-05-18-193734.jpeg",
-      side: "right",
-      x: 16,
-      y: 80,
-      description: "Korrosion und Kratzer an der Felge hinten rechts.",
-      detail_paths: [
         {
           src: "/damages/zoe/signal-2025-05-18-193734.jpeg",
           title: "Korrosion und Kratzer an der Felge hinten rechts.",
