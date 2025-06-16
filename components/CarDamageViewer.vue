@@ -48,8 +48,8 @@ watchEffect(() => {
     <div class="w-full mx-auto">
       <!-- All Damage Images -->
       <div class="damage-list">
-        <div v-for="(image, index) in damageImages" :key="index" class="damage-item mb-2">
-          <div class="relative group">
+        <div v-for="(image, index) in damageImages" :key="index" class="mb-2">
+          <div class="relative group min-h-[90px] ">
             <!-- Main Damage Image with NuxtImg -->
             <div class="overflow-hidden">
               <NuxtImg :src="image.path"
