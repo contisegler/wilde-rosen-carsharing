@@ -1,38 +1,38 @@
 <script setup lang="ts">
-// Component for displaying car damage images with schematics
+  // Component for displaying car damage images with schematics
 
-// Easy Lightbox state
-const visibleRef = ref<boolean[]>([]);
+  // Easy Lightbox state
+  const visibleRef = ref<boolean[]>([])
 
-// Show image in lightbox
-const showImg = (index: number) => {
-  visibleRef.value[index] = true;
-};
-
-// Hide lightbox
-const onHide = () => {
-  visibleRef.value = visibleRef.value.map(() => false);
-};
-
-interface Props {
-  damageImages: DamageEntry[];
-  carModel: string;
-  title: string;
-}
-
-const props = defineProps<Props>();
-
-// Use the shared getSchematicPath function with the car model from props
-const getCarSchematicPath = (side: string) => {
-  return getSchematicPath(props.carModel, side);
-};
-
-// Initialize lightbox images from damage entries
-watchEffect(() => {
-  if (props.damageImages && props.damageImages.length > 0) {
-    visibleRef.value = new Array(props.damageImages.length).fill(false);
+  // Show image in lightbox
+  const showImg = (index: number) => {
+    visibleRef.value[index] = true
   }
-});
+
+  // Hide lightbox
+  const onHide = () => {
+    visibleRef.value = visibleRef.value.map(() => false)
+  }
+
+  interface Props {
+    damageImages: DamageEntry[]
+    carModel: string
+    title: string
+  }
+
+  const props = defineProps<Props>()
+
+  // Use the shared getSchematicPath function with the car model from props
+  const getCarSchematicPath = (side: string) => {
+    return getSchematicPath(props.carModel, side)
+  }
+
+  // Initialize lightbox images from damage entries
+  watchEffect(() => {
+    if (props.damageImages && props.damageImages.length > 0) {
+      visibleRef.value = new Array(props.damageImages.length).fill(false)
+    }
+  })
 </script>
 
 <template>
@@ -76,23 +76,14 @@ watchEffect(() => {
                 <NuxtImg
                   :src="getCarSchematicPath(image.side)"
                   class="schematic-image opacity-70"
-                  :alt="
-                    'Schematic for ' +
-                    props.carModel +
-                    ' ' +
-                    image.side +
-                    ' side'
-                  "
+                  :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'"
                   sizes="sm:30vw md:225px"
                   loading="lazy"
                   format="webp"
                   quality="60"
                   fit="contain"
                 />
-                <div
-                  class="damage-x-marker"
-                  :style="{ left: image.x + '%', top: image.y + '%' }"
-                >
+                <div class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
                   X
                 </div>
               </div>
@@ -123,34 +114,34 @@ watchEffect(() => {
 </template>
 
 <style scoped>
-.damage-x-marker {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  color: red;
-  font-weight: bold;
-  font-size: 24px;
-  text-shadow:
-    -1px -1px 0 #fff,
-    1px -1px 0 #fff,
-    -1px 1px 0 #fff,
-    1px 1px 0 #fff;
-}
-
-/* Responsive adjustments for the damage marker */
-@media (max-width: 576px) {
   .damage-x-marker {
-    font-size: 16px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-weight: bold;
+    font-size: 24px;
     text-shadow:
-      -0.5px -0.5px 0 #fff,
-      0.5px -0.5px 0 #fff,
-      -0.5px 0.5px 0 #fff,
-      0.5px 0.5px 0 #fff;
+      -1px -1px 0 #fff,
+      1px -1px 0 #fff,
+      -1px 1px 0 #fff,
+      1px 1px 0 #fff;
   }
-}
 
-@media (max-width: 375px) {
-  .damage-x-marker {
-    font-size: 14px;
+  /* Responsive adjustments for the damage marker */
+  @media (max-width: 576px) {
+    .damage-x-marker {
+      font-size: 16px;
+      text-shadow:
+        -0.5px -0.5px 0 #fff,
+        0.5px -0.5px 0 #fff,
+        -0.5px 0.5px 0 #fff,
+        0.5px 0.5px 0 #fff;
+    }
   }
-}
+
+  @media (max-width: 375px) {
+    .damage-x-marker {
+      font-size: 14px;
+    }
+  }
 </style>

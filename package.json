@@ -8,10 +8,10 @@
     "generate": "nuxt generate",
     "preview": "nuxt preview",
     "postinstall": "nuxt prepare",
-    "lint": "eslint . && prettier . --check",
+    "lint": "prettier . --check && eslint .",
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier . --check",
-    "lint:fix": "eslint . --fix && prettier --write --list-different ."
+    "lint:fix": "prettier --write --list-different . && eslint . --fix"
   },
   "dependencies": {
     "@nuxt/image": "^1.10.0",

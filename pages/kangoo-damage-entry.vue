@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// This page will use the DamageEntryForm component for Kangoo
+  // This page will use the DamageEntryForm component for Kangoo
 </script>
 
 <template>
@@ -16,7 +16,7 @@
 </template>
 
 <style scoped>
-.damage-entry-page {
-  padding-bottom: 2rem;
-}
+  .damage-entry-page {
+    padding-bottom: 2rem;
+  }
 </style>
