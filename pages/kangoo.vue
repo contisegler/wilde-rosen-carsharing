@@ -5,35 +5,55 @@
 // or fetched from an API, but for now we're keeping it here for simplicity
 const kangooDamageImages = ref<DamageEntry[]>([
   {
-    "path": "/damages/kangoo/signal-2025-05-18-194106.jpeg",
-    "side": "back",
-    "x": 51,
-    "y": 78,
-    "description": "Kratzer an der Stoßstange hinten, bzw. der Laderampe zum Kofferraum."
+    path: "/damages/kangoo/signal-2025-05-18-194106.jpeg",
+    side: "back",
+    x: 51,
+    y: 78,
+    description:
+      "Kratzer an der Stoßstange hinten, bzw. der Laderampe zum Kofferraum.",
+    detail_paths: [
+      {
+        src: "/damages/kangoo/signal-2025-05-18-194106.jpeg",
+        title:
+          "Kratzer an der Stoßstange hinten, bzw. der Laderampe zum Kofferraum.",
+      },
+    ],
   },
   {
-    "path": "/damages/kangoo/signal-2025-05-18-194231.jpeg",
-    "side": "left",
-    "x": 13,
-    "y": 61,
-    "description": "Stoßstange steht vorne links ab."
+    path: "/damages/kangoo/signal-2025-05-18-194231.jpeg",
+    side: "left",
+    x: 13,
+    y: 61,
+    description: "Stoßstange steht vorne links ab.",
+    detail_paths: [
+      {
+        src: "/damages/kangoo/signal-2025-05-18-194231.jpeg",
+        title: "Stoßstange steht vorne links ab.",
+      },
+    ],
   },
   {
-    "path": "/damages/kangoo/signal-2025-05-18-194245.jpeg",
-    "side": "right",
-    "x": 79,
-    "y": 80,
-    "description": "Kratzer an der Felgenabdeckung vorne rechts."
-  }
-])
+    path: "/damages/kangoo/signal-2025-05-18-194245.jpeg",
+    side: "right",
+    x: 79,
+    y: 80,
+    description: "Kratzer an der Felgenabdeckung vorne rechts.",
+    detail_paths: [
+      {
+        src: "/damages/kangoo/signal-2025-05-18-194245.jpeg",
+        title: "Kratzer an der Felgenabdeckung vorne rechts.",
+      },
+    ],
+  },
+]);
 </script>
 
 <template>
   <div>
-    <CarDamageViewer 
-      :damage-images="kangooDamageImages" 
+    <CarDamageViewer
+      :damage-images="kangooDamageImages"
       car-model="kangoo"
-      title="Kangoo" 
+      title="Kangoo"
     />
   </div>
 </template>

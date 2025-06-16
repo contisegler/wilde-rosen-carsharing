@@ -10,7 +10,7 @@
       </NuxtLink>
       <h1 class="w-full text-center">Bearbeite Kangoo Schäden</h1>
     </div>
-    
+
     <DamageEntryForm car-model="kangoo" />
   </div>
 </template>
