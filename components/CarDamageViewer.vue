@@ -2,11 +2,21 @@
   // Component for displaying car damage images with schematics
 
   // Easy Lightbox state
-  const visibleRef = ref<boolean[]>([])
+  const lightboxVisible = ref<boolean[]>([])
+  const schematicLoaded = ref<boolean[]>([])
 
   // Hide lightbox
-  const onHide = () => {
-    visibleRef.value = visibleRef.value.map(() => false)
+  const onLightboxHide = () => {
+    lightboxVisible.value = lightboxVisible.value.map(() => false)
+  }
+
+  const onSchematicLoad = (index: number) => {
+    schematicLoaded.value[index] = true
+    console.log('Schematic loaded for index:', index)
+  }
+
+  const onImageLoad = (index: number) => {
+    console.log('Image loaded for index:', index)
   }
 
   interface Props {
@@ -25,7 +35,8 @@
   // Initialize lightbox images from damage entries
   watchEffect(() => {
     if (props.damageImages && props.damageImages.length > 0) {
-      visibleRef.value = new Array(props.damageImages.length).fill(false)
+      lightboxVisible.value = new Array(props.damageImages.length).fill(false)
+      schematicLoaded.value = new Array(props.damageImages.length).fill(false)
     }
   })
 </script>
@@ -58,7 +69,8 @@
                 loading="lazy"
                 fit="inside"
                 placeholder
-                @click="() => visibleRef[index] = true"
+                @click="() => lightboxVisible[index] = true"
+                @load="onImageLoad(index)"
               />
             </div>
 
@@ -73,12 +85,13 @@
                   class="schematic-image opacity-70"
                   :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'"
                   sizes="sm:30vw md:225px"
-                  loading="lazy"
+                  loading="eager"
                   format="webp"
                   quality="60"
                   fit="contain"
+                  @load="onSchematicLoad(index)"
                 />
-                <div class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
+                <div v-if="schematicLoaded[index]" class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
                   X
                 </div>
               </div>
@@ -94,14 +107,14 @@
           <!-- Use VueEasyLightbox with detail_paths -->
           <VueEasyLightbox
             v-if="image.detail_paths"
-            :visible="visibleRef[index]"
+            :visible="lightboxVisible[index]"
             :imgs="image.detail_paths"
             :index="0"
             :rotate-disabled="true"
             :zoom-scale="0.5"
             :min-zoom="0.5"
             loop="true"
-            @hide="onHide"
+            @hide="onLightboxHide"
           />
         </div>
       </div>
