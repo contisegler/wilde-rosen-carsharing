@@ -4,11 +4,6 @@
   // Easy Lightbox state
   const visibleRef = ref<boolean[]>([])
 
-  // Show image in lightbox
-  const showImg = (index: number) => {
-    visibleRef.value[index] = true
-  }
-
   // Hide lightbox
   const onHide = () => {
     visibleRef.value = visibleRef.value.map(() => false)
@@ -63,7 +58,7 @@
                 loading="lazy"
                 fit="inside"
                 placeholder
-                @click="() => showImg(index)"
+                @click="() => visibleRef[index] = true"
               />
             </div>
 
