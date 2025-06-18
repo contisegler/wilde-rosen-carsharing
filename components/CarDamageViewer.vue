@@ -1,23 +1,10 @@
 <script setup lang="ts">
+
   // Component for displaying car damage images with schematics
 
   // Easy Lightbox state
   const lightboxVisible = ref<boolean[]>([])
   const schematicLoaded = ref<boolean[]>([])
-
-  // Hide lightbox
-  const onLightboxHide = () => {
-    lightboxVisible.value = lightboxVisible.value.map(() => false)
-  }
-
-  const onSchematicLoad = (index: number) => {
-    schematicLoaded.value[index] = true
-    console.log('Schematic loaded for index:', index)
-  }
-
-  const onImageLoad = (index: number) => {
-    console.log('Image loaded for index:', index)
-  }
 
   interface Props {
     damageImages: DamageEntry[]
@@ -70,7 +57,6 @@
                 fit="inside"
                 placeholder
                 @click="() => lightboxVisible[index] = true"
-                @load="onImageLoad(index)"
               />
             </div>
 
@@ -89,7 +75,7 @@
                   format="webp"
                   quality="60"
                   fit="contain"
-                  @load="onSchematicLoad(index)"
+                  @load="schematicLoaded[index] = true"
                 />
                 <div v-if="schematicLoaded[index]" class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
                   X
@@ -114,7 +100,7 @@
             :zoom-scale="0.5"
             :min-zoom="0.5"
             loop="true"
-            @hide="onLightboxHide"
+            @hide="lightboxVisible = lightboxVisible.map(() => false)"
           />
         </div>
       </div>
