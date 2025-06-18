@@ -99,7 +99,7 @@
             :rotate-disabled="true"
             :zoom-scale="0.5"
             :min-zoom="0.5"
-            loop="true"
+            :loop="true"
             @hide="lightboxVisible = lightboxVisible.map(() => false)"
           />
         </div>
