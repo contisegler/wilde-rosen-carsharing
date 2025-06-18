@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
   // Component for displaying car damage images with schematics
 
   // Easy Lightbox state
@@ -60,6 +59,15 @@
               />
             </div>
 
+            <!-- Badge showing number of detail images -->
+            <Badge
+              v-if="image.detail_paths?.length"
+              class="absolute top-2 left-2 z-10 opacity-50 font-bold"
+              variant="secondary"
+            >
+              {{ image.detail_paths.length }}
+            </Badge>
+
             <!-- Schematic Overlay -->
             <div
               v-if="getCarSchematicPath(image.side)"
@@ -77,7 +85,11 @@
                   fit="contain"
                   @load="schematicLoaded[index] = true"
                 />
-                <div v-if="schematicLoaded[index]" class="damage-x-marker" :style="{ left: image.x + '%', top: image.y + '%' }">
+                <div
+                  v-if="schematicLoaded[index]"
+                  class="damage-x-marker"
+                  :style="{ left: image.x + '%', top: image.y + '%' }"
+                >
                   X
                 </div>
               </div>
