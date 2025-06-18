@@ -57,7 +57,7 @@
                 :src="image.path"
                 class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
                 :alt="'Car damage: ' + image.description"
-                sizes="sm:100vw md:80vw lg:600px"
+                sizes="sm:80vw md:60vw lg:500px"
                 format="webp"
                 quality="70"
                 loading="lazy"
