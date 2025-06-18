@@ -71,7 +71,7 @@
                   class="schematic-image opacity-70"
                   :alt="'Schematic for ' + props.carModel + ' ' + image.side + ' side'"
                   sizes="sm:30vw md:225px"
-                  loading="eager"
+                  loading="lazy"
                   format="webp"
                   quality="60"
                   fit="contain"
