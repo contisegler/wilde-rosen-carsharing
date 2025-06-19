@@ -1,0 +1,9 @@
+{
+  "eslint.useFlatConfig": true,
+  "prettier.vueIndentScriptAndStyle": true,
+  "vue.format.script.initialIndent": true,
+  "vue.format.style.initialIndent": true,
+  "[vue]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

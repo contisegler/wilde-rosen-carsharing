@@ -1,5 +1,5 @@
 <script setup lang="ts">
-// This page will use the DamageEntryForm component
+  // This page will use the DamageEntryForm component
 </script>
 
 <template>
@@ -15,7 +15,7 @@
 </template>
 
 <style scoped>
-.damage-entry-page {
-  padding-bottom: 2rem;
-}
+  .damage-entry-page {
+    padding-bottom: 2rem;
+  }
 </style>
