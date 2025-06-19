@@ -18,6 +18,13 @@
     return getSchematicPath(props.carModel, side)
   }
 
+  const getLightboxImages = (detail_paths: DetailPath[]) => {
+    return detail_paths.map((detail_path, index) => ({
+      src: detail_path.src,
+      title: index + 1 + ": " + detail_path.title,
+    }))
+  }
+
   // Initialize lightbox images from damage entries
   watchEffect(() => {
     if (props.damageImages && props.damageImages.length > 0) {
@@ -61,8 +68,8 @@
           <!-- Badge showing number of detail images -->
           <Badge
             v-if="image.detail_paths?.length"
-            class="absolute top-2 left-2 opacity-70 text-sm md:text-base font-bold"
-            variant="secondary"
+            class="absolute top-2 left-2 bg-black/80 text-white opacity-50 text-sm md:text-base"
+            variant="default"
           >
             {{ image.detail_paths.length }}
           </Badge>
@@ -93,16 +100,16 @@
 
           <!-- Description overlaid on the image -->
           <div
-            class="absolute bottom-0 left-0 right-0 bg-black/80 text-white p-2 text-sm opacity-50"
+            class="absolute bottom-0 left-0 right-0 p-2 bg-black/80 text-white opacity-50 text-sm md:text-base text-center"
           >
-            <p class="m-0 text-center text-sm md:text-base">{{ image.description }}</p>
+            {{ image.description }}
           </div>
         </div>
         <!-- Use VueEasyLightbox with detail_paths -->
         <VueEasyLightbox
           v-if="image.detail_paths"
           :visible="lightboxVisible[index]"
-          :imgs="image.detail_paths"
+          :imgs="getLightboxImages(image.detail_paths)"
           :index="0"
           :rotate-disabled="true"
           :zoom-scale="0.5"
