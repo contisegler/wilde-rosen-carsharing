@@ -44,7 +44,9 @@ export default defineNuxtConfig({
   ],
 
   // Image module configuration
-  image: {},
+  image: {
+    domains: ["firebasestorage.googleapis.com"],
+  },
 
   // shadcn-nuxt configuration
   shadcn: {
