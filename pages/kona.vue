@@ -19,6 +19,6 @@
 
 <template>
   <div>
-    <CarDamageViewer :damage-images="konaDamageImages" car-model="kona" title="Kona" />
+    <CarDamageViewer :damage-entries="konaDamageImages" car-model="kona" title="Kona" />
   </div>
 </template>

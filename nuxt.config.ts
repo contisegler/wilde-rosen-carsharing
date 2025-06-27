@@ -35,15 +35,21 @@ export default defineNuxtConfig({
   },
 
   // Modules
-  modules: ["@nuxt/image", "nuxt-easy-lightbox", "shadcn-nuxt", "@nuxt/eslint"],
+  modules: ["@nuxt/image", "nuxt-easy-lightbox", "shadcn-nuxt", "@nuxt/eslint", "nuxt-vuefire"],
 
   // Image module configuration
-  image: {},
+  image: {
+    domains: ["firebasestorage.googleapis.com"],
+  },
 
   // shadcn-nuxt configuration
   shadcn: {
     prefix: "",
     componentDir: "./components/ui",
+  },
+
+  vuefire: {
+    config: JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || ""),
   },
 
   // // Nitro configuration for optimized server

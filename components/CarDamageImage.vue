@@ -1,0 +1,145 @@
+<script setup lang="ts">
+  import { ref as storageRef } from "firebase/storage"
+
+  interface Props {
+    damageEntry: DamageEntry
+    carModel: string
+  }
+
+  const props = defineProps<Props>()
+
+  const storage = useFirebaseStorage()
+
+  const imageFileRef = storageRef(storage, props.damageEntry.path)
+  const { url: imageUrl } = useStorageFileUrl(imageFileRef)
+  console.log(imageUrl.value)
+
+  const numDetails = computed(() => {
+    return props.damageEntry.detail_paths?.length
+  })
+
+  const lightboxVisible = ref<boolean>(false)
+
+  const schematicFileRef = storageRef(storage, `${props.carModel}_${props.damageEntry.side}.png`)
+  const { url: schematicUrl } = useStorageFileUrl(schematicFileRef)
+
+  const schematicLoaded = ref<boolean>(false)
+
+  const lightboxImages = computed(() => {
+    return props.damageEntry.detail_paths?.map((detail_path, index) => {
+      const fileRef = storageRef(storage, detail_path.path)
+      const { url } = useStorageFileUrl(fileRef)
+      return {
+        src: url.value || "",
+        title: index + 1 + ": " + detail_path.title,
+      }
+    })
+  })
+</script>
+
+<template>
+  <div class="relative group min-h-[90px]">
+    <!-- Main Damage Image with NuxtImg -->
+    <div class="overflow-hidden">
+      <NuxtImg
+        v-if="imageUrl"
+        :src="imageUrl"
+        class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
+        :alt="'Auto Schaden: ' + damageEntry.description"
+        sizes="sm:80vw md:70vw lg:736px"
+        format="webp"
+        quality="70"
+        loading="lazy"
+        fit="inside"
+        placeholder
+        @click="lightboxVisible = true"
+      />
+    </div>
+
+    <!-- Badge showing number of detail images -->
+    <Badge
+      v-if="numDetails"
+      class="absolute top-2 left-2 bg-black/80 text-white opacity-50 text-sm md:text-base"
+      variant="default"
+    >
+      {{ numDetails }}
+    </Badge>
+
+    <!-- Schematic Overlay -->
+    <div v-if="schematicUrl" class="absolute top-2 right-2">
+      <div class="relative">
+        <NuxtImg
+          :src="schematicUrl"
+          class="opacity-70"
+          :alt="'Schema für ' + props.carModel + '; Seite: ' + damageEntry.side"
+          sizes="sm:30vw md:225px"
+          loading="lazy"
+          format="webp"
+          quality="60"
+          fit="contain"
+          @load="schematicLoaded = true"
+        />
+        <div
+          v-if="schematicLoaded"
+          class="damage-x-marker"
+          :style="{ left: damageEntry.x + '%', top: damageEntry.y + '%' }"
+        >
+          X
+        </div>
+      </div>
+    </div>
+
+    <!-- Description overlaid on the image -->
+    <div
+      class="absolute bottom-0 left-0 right-0 p-2 bg-black/80 text-white opacity-50 text-sm md:text-base text-center"
+    >
+      {{ damageEntry.description }}
+    </div>
+  </div>
+
+  <!-- Use VueEasyLightbox with detail_paths -->
+  <VueEasyLightbox
+    v-if="damageEntry.detail_paths"
+    :visible="lightboxVisible"
+    :imgs="lightboxImages"
+    :index="0"
+    :rotate-disabled="true"
+    :zoom-scale="0.5"
+    :min-zoom="0.5"
+    :loop="true"
+    @hide="lightboxVisible = false"
+  />
+</template>
+
+<style scoped>
+  .damage-x-marker {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-weight: bold;
+    font-size: 24px;
+    text-shadow:
+      -1px -1px 0 #fff,
+      1px -1px 0 #fff,
+      -1px 1px 0 #fff,
+      1px 1px 0 #fff;
+  }
+
+  /* Responsive adjustments for the damage marker */
+  @media (max-width: 576px) {
+    .damage-x-marker {
+      font-size: 16px;
+      text-shadow:
+        -0.5px -0.5px 0 #fff,
+        0.5px -0.5px 0 #fff,
+        -0.5px 0.5px 0 #fff,
+        0.5px 0.5px 0 #fff;
+    }
+  }
+
+  @media (max-width: 375px) {
+    .damage-x-marker {
+      font-size: 14px;
+    }
+  }
+</style>

@@ -57,7 +57,7 @@
       ...damageData,
       detail_paths: [
         {
-          src: damageData.path,
+          path: damageData.path,
           title: damageData.description,
         },
       ],
@@ -107,7 +107,7 @@
       ...damageData,
       detail_paths: [
         {
-          src: damageData.path,
+          path: damageData.path,
           title: damageData.description,
         },
       ],

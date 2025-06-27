@@ -1,7 +1,7 @@
 // Define shared types and constants for the application
 
 export interface DetailPath {
-  src: string // URL to the image
+  path: string // URL to the image
   title: string // Description/title for the image
 }
 
