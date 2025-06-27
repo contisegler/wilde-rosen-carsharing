@@ -35,13 +35,7 @@ export default defineNuxtConfig({
   },
 
   // Modules
-  modules: [
-    "@nuxt/image",
-    "nuxt-easy-lightbox",
-    "shadcn-nuxt",
-    "@nuxt/eslint",
-    "nuxt-vuefire"
-  ],
+  modules: ["@nuxt/image", "nuxt-easy-lightbox", "shadcn-nuxt", "@nuxt/eslint", "nuxt-vuefire"],
 
   // Image module configuration
   image: {
