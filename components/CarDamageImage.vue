@@ -12,10 +12,9 @@
 
   const imageFileRef = storageRef(storage, props.damageEntry.path)
   const { url: imageUrl } = useStorageFileUrl(imageFileRef)
-  console.log(imageUrl.value)
 
   const numDetails = computed(() => {
-    return props.damageEntry.detail_paths?.length
+    return props.damageEntry.details?.length
   })
 
   const lightboxVisible = ref<boolean>(false)
@@ -26,12 +25,12 @@
   const schematicLoaded = ref<boolean>(false)
 
   const lightboxImages = computed(() => {
-    return props.damageEntry.detail_paths?.map((detail_path, index) => {
-      const fileRef = storageRef(storage, detail_path.path)
+    return props.damageEntry.details?.map((detail, index) => {
+      const fileRef = storageRef(storage, detail.path)
       const { url } = useStorageFileUrl(fileRef)
       return {
         src: url.value || "",
-        title: index + 1 + ": " + detail_path.title,
+        title: index + 1 + ": " + detail.description,
       }
     })
   })
@@ -99,7 +98,7 @@
 
   <!-- Use VueEasyLightbox with detail_paths -->
   <VueEasyLightbox
-    v-if="damageEntry.detail_paths"
+    v-if="damageEntry.details"
     :visible="lightboxVisible"
     :imgs="lightboxImages"
     :index="0"
