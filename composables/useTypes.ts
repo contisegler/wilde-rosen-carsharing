@@ -6,12 +6,16 @@ export interface DamageDetail {
 }
 
 export interface DamageEntry {
+  id: string // Document ID from Firestore
   path: string // URL to the image (either blob URL or static path)
   description: string
   x: number // X position (0-100%)
   y: number // Y position (0-100%)
-  side: string // 'front', 'back', 'left', 'right'
+  side: 'front' | 'back' | 'left' | 'right' | 'top' // Enforce valid side values
   details: DamageDetail[] // Array of detail images with their descriptions
+  createdAt: Date // When the entry was created
+  updatedAt: Date // When the entry was last updated
+  order: number // Sort order
 }
 
 // Shared constants for car sides

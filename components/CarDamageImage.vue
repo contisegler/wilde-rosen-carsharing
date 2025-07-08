@@ -3,7 +3,7 @@
 
   interface Props {
     damageEntry: DamageEntry
-    carModel: string
+    carId: string
   }
 
   const props = defineProps<Props>()
@@ -19,7 +19,7 @@
 
   const lightboxVisible = ref<boolean>(false)
 
-  const schematicFileRef = storageRef(storage, `${props.carModel}_${props.damageEntry.side}.png`)
+  const schematicFileRef = storageRef(storage, `${props.carId}_${props.damageEntry.side}.png`)
   const { url: schematicUrl } = useStorageFileUrl(schematicFileRef)
 
   const schematicLoaded = ref<boolean>(false)
@@ -70,7 +70,7 @@
         <NuxtImg
           :src="schematicUrl"
           class="opacity-70"
-          :alt="'Schema für ' + props.carModel + '; Seite: ' + damageEntry.side"
+          :alt="'Schema für ' + carId + '; Seite: ' + damageEntry.side"
           sizes="sm:30vw md:225px"
           loading="lazy"
           format="webp"
