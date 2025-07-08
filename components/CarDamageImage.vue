@@ -37,7 +37,7 @@
 </script>
 
 <template>
-  <div class="relative group min-h-[90px]">
+  <div class="relative group min-h-[90px]" :data-id="damageEntry.id" :data-order="damageEntry.order">
     <!-- Main Damage Image with NuxtImg -->
     <div class="overflow-hidden">
       <NuxtImg
