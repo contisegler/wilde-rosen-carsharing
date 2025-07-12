@@ -150,28 +150,43 @@ export function useCarDamages(options: UseCarDamagesOptions): UseCarDamagesRetur
 
   // Process damage entries to add storage URLs
   const damageEntries = ref<DamageEntry[] | null>(null)
-  watchEffect(async () => {
+  
+  // Process entries on both server and client
+  const processEntries = async (entries: DamageEntryBase[]) => {
+    try {
+      const entriesWithUrls = await Promise.all(
+        entries.map(async (entry: DamageEntryBase) => {
+          const urls = await getStorageUrls(options.carId, entry)
+          return {
+            ...entry,
+            imageUrl: urls.imageUrl,
+            schematicUrl: urls.schematicUrl,
+          } as DamageEntry
+        })
+      )
+      damageEntries.value = entriesWithUrls
+    } catch (err) {
+      console.error("Error processing damage entries:", err)
+      error.value = err as Error
+    } finally {
+      isLoading.value = false
+    }
+  }
+  
+  // Process entries when baseDamageEntries changes
+  watchEffect(() => {
     if (baseDamageEntries.value) {
-      try {
-        const entriesWithUrls = await Promise.all(
-          baseDamageEntries.value.map(async entry => {
-            const urls = await getStorageUrls(options.carId, entry)
-            return {
-              ...entry,
-              imageUrl: urls.imageUrl,
-              schematicUrl: urls.schematicUrl,
-            }
-          })
-        )
-        damageEntries.value = entriesWithUrls
-      } catch (err) {
-        console.error("Error processing damage entries:", err)
-        error.value = err as Error
-      } finally {
-        isLoading.value = false
-      }
+      processEntries(baseDamageEntries.value)
     } else {
       damageEntries.value = null
+      isLoading.value = false
+    }
+  })
+  
+  // Initial processing on server
+  onMounted(() => {
+    if (baseDamageEntries.value && import.meta.client) {
+      processEntries(baseDamageEntries.value)
     }
   })
 
