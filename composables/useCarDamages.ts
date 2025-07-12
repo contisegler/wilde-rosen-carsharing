@@ -1,16 +1,17 @@
-import { collection, query, orderBy, where } from 'firebase/firestore'
-import type { DocumentData, WithFieldValue, QueryDocumentSnapshot, SnapshotOptions } from 'firebase/firestore'
-
-interface CarData {
-  id: string
-  carId: string
-  title: string
-}
+// Firebase imports
+import { collection, query, where, orderBy } from "firebase/firestore"
+import { getStorage, ref as storageRef, getDownloadURL } from "firebase/storage"
+import type { FirestoreDataConverter, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, Timestamp } from "firebase/firestore"
 
 interface UseCarDamagesOptions {
   carId: string
   sortBy?: string
-  sortDirection?: 'asc' | 'desc'
+  sortDirection?: "asc" | "desc"
+}
+
+type FirestoreDamageEntry = Omit<DamageEntry, "id" | "createdAt" | "updatedAt" | "imageUrl" | "schematicUrl"> & {
+  createdAt: Timestamp
+  updatedAt: Timestamp
 }
 
 interface UseCarDamagesReturn {
@@ -23,42 +24,68 @@ interface UseCarDamagesReturn {
 /**
  * Composable to fetch and manage car data and its damage entries
  */
-export function useCarDamages (options: UseCarDamagesOptions): UseCarDamagesReturn {
-  console.log('useCarDamages called with options:', options)
+export function useCarDamages(options: UseCarDamagesOptions): UseCarDamagesReturn {
+  console.log("useCarDamages called with options:", options)
   const db = useFirestore()
   const error = ref<Error | null>(null)
   const isLoading = ref(true)
-  
+
+  // Helper function to generate storage URLs
+  async function getStorageUrls(
+    carId: string,
+    entry: DamageEntryBase
+  ): Promise<{ imageUrl: string; schematicUrl: string }> {
+    const storage = getStorage()
+    try {
+      const [imageUrl, schematicUrl] = await Promise.all([
+        getDownloadURL(storageRef(storage, entry.path)),
+        getDownloadURL(storageRef(storage, `${carId}_${entry.side}.png`)),
+      ])
+      return { imageUrl, schematicUrl }
+    } catch (err) {
+      console.error("Error generating storage URLs:", err)
+      return { imageUrl: "", schematicUrl: "" }
+    }
+  }
+
   // Create a Firestore data converter with proper type safety
-  const damageEntryConverter = {
-    toFirestore(damageEntry: WithFieldValue<DamageEntry>): DocumentData {
-      const { id, ...data } = damageEntry as DamageEntry
-      return data as DocumentData
-    },
-    fromFirestore(
-      snapshot: QueryDocumentSnapshot<DocumentData>,
-      options?: SnapshotOptions
-    ): DamageEntry {
-      const data = snapshot.data(options) as Omit<DamageEntry, 'id'> & {
-        createdAt: { toDate: () => Date }
-        updatedAt: { toDate: () => Date }
+  const createDamageEntryConverter = (): FirestoreDataConverter<
+    DamageEntryBase,
+    FirestoreDamageEntry
+  > => ({
+    toFirestore: (damageEntry: WithFieldValue<DamageEntryBase>): FirestoreDamageEntry => {
+      const { id, createdAt, updatedAt, ...data } = damageEntry as DamageEntryBase
+      return {
+        ...data,
+        createdAt: createdAt as unknown as Timestamp,
+        updatedAt: updatedAt as unknown as Timestamp,
       }
-      
-      // Create the result with proper typing and required fields
+    },
+    fromFirestore: (
+      snapshot: QueryDocumentSnapshot<FirestoreDamageEntry>,
+      options: SnapshotOptions
+    ): DamageEntryBase => {
+      const data = snapshot.data(options)
+
       return {
         id: snapshot.id,
         path: data.path,
-        description: data.description,
-        x: data.x,
-        y: data.y,
-        side: data.side,
-        details: data.details || [],
-        order: data.order,
-        createdAt: data.createdAt.toDate(),
-        updatedAt: data.updatedAt.toDate()
+        description: data.description || "",
+        x: data.x || 0,
+        y: data.y || 0,
+        side: data.side || "front",
+        details:
+          data.details?.map(detail => ({
+            id: detail.id,
+            description: detail.description,
+            path: detail.path,
+          })) || [],
+        order: data.order || 0,
+        createdAt: data.createdAt?.toDate() || new Date(),
+        updatedAt: data.updatedAt?.toDate() || new Date(),
       }
-    }
-  }
+    },
+  })
 
   // Create a converter for CarData
   const carConverter = {
@@ -74,26 +101,23 @@ export function useCarDamages (options: UseCarDamagesOptions): UseCarDamagesRetu
       return {
         id: snapshot.id,
         carId: data.carId,
-        title: data.title
+        title: data.title,
       } as CarData
-    }
+    },
   }
 
   // Create a query to find the car document by its carId field
   const carsQuery = query(
-    collection(db, 'cars').withConverter(carConverter),
-    where('carId', '==', options.carId)
+    collection(db, "cars").withConverter(carConverter),
+    where("carId", "==", options.carId)
   )
-  
+
   // Use useCollection to get the car document
-  const { data: cars, error: carError } = useCollection(
-    carsQuery,
-    { once: true }
-  )
-  
+  const { data: cars, error: carError } = useCollection(carsQuery, { once: true })
+
   // Get the first (and should be only) matching car
   const car = computed(() => {
-    console.log('cars.value:', cars.value)
+    console.log("cars.value:", cars.value)
     const doc = cars.value?.[0]
     if (!doc) return null
     return doc as CarData
@@ -102,60 +126,67 @@ export function useCarDamages (options: UseCarDamagesOptions): UseCarDamagesRetu
   // Create a subcollection query for damage entries
   // We'll use the car's document ID (from the query result) to build the subcollection path
   const damageEntriesQuery = computed(() => {
-    if (!car.value) {
-      console.log('No car document yet, not creating damage entries query')
+    // Return null if car is not loaded yet (handles SSR case)
+    if (!car.value?.id) return null
+
+    console.log("Creating damage entries query for car document ID:", car.value.id)
+    try {
+      return query(
+        collection(db, "cars", car.value.id, "damages").withConverter(createDamageEntryConverter()),
+        orderBy(options.sortBy || "order", options.sortDirection || ("asc" as const))
+      )
+    } catch (err) {
+      console.error("Error creating damage entries query:", err)
       return null
     }
-    
-    console.log('Creating damage entries query for car document ID:', car.value.id)
-    return query(
-      collection(db, 'cars', car.value.id, 'damages').withConverter(damageEntryConverter),
-      orderBy(
-        options.sortBy || 'order', 
-        options.sortDirection || 'asc'
-      )
-    )
   })
-  
-  // Use VueFire's useCollection with one-time fetch
-  const { 
-    data: damageEntries, 
-    error: damageEntriesError,
-    pending: damageEntriesPending
-  } = useCollection<DamageEntry>(
-    damageEntriesQuery,
-    { 
-      once: true,
-      // Only run the query when we have a valid car document
-      wait: !car.value
-    }
-  )
 
-  // Watch for changes and update state
-  watchEffect(() => {
-    const wasLoading = isLoading.value
-    
-    // Update loading state
-    isLoading.value = damageEntriesPending.value || !car.value
-    
-    // Update error state
-    error.value = damageEntriesError.value || carError.value || null
-    
-    console.log('WatchEffect - isLoading:', isLoading.value, 'damageEntriesPending:', damageEntriesPending.value, 'hasCarDoc:', !!car.value)
-    
-    if (error.value) {
-      console.error('Error loading data:', error.value)
-    }
-    
-    if (wasLoading && !isLoading.value) {
-      console.log('Loading complete. Car:', !!car.value, 'Damage entries:', damageEntries.value?.length || 0)
+  // Use VueFire's useCollection to fetch the damage entries
+  const { data: baseDamageEntries } = useCollection<DamageEntryBase>(damageEntriesQuery, {
+    once: true,
+    // Only wait for car if we're on the server
+    wait: !car.value,
+  })
+
+  // Process damage entries to add storage URLs
+  const damageEntries = ref<DamageEntry[] | null>(null)
+  watchEffect(async () => {
+    if (baseDamageEntries.value) {
+      try {
+        const entriesWithUrls = await Promise.all(
+          baseDamageEntries.value.map(async entry => {
+            const urls = await getStorageUrls(options.carId, entry)
+            return {
+              ...entry,
+              imageUrl: urls.imageUrl,
+              schematicUrl: urls.schematicUrl,
+            }
+          })
+        )
+        damageEntries.value = entriesWithUrls
+      } catch (err) {
+        console.error("Error processing damage entries:", err)
+        error.value = err as Error
+      } finally {
+        isLoading.value = false
+      }
+    } else {
+      damageEntries.value = null
     }
   })
-  
+
+  // Handle car loading and errors
+  watchEffect(() => {
+    if (carError.value) {
+      error.value = carError.value
+      isLoading.value = false
+    }
+  })
+
   return {
-    car: car,
-    damageEntries: damageEntries || ref(null),
+    car,
+    damageEntries: computed(() => damageEntries.value),
     isLoading,
-    error
+    error,
   }
 }

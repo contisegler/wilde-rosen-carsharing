@@ -1,6 +1,4 @@
 <script setup lang="ts">
-  import { ref as storageRef } from "firebase/storage"
-
   interface Props {
     damageEntry: DamageEntry
     carId: string
@@ -8,10 +6,7 @@
 
   const props = defineProps<Props>()
 
-  const storage = useFirebaseStorage()
-
-  const imageFileRef = storageRef(storage, props.damageEntry.path)
-  const { url: imageUrl } = useStorageFileUrl(imageFileRef)
+  const imageUrl = computed(() => props.damageEntry.imageUrl)
 
   const numDetails = computed(() => {
     return props.damageEntry.details?.length
@@ -19,25 +14,25 @@
 
   const lightboxVisible = ref<boolean>(false)
 
-  const schematicFileRef = storageRef(storage, `${props.carId}_${props.damageEntry.side}.png`)
-  const { url: schematicUrl } = useStorageFileUrl(schematicFileRef)
-
+  const schematicUrl = computed(() => props.damageEntry.schematicUrl)
   const schematicLoaded = ref<boolean>(false)
 
   const lightboxImages = computed(() => {
-    return props.damageEntry.details?.map((detail, index) => {
-      const fileRef = storageRef(storage, detail.path)
-      const { url } = useStorageFileUrl(fileRef)
-      return {
-        src: url.value || "",
+    return (
+      props.damageEntry.details?.map((detail, index) => ({
+        src: detail.path,
         title: index + 1 + ": " + detail.description,
-      }
-    })
+      })) || []
+    )
   })
 </script>
 
 <template>
-  <div class="relative group min-h-[90px]" :data-id="damageEntry.id" :data-order="damageEntry.order">
+  <div
+    class="relative group min-h-[90px]"
+    :data-id="damageEntry.id"
+    :data-order="damageEntry.order"
+  >
     <!-- Main Damage Image with NuxtImg -->
     <div class="overflow-hidden">
       <NuxtImg

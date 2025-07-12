@@ -1,35 +1,33 @@
 // Define shared types and constants for the application
 
+export interface CarData {
+  id: string
+  carId: string
+  title: string
+}
+
 export interface DamageDetail {
-  path: string // URL to the image
-  description: string // Description/title for the image
-}
-
-export interface DamageEntry {
-  id: string // Document ID from Firestore
-  path: string // URL to the image (either blob URL or static path)
+  id: string
   description: string
-  x: number // X position (0-100%)
-  y: number // Y position (0-100%)
-  side: 'front' | 'back' | 'left' | 'right' | 'top' // Enforce valid side values
-  details: DamageDetail[] // Array of detail images with their descriptions
-  createdAt: Date // When the entry was created
-  updatedAt: Date // When the entry was last updated
-  order: number // Sort order
+  path: string
 }
 
-// Shared constants for car sides
-export const CAR_SIDES = [
-  { value: "front", label: "Front" },
-  { value: "back", label: "Back" },
-  { value: "left", label: "Left Side" },
-  { value: "right", label: "Right Side" },
-  { value: "top", label: "Top" },
-]
+export type CarSide = "front" | "back" | "left" | "right" | "top"
 
-// Shared constants for car models
-export const CAR_MODELS = {
-  zoe: "Zoe",
-  kangoo: "Kangoo",
-  kona: "Kona",
+export interface DamageEntryBase {
+  id: string
+  path: string
+  description: string
+  x: number
+  y: number
+  side: CarSide
+  details: DamageDetail[]
+  order: number
+  createdAt: Date
+  updatedAt: Date
+}
+
+export interface DamageEntry extends DamageEntryBase {
+  imageUrl: string
+  schematicUrl: string
 }
