@@ -34,25 +34,19 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
   const storage = useFirebaseStorage()
 
   // Helper function to generate storage URLs
-  async function getStorageUrls(
-    carId: string,
-    entry: DamageEntryBase
-  ): Promise<{ imageUrl: string; schematicUrl: string }> {
+ function getStorageUrl(
+    path: string,
+  ): string {
     try {
-      const imageRef = storageRef(storage, entry.path)
-      const schematicRef = storageRef(storage, `${carId}_${entry.side}.png`)
-
-      const [imageUrl, schematicUrl] = await Promise.all([
-        useStorageFileUrl(imageRef).url.value || "",
-        useStorageFileUrl(schematicRef).url.value || "",
-      ])
-
-      return { imageUrl, schematicUrl }
+      const imageRef = storageRef(storage, path)
+      const imageUrl = useStorageFileUrl(imageRef).url.value || ""
+      return imageUrl
     } catch (err) {
       console.error("Error generating storage URLs:", err)
-      return { imageUrl: "", schematicUrl: "" }
+      return ""
     }
   }
+
 
   // Create a Firestore data converter
   const damageEntryConverter: FirestoreDataConverter<DamageEntryBase, FirestoreDamageEntry> = {
@@ -124,13 +118,29 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
   )
 
   // Process entries when they change
-  const processEntries = async (entries: DamageEntryBase[]) => {
+  const processEntries = (entries: DamageEntryBase[]) => {
     try {
-      damageEntries.value = await Promise.all(
-        entries.map(async entry => ({
-          ...entry,
-          ...(await getStorageUrls(carId, entry)),
-        }))
+      damageEntries.value = entries.map(entry => {
+          // First get the main image and schematic URLs
+          const imageUrl = getStorageUrl(entry.path)
+          const schematicUrl = getStorageUrl(`${carId}_${entry.side}.png`)
+          
+          // Then get all lightbox images for this entry's details
+          const lightboxImages = (
+            entry.details.map(detail => ({
+              src: getStorageUrl(detail.path),
+              title: detail.description,
+            }))
+          )
+          
+          // Return the complete entry with all resolved URLs
+          return {
+            ...entry,
+            imageUrl,
+            schematicUrl,
+            lightboxImages,
+          }
+        }
       )
     } catch (err) {
       console.error("Error processing damage entries:", err)

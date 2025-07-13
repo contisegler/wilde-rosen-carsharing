@@ -6,25 +6,11 @@
 
   const props = defineProps<Props>()
 
-  const imageUrl = computed(() => props.damageEntry.imageUrl)
-
   const numDetails = computed(() => {
     return props.damageEntry.details?.length
   })
-
   const lightboxVisible = ref<boolean>(false)
-
-  const schematicUrl = computed(() => props.damageEntry.schematicUrl)
   const schematicLoaded = ref<boolean>(false)
-
-  const lightboxImages = computed(() => {
-    return (
-      props.damageEntry.details?.map((detail, index) => ({
-        src: detail.path,
-        title: index + 1 + ": " + detail.description,
-      })) || []
-    )
-  })
 </script>
 
 <template>
@@ -36,8 +22,8 @@
     <!-- Main Damage Image with NuxtImg -->
     <div class="overflow-hidden">
       <NuxtImg
-        v-if="imageUrl"
-        :src="imageUrl"
+        v-if="damageEntry.imageUrl"
+        :src="damageEntry.imageUrl"
         class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
         :alt="'Auto Schaden: ' + damageEntry.description"
         sizes="sm:80vw md:70vw lg:736px"
@@ -60,10 +46,10 @@
     </Badge>
 
     <!-- Schematic Overlay -->
-    <div v-if="schematicUrl" class="absolute top-2 right-2">
+    <div v-if="damageEntry.schematicUrl" class="absolute top-2 right-2">
       <div class="relative">
         <NuxtImg
-          :src="schematicUrl"
+          :src="damageEntry.schematicUrl"
           class="opacity-70"
           :alt="'Schema für ' + carId + '; Seite: ' + damageEntry.side"
           sizes="sm:30vw md:225px"
@@ -93,9 +79,9 @@
 
   <!-- Use VueEasyLightbox with detail_paths -->
   <VueEasyLightbox
-    v-if="damageEntry.details"
+    v-if="damageEntry.lightboxImages"
     :visible="lightboxVisible"
-    :imgs="lightboxImages"
+    :imgs="damageEntry.lightboxImages"
     :index="0"
     :rotate-disabled="true"
     :zoom-scale="0.5"

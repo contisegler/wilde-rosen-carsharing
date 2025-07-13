@@ -11,6 +11,11 @@ export interface DamageDetail {
   path: string
 }
 
+export interface LightboxImage {
+  src: string
+  title: string
+}
+
 export type CarSide = "front" | "back" | "left" | "right" | "top"
 
 export interface DamageEntryBase {
@@ -29,4 +34,5 @@ export interface DamageEntryBase {
 export interface DamageEntry extends DamageEntryBase {
   imageUrl: string
   schematicUrl: string
+  lightboxImages: LightboxImage[]
 }
