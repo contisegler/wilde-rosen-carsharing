@@ -1,18 +1,18 @@
 // Firebase imports
-import { collection, query, where, orderBy } from "firebase/firestore"
-import { getStorage, ref as storageRef, getDownloadURL } from "firebase/storage"
-import type { FirestoreDataConverter, QueryDocumentSnapshot, WithFieldValue, DocumentData, SnapshotOptions, Timestamp } from "firebase/firestore"
+import { doc, collection, query, orderBy } from "firebase/firestore"
+import { ref as storageRef } from "firebase/storage"
+import type { FirestoreDataConverter, WithFieldValue, Timestamp } from "firebase/firestore"
 
 interface UseCarDamagesOptions {
   carId: string
-  sortBy?: string
-  sortDirection?: "asc" | "desc"
 }
 
-type FirestoreDamageEntry = Omit<DamageEntry, "id" | "createdAt" | "updatedAt" | "imageUrl" | "schematicUrl"> & {
+type FirestoreDamageEntry = Omit<DamageEntryBase, "id" | "createdAt" | "updatedAt"> & {
   createdAt: Timestamp
   updatedAt: Timestamp
 }
+
+type FirestoreCarData = Omit<CarData, "id">
 
 interface UseCarDamagesReturn {
   car: Ref<CarData | null>
@@ -24,23 +24,29 @@ interface UseCarDamagesReturn {
 /**
  * Composable to fetch and manage car data and its damage entries
  */
-export function useCarDamages(options: UseCarDamagesOptions): UseCarDamagesReturn {
-  console.log("useCarDamages called with options:", options)
+export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesReturn {
+  console.log("useCarDamages called with carId:", carId)
   const db = useFirestore()
   const error = ref<Error | null>(null)
   const isLoading = ref(true)
+
+  // Get VueFire storage instance
+  const storage = useFirebaseStorage()
 
   // Helper function to generate storage URLs
   async function getStorageUrls(
     carId: string,
     entry: DamageEntryBase
   ): Promise<{ imageUrl: string; schematicUrl: string }> {
-    const storage = getStorage()
     try {
+      const imageRef = storageRef(storage, entry.path)
+      const schematicRef = storageRef(storage, `${carId}_${entry.side}.png`)
+
       const [imageUrl, schematicUrl] = await Promise.all([
-        getDownloadURL(storageRef(storage, entry.path)),
-        getDownloadURL(storageRef(storage, `${carId}_${entry.side}.png`)),
+        useStorageFileUrl(imageRef).url.value || "",
+        useStorageFileUrl(schematicRef).url.value || "",
       ])
+
       return { imageUrl, schematicUrl }
     } catch (err) {
       console.error("Error generating storage URLs:", err)
@@ -48,25 +54,18 @@ export function useCarDamages(options: UseCarDamagesOptions): UseCarDamagesRetur
     }
   }
 
-  // Create a Firestore data converter with proper type safety
-  const createDamageEntryConverter = (): FirestoreDataConverter<
-    DamageEntryBase,
-    FirestoreDamageEntry
-  > => ({
-    toFirestore: (damageEntry: WithFieldValue<DamageEntryBase>): FirestoreDamageEntry => {
-      const { id, createdAt, updatedAt, ...data } = damageEntry as DamageEntryBase
+  // Create a Firestore data converter
+  const damageEntryConverter: FirestoreDataConverter<DamageEntryBase, FirestoreDamageEntry> = {
+    toFirestore: (entry: WithFieldValue<DamageEntryBase>): FirestoreDamageEntry => {
+      const { id, createdAt, updatedAt, ...data } = entry as DamageEntryBase
       return {
         ...data,
         createdAt: createdAt as unknown as Timestamp,
         updatedAt: updatedAt as unknown as Timestamp,
       }
     },
-    fromFirestore: (
-      snapshot: QueryDocumentSnapshot<FirestoreDamageEntry>,
-      options: SnapshotOptions
-    ): DamageEntryBase => {
+    fromFirestore: (snapshot, options): DamageEntryBase => {
       const data = snapshot.data(options)
-
       return {
         id: snapshot.id,
         path: data.path,
@@ -74,134 +73,92 @@ export function useCarDamages(options: UseCarDamagesOptions): UseCarDamagesRetur
         x: data.x || 0,
         y: data.y || 0,
         side: data.side || "front",
-        details:
-          data.details?.map(detail => ({
-            id: detail.id,
-            description: detail.description,
-            path: detail.path,
-          })) || [],
+        details: data.details || [],
         order: data.order || 0,
         createdAt: data.createdAt?.toDate() || new Date(),
         updatedAt: data.updatedAt?.toDate() || new Date(),
       }
     },
-  })
+  }
 
   // Create a converter for CarData
-  const carConverter = {
-    toFirestore(car: WithFieldValue<CarData>): DocumentData {
+  const carConverter: FirestoreDataConverter<CarData, FirestoreCarData> = {
+    toFirestore: (car: WithFieldValue<CarData>): FirestoreCarData => {
       const { id, ...data } = car as CarData
-      return data as DocumentData
+      return data
     },
-    fromFirestore(
-      snapshot: QueryDocumentSnapshot<DocumentData>,
-      options: SnapshotOptions
-    ): CarData {
+    fromFirestore: (snapshot, options): CarData => {
       const data = snapshot.data(options)
       return {
         id: snapshot.id,
-        carId: data.carId,
         title: data.title,
-      } as CarData
+      }
     },
   }
 
-  // Create a query to find the car document by its carId field
-  const carsQuery = query(
-    collection(db, "cars").withConverter(carConverter),
-    where("carId", "==", options.carId)
-  )
-
-  // Use useCollection to get the car document
-  const { data: cars, error: carError } = useCollection(carsQuery, { once: true })
+  // Fetch car data
+  const {
+    data: carData,
+    error: carError,
+    pending: isCarLoading,
+  } = useDocument<CarData>(doc(db, "cars", carId).withConverter(carConverter))
 
   // Get the first (and should be only) matching car
   const car = computed(() => {
-    console.log("cars.value:", cars.value)
-    const doc = cars.value?.[0]
-    if (!doc) return null
-    return doc as CarData
+    return carData.value as CarData
   })
 
-  // Create a subcollection query for damage entries
-  // We'll use the car's document ID (from the query result) to build the subcollection path
-  const damageEntriesQuery = computed(() => {
-    // Return null if car is not loaded yet (handles SSR case)
-    if (!car.value?.id) return null
-
-    console.log("Creating damage entries query for car document ID:", car.value.id)
-    try {
-      return query(
-        collection(db, "cars", car.value.id, "damages").withConverter(createDamageEntryConverter()),
-        orderBy(options.sortBy || "order", options.sortDirection || ("asc" as const))
-      )
-    } catch (err) {
-      console.error("Error creating damage entries query:", err)
-      return null
-    }
-  })
-
-  // Use VueFire's useCollection to fetch the damage entries
-  const { data: baseDamageEntries } = useCollection<DamageEntryBase>(damageEntriesQuery, {
-    once: true,
-    // Only wait for car if we're on the server
-    wait: !car.value,
-  })
-
-  // Process damage entries to add storage URLs
+  // Fetch damage entries ordered by the 'order' field
   const damageEntries = ref<DamageEntry[] | null>(null)
-  
-  // Process entries on both server and client
+
+  const {
+    data: baseDamageEntries,
+    error: damagesError,
+    pending: isDamagesLoading,
+  } = useCollection<DamageEntryBase>(
+    query(
+      collection(db, "cars", carId, "damages").withConverter(damageEntryConverter),
+      orderBy("order")
+    ),
+    { once: true }
+  )
+
+  // Process entries when they change
   const processEntries = async (entries: DamageEntryBase[]) => {
     try {
-      const entriesWithUrls = await Promise.all(
-        entries.map(async (entry: DamageEntryBase) => {
-          const urls = await getStorageUrls(options.carId, entry)
-          return {
-            ...entry,
-            imageUrl: urls.imageUrl,
-            schematicUrl: urls.schematicUrl,
-          } as DamageEntry
-        })
+      damageEntries.value = await Promise.all(
+        entries.map(async entry => ({
+          ...entry,
+          ...(await getStorageUrls(carId, entry)),
+        }))
       )
-      damageEntries.value = entriesWithUrls
     } catch (err) {
       console.error("Error processing damage entries:", err)
       error.value = err as Error
-    } finally {
-      isLoading.value = false
     }
   }
-  
-  // Process entries when baseDamageEntries changes
+
+  // Handle damages data changes
   watchEffect(() => {
     if (baseDamageEntries.value) {
       processEntries(baseDamageEntries.value)
     } else {
       damageEntries.value = null
-      isLoading.value = false
-    }
-  })
-  
-  // Initial processing on server
-  onMounted(() => {
-    if (baseDamageEntries.value && import.meta.client) {
-      processEntries(baseDamageEntries.value)
     }
   })
 
-  // Handle car loading and errors
+  // Handle errors and loading states
   watchEffect(() => {
     if (carError.value) {
       error.value = carError.value
       isLoading.value = false
+    } else if (damagesError.value) {
+      error.value = damagesError.value
+      isLoading.value = false
+    } else {
+      isLoading.value = isCarLoading.value || isDamagesLoading.value
     }
   })
 
-  return {
-    car,
-    damageEntries: computed(() => damageEntries.value),
-    isLoading,
-    error,
-  }
+  return { car, damageEntries, isLoading, error }
 }

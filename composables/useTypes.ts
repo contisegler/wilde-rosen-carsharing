@@ -2,7 +2,6 @@
 
 export interface CarData {
   id: string
-  carId: string
   title: string
 }
 
