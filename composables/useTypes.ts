@@ -6,33 +6,22 @@ export interface CarData {
 }
 
 export interface DamageDetail {
-  id: string
   description: string
-  path: string
+  imageUrl: string
 }
 
-export interface LightboxImage {
-  src: string
-  title: string
-}
 
 export type CarSide = "front" | "back" | "left" | "right" | "top"
 
-export interface DamageEntryBase {
+
+export interface DamageEntry {
   id: string
-  path: string
   description: string
   x: number
   y: number
   side: CarSide
   details: DamageDetail[]
   order: number
-  createdAt: Date
-  updatedAt: Date
-}
-
-export interface DamageEntry extends DamageEntryBase {
   imageUrl: string
   schematicUrl: string
-  lightboxImages: LightboxImage[]
 }

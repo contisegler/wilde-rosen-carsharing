@@ -12,7 +12,8 @@
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier . --check",
     "lint:fix": "prettier --write --list-different . && eslint . --fix",
-    "copy-car": "node --import tsx scripts/firebase/copy-car.ts"
+    "copy-car": "node --import tsx scripts/firebase/copy-car.ts",
+    "update-damage-urls": "node --import tsx scripts/firebase/update-damage-urls.ts"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.4.1",

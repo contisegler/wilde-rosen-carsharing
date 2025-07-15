@@ -9,6 +9,13 @@
   const numDetails = computed(() => {
     return props.damageEntry.details?.length
   })
+
+  const lightboxImages = computed(() => {
+    return props.damageEntry.details?.map((detail) => ({
+      src: detail.imageUrl,
+      title: detail.description
+    }))
+  })
   const lightboxVisible = ref<boolean>(false)
   const schematicLoaded = ref<boolean>(false)
 </script>
@@ -79,9 +86,9 @@
 
   <!-- Use VueEasyLightbox with detail_paths -->
   <VueEasyLightbox
-    v-if="damageEntry.lightboxImages"
+    v-if="damageEntry.details"
     :visible="lightboxVisible"
-    :imgs="damageEntry.lightboxImages"
+    :imgs="lightboxImages"
     :index="0"
     :rotate-disabled="true"
     :zoom-scale="0.5"

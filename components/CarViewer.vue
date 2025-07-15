@@ -28,44 +28,53 @@
     </div>
 
     <!-- Loading state -->
-    <div v-if="isLoading" class="text-center p-8">
-      <p>Lade Schadensdaten...</p>
-    </div>
+    <template v-if="isLoading">
+      <div class="text-center p-8">
+        <p>Lade Schadensdaten...</p>
+      </div>
+    </template>
 
     <!-- Error state -->
-    <div
-      v-else-if="error"
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-      role="alert"
-    >
-      <strong class="font-bold">Fehler!</strong>
-      <span class="block sm:inline">Die Schadensdaten konnten nicht geladen werden.</span>
-    </div>
+    <template v-else-if="error">
+      <div
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+        role="alert"
+      >
+        <strong class="font-bold">Fehler!</strong>
+        <span class="block sm:inline">Die Schadensdaten konnten nicht geladen werden.</span>
+      </div>
+    </template>
 
     <!-- Error state -->
-    <div
-      v-else-if="!car"
-      class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-      role="alert"
-    >
-      <strong class="font-bold">Fehler!</strong>
-      <span class="block sm:inline">
-        Das Auto mit der Id {{ carId }} konnte nicht gefunden werden.
-      </span>
-    </div>
+    <template v-else-if="!car">
+      <div
+        class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+        role="alert"
+      >
+        <strong class="font-bold">Fehler!</strong>
+        <span class="block sm:inline">
+          Das Auto mit der Id {{ carId }} konnte nicht gefunden werden.
+        </span>
+      </div>
+    </template>
 
     <!-- Empty state -->
-    <div v-else-if="!damageEntries?.length" class="text-center p-8">
-      <p>Keine Schäden gefunden.</p>
-    </div>
+    <template v-else-if="!damageEntries?.length">
+      <div class="text-center p-8">
+        <p>Keine Schäden gefunden.</p>
+      </div>
+    </template>
 
-    <div v-else class="flex flex-wrap w-full">
-      <div class="w-full mx-auto">
-        <!-- All Damage Images -->
-        <div v-for="damageEntry in damageEntries" :key="damageEntry.path" class="mb-2">
-          <CarDamageImage :damage-entry="damageEntry" :car-id="carId" />
+    <!-- Default state -->
+    <template v-else>
+      <div class="flex flex-wrap w-full">
+        <div class="w-full mx-auto">
+          <!-- All Damage Images -->
+          <div v-for="damageEntry in damageEntries" :key="damageEntry.id" class="mb-2">
+            <CarDamageImage :damage-entry="damageEntry" :car-id="carId" />
+          </div>
         </div>
       </div>
-    </div>
+    </template>
   </div>
 </template>

@@ -1,21 +1,13 @@
 // Firebase imports
 import { doc, collection, query, orderBy } from "firebase/firestore"
-import { ref as storageRef } from "firebase/storage"
-import type { FirestoreDataConverter, WithFieldValue, Timestamp } from "firebase/firestore"
+import type { FirestoreDataConverter, WithFieldValue, DocumentData } from "firebase/firestore"
 
 interface UseCarDamagesOptions {
   carId: string
 }
 
-type FirestoreDamageEntry = Omit<DamageEntryBase, "id" | "createdAt" | "updatedAt"> & {
-  createdAt: Timestamp
-  updatedAt: Timestamp
-}
-
-type FirestoreCarData = Omit<CarData, "id">
-
 interface UseCarDamagesReturn {
-  car: Ref<CarData | null>
+  car: Ref<CarData | null | undefined>
   damageEntries: Ref<DamageEntry[] | null>
   isLoading: Ref<boolean>
   error: Ref<Error | null>
@@ -25,64 +17,43 @@ interface UseCarDamagesReturn {
  * Composable to fetch and manage car data and its damage entries
  */
 export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesReturn {
-  console.log("useCarDamages called with carId:", carId)
   const db = useFirestore()
   const error = ref<Error | null>(null)
   const isLoading = ref(true)
 
-  // Get VueFire storage instance
-  const storage = useFirebaseStorage()
-
-  // Helper function to generate storage URLs
- function getStorageUrl(
-    path: string,
-  ): string {
-    try {
-      const imageRef = storageRef(storage, path)
-      const imageUrl = useStorageFileUrl(imageRef).url.value || ""
-      return imageUrl
-    } catch (err) {
-      console.error("Error generating storage URLs:", err)
-      return ""
-    }
-  }
-
-
-  // Create a Firestore data converter
-  const damageEntryConverter: FirestoreDataConverter<DamageEntryBase, FirestoreDamageEntry> = {
-    toFirestore: (entry: WithFieldValue<DamageEntryBase>): FirestoreDamageEntry => {
-      const { id, createdAt, updatedAt, ...data } = entry as DamageEntryBase
-      return {
-        ...data,
-        createdAt: createdAt as unknown as Timestamp,
-        updatedAt: updatedAt as unknown as Timestamp,
-      }
+  // Create a converter for DamageEntry
+  const damageEntryConverter: FirestoreDataConverter<DamageEntry> = {
+    toFirestore: (entry: WithFieldValue<DamageEntry>): DocumentData => {
+      const { id, ...data } = entry as DamageEntry
+      return data
     },
-    fromFirestore: (snapshot, options): DamageEntryBase => {
-      const data = snapshot.data(options)
+    fromFirestore: (snapshot, options): DamageEntry => {
+      const data = snapshot.data(options) as DamageEntry
       return {
         id: snapshot.id,
-        path: data.path,
-        description: data.description || "",
-        x: data.x || 0,
-        y: data.y || 0,
-        side: data.side || "front",
-        details: data.details || [],
-        order: data.order || 0,
-        createdAt: data.createdAt?.toDate() || new Date(),
-        updatedAt: data.updatedAt?.toDate() || new Date(),
+        description: data.description,
+        x: data.x,
+        y: data.y,
+        side: data.side,
+        details: data.details?.map((detail: DamageDetail) => ({
+          description: detail.description,
+          imageUrl: detail.imageUrl,
+        })),
+        order: data.order,
+        imageUrl: data.imageUrl,
+        schematicUrl: data.schematicUrl,
       }
     },
   }
 
   // Create a converter for CarData
-  const carConverter: FirestoreDataConverter<CarData, FirestoreCarData> = {
-    toFirestore: (car: WithFieldValue<CarData>): FirestoreCarData => {
+  const carConverter: FirestoreDataConverter<CarData> = {
+    toFirestore: (car: WithFieldValue<CarData>): DocumentData => {
       const { id, ...data } = car as CarData
       return data
     },
     fromFirestore: (snapshot, options): CarData => {
-      const data = snapshot.data(options)
+      const data = snapshot.data(options) as CarData
       return {
         id: snapshot.id,
         title: data.title,
@@ -92,70 +63,25 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
 
   // Fetch car data
   const {
-    data: carData,
+    data: car,
     error: carError,
     pending: isCarLoading,
-  } = useDocument<CarData>(doc(db, "cars", carId).withConverter(carConverter))
-
-  // Get the first (and should be only) matching car
-  const car = computed(() => {
-    return carData.value as CarData
-  })
+  } = useDocument<CarData>(doc(db, "cars", carId).withConverter(carConverter), { once: true })
 
   // Fetch damage entries ordered by the 'order' field
-  const damageEntries = ref<DamageEntry[] | null>(null)
-
   const {
-    data: baseDamageEntries,
+    data: damageEntries,
     error: damagesError,
     pending: isDamagesLoading,
-  } = useCollection<DamageEntryBase>(
+  } = useCollection<DamageEntry>(
     query(
       collection(db, "cars", carId, "damages").withConverter(damageEntryConverter),
       orderBy("order")
     ),
-    { once: true }
+    { once: true,
+      ssrKey: `car-damages-${carId}`
+    }
   )
-
-  // Process entries when they change
-  const processEntries = (entries: DamageEntryBase[]) => {
-    try {
-      damageEntries.value = entries.map(entry => {
-          // First get the main image and schematic URLs
-          const imageUrl = getStorageUrl(entry.path)
-          const schematicUrl = getStorageUrl(`${carId}_${entry.side}.png`)
-          
-          // Then get all lightbox images for this entry's details
-          const lightboxImages = (
-            entry.details.map(detail => ({
-              src: getStorageUrl(detail.path),
-              title: detail.description,
-            }))
-          )
-          
-          // Return the complete entry with all resolved URLs
-          return {
-            ...entry,
-            imageUrl,
-            schematicUrl,
-            lightboxImages,
-          }
-        }
-      )
-    } catch (err) {
-      console.error("Error processing damage entries:", err)
-      error.value = err as Error
-    }
-  }
-
-  // Handle damages data changes
-  watchEffect(() => {
-    if (baseDamageEntries.value) {
-      processEntries(baseDamageEntries.value)
-    } else {
-      damageEntries.value = null
-    }
-  })
 
   // Handle errors and loading states
   watchEffect(() => {
