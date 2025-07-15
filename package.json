@@ -11,7 +11,9 @@
     "lint": "prettier . --check && eslint .",
     "lint:eslint": "eslint .",
     "lint:prettier": "prettier . --check",
-    "lint:fix": "prettier --write --list-different . && eslint . --fix"
+    "lint:fix": "prettier --write --list-different . && eslint . --fix",
+    "copy-car": "node --import tsx scripts/firebase/copy-car.ts",
+    "update-damage-urls": "node --import tsx scripts/firebase/update-damage-urls.ts"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.4.1",
@@ -36,7 +38,12 @@
     "vuefire": "^3.2.1"
   },
   "devDependencies": {
+    "@types/node": "^24.0.13",
+    "commander": "^14.0.0",
+    "firebase-admin": "^13.4.0",
     "prettier": "^3.5.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.20.3",
     "typescript": "^5.8.3",
     "vue-tsc": "^2.2.10"
   }

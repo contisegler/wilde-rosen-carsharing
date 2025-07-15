@@ -1,49 +1,36 @@
 <script setup lang="ts">
-  import { ref as storageRef } from "firebase/storage"
-
   interface Props {
     damageEntry: DamageEntry
-    carModel: string
+    carId: string
   }
 
   const props = defineProps<Props>()
 
-  const storage = useFirebaseStorage()
-
-  const imageFileRef = storageRef(storage, props.damageEntry.path)
-  const { url: imageUrl } = useStorageFileUrl(imageFileRef)
-  console.log(imageUrl.value)
-
   const numDetails = computed(() => {
-    return props.damageEntry.detail_paths?.length
+    return props.damageEntry.details?.length
   })
-
-  const lightboxVisible = ref<boolean>(false)
-
-  const schematicFileRef = storageRef(storage, `${props.carModel}_${props.damageEntry.side}.png`)
-  const { url: schematicUrl } = useStorageFileUrl(schematicFileRef)
-
-  const schematicLoaded = ref<boolean>(false)
 
   const lightboxImages = computed(() => {
-    return props.damageEntry.detail_paths?.map((detail_path, index) => {
-      const fileRef = storageRef(storage, detail_path.path)
-      const { url } = useStorageFileUrl(fileRef)
-      return {
-        src: url.value || "",
-        title: index + 1 + ": " + detail_path.title,
-      }
-    })
+    return props.damageEntry.details?.map((detail) => ({
+      src: detail.imageUrl,
+      title: detail.description
+    }))
   })
+  const lightboxVisible = ref<boolean>(false)
+  const schematicLoaded = ref<boolean>(false)
 </script>
 
 <template>
-  <div class="relative group min-h-[90px]">
+  <div
+    class="relative group min-h-[90px]"
+    :data-id="damageEntry.id"
+    :data-order="damageEntry.order"
+  >
     <!-- Main Damage Image with NuxtImg -->
     <div class="overflow-hidden">
       <NuxtImg
-        v-if="imageUrl"
-        :src="imageUrl"
+        v-if="damageEntry.imageUrl"
+        :src="damageEntry.imageUrl"
         class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
         :alt="'Auto Schaden: ' + damageEntry.description"
         sizes="sm:80vw md:70vw lg:736px"
@@ -66,12 +53,12 @@
     </Badge>
 
     <!-- Schematic Overlay -->
-    <div v-if="schematicUrl" class="absolute top-2 right-2">
+    <div v-if="damageEntry.schematicUrl" class="absolute top-2 right-2">
       <div class="relative">
         <NuxtImg
-          :src="schematicUrl"
+          :src="damageEntry.schematicUrl"
           class="opacity-70"
-          :alt="'Schema für ' + props.carModel + '; Seite: ' + damageEntry.side"
+          :alt="'Schema für ' + carId + '; Seite: ' + damageEntry.side"
           sizes="sm:30vw md:225px"
           loading="lazy"
           format="webp"
@@ -99,7 +86,7 @@
 
   <!-- Use VueEasyLightbox with detail_paths -->
   <VueEasyLightbox
-    v-if="damageEntry.detail_paths"
+    v-if="damageEntry.details"
     :visible="lightboxVisible"
     :imgs="lightboxImages"
     :index="0"
