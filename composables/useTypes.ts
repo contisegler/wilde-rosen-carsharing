@@ -1,5 +1,7 @@
 // Define shared types and constants for the application
 
+export type CarSide = "front" | "back" | "left" | "right" | "top"
+
 export interface CarData {
   id: string
   title: string
@@ -7,12 +9,8 @@ export interface CarData {
 
 export interface DamageDetail {
   description: string
-  imageUrl: string
+  imagePath: string
 }
-
-
-export type CarSide = "front" | "back" | "left" | "right" | "top"
-
 
 export interface DamageEntry {
   id: string
@@ -22,6 +20,6 @@ export interface DamageEntry {
   side: CarSide
   details: DamageDetail[]
   order: number
-  imageUrl: string
-  schematicUrl: string
+  imagePath: string
+  schematicPath: string
 }

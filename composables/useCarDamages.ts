@@ -24,25 +24,14 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
   // Create a converter for DamageEntry
   const damageEntryConverter: FirestoreDataConverter<DamageEntry> = {
     toFirestore: (entry: WithFieldValue<DamageEntry>): DocumentData => {
-      const { id, ...data } = entry as DamageEntry
+      const { id, schematicPath, ...data } = entry as DamageEntry
       return data
     },
     fromFirestore: (snapshot, options): DamageEntry => {
       const data = snapshot.data(options) as DamageEntry
-      return {
-        id: snapshot.id,
-        description: data.description,
-        x: data.x,
-        y: data.y,
-        side: data.side,
-        details: data.details?.map((detail: DamageDetail) => ({
-          description: detail.description,
-          imageUrl: detail.imageUrl,
-        })),
-        order: data.order,
-        imageUrl: data.imageUrl,
-        schematicUrl: data.schematicUrl,
-      }
+      data.id = snapshot.id
+      data.schematicPath = `${carId}_${data.side}.png`
+      return data
     },
   }
 
@@ -54,10 +43,8 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
     },
     fromFirestore: (snapshot, options): CarData => {
       const data = snapshot.data(options) as CarData
-      return {
-        id: snapshot.id,
-        title: data.title,
-      }
+      data.id = snapshot.id
+      return data
     },
   }
 
@@ -78,9 +65,7 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
       collection(db, "cars", carId, "damages").withConverter(damageEntryConverter),
       orderBy("order")
     ),
-    { once: true,
-      ssrKey: `car-damages-${carId}`
-    }
+    { once: true, ssrKey: `car-damages-${carId}` }
   )
 
   // Handle errors and loading states
