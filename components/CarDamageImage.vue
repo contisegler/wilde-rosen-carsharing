@@ -1,4 +1,6 @@
 <script setup lang="ts">
+  import { ref as storageRef } from "firebase/storage"
+
   interface Props {
     damageEntry: DamageEntry
     carId: string
@@ -10,14 +12,19 @@
     return props.damageEntry.details?.length
   })
 
-  const lightboxImages = computed(() => {
-    return props.damageEntry.details?.map((detail) => ({
-      src: detail.imageUrl,
-      title: detail.description
-    }))
-  })
+  const storage = useFirebaseStorage()
+
+  const imageUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.imagePath)).url
+  const schematicUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.schematicPath)).url
+
+  const lightboxImages = props.damageEntry.details?.map(detail => ({
+    src: useStorageFileUrl(storageRef(storage, detail.imagePath)).url.value,
+    title: detail.description,
+  }))
+ console.log(lightboxImages)
   const lightboxVisible = ref<boolean>(false)
   const schematicLoaded = ref<boolean>(false)
+
 </script>
 
 <template>
@@ -29,8 +36,8 @@
     <!-- Main Damage Image with NuxtImg -->
     <div class="overflow-hidden">
       <NuxtImg
-        v-if="damageEntry.imageUrl"
-        :src="damageEntry.imageUrl"
+        v-if="imageUrl"
+        :src="imageUrl"
         class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
         :alt="'Auto Schaden: ' + damageEntry.description"
         sizes="sm:80vw md:70vw lg:736px"
@@ -53,10 +60,11 @@
     </Badge>
 
     <!-- Schematic Overlay -->
-    <div v-if="damageEntry.schematicUrl" class="absolute top-2 right-2">
+    <div class="absolute top-2 right-2">
       <div class="relative">
         <NuxtImg
-          :src="damageEntry.schematicUrl"
+          v-if="schematicUrl"
+          :src="schematicUrl"
           class="opacity-70"
           :alt="'Schema für ' + carId + '; Seite: ' + damageEntry.side"
           sizes="sm:30vw md:225px"
