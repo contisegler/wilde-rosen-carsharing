@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  const user = useCurrentUser()
+</script>
 
 <template>
   <div class="text-center pt-6">
@@ -12,7 +14,7 @@
       <NuxtLink to="/zoe" class="w-1/2">
         <Button variant="outline" size="lg" class="w-full font-bold">Zoe</Button>
       </NuxtLink>
-
+{{ user }}
       <!-- <div class="mt-4 pt-3 border-t w-1/2">
         <div class="flex flex-col gap-3">
           <NuxtLink to="/zoe-damage-entry" class="w-full">

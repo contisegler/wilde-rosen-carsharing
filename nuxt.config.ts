@@ -49,6 +49,9 @@ export default defineNuxtConfig({
   },
 
   vuefire: {
+    auth: {
+      enabled: true
+    },
     config: JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || ""),
   },
 
