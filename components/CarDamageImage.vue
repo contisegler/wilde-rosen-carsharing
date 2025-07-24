@@ -21,7 +21,6 @@
     src: useStorageFileUrl(storageRef(storage, detail.imagePath)).url.value,
     title: detail.description,
   }))
- console.log(lightboxImages)
   const lightboxVisible = ref<boolean>(false)
   const schematicLoaded = ref<boolean>(false)
 
