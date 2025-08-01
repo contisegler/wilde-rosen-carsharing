@@ -45,7 +45,10 @@
 </script>
 
 <template>
-  <DefaultPageStructure title="Anmelden">
+  <DefaultPageStructure>
+    <template #title>
+      <h1>Anmelden</h1>
+    </template>
     <HalfWidth>
       <div v-if="!user">
         <Button variant="outline" size="lg" class="w-full font-bold" @click="signInWithGoogle()">

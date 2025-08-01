@@ -56,7 +56,8 @@
 </script>
 
 <template>
-  <DefaultPageStructure title="Profil">
+  <DefaultPageStructure>
+    <template #title>Profil</template>
     <HalfWidth>
       <div v-if="!user">
         Melde dich an, um dein Profil zu verwalten. Zur
