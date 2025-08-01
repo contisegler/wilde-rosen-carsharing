@@ -7,12 +7,16 @@
     <div class="mb-5">
       <div class="flex flex-row items-center justify-between w-full mb-0">
         <NuxtLink to="/" class="flex-shrink-0">
-          <img src="/carsharing_logo.svg" alt="Logo" class="h-10 w-auto" >
+          <img src="/carsharing_logo.svg" alt="Logo" class="h-10 w-auto" />
         </NuxtLink>
         <h1 class="hidden sm:block flex-1 text-center text-3xl font-bold mx-2">
           Wilde Rosen Carsharing
         </h1>
-        <Button variant="outline" size="sm" @click="user ? navigateTo('/profile') : navigateTo('/login')">
+        <Button
+          variant="outline"
+          size="sm"
+          @click="user ? navigateTo('/profile') : navigateTo('/login')"
+        >
           {{ user ? "Profil" : "Anmelden" }}
         </Button>
       </div>

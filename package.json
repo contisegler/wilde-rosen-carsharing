@@ -41,9 +41,12 @@
     "vuefire": "^3.2.1"
   },
   "devDependencies": {
+    "@nuxt/eslint-config": "^1.7.1",
     "@types/node": "^24.0.13",
+    "@vue/eslint-config-prettier": "^10.2.0",
     "commander": "^14.0.0",
     "prettier": "^3.5.3",
+    "prettier-plugin-vue": "^1.1.6",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
