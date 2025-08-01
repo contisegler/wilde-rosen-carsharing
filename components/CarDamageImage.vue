@@ -23,7 +23,6 @@
   }))
   const lightboxVisible = ref<boolean>(false)
   const schematicLoaded = ref<boolean>(false)
-
 </script>
 
 <template>

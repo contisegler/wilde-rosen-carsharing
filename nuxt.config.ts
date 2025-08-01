@@ -1,10 +1,13 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite"
 
+// console.log("FIREBASE_WEBAPP_CONFIG at build:", process.env.FIREBASE_WEBAPP_CONFIG)
+
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-01",
   devtools: { enabled: false },
   css: ["~/assets/css/tailwind.css"],
+  ssr: false,
 
   // App configuration
   appConfig: {
@@ -50,7 +53,7 @@ export default defineNuxtConfig({
 
   vuefire: {
     auth: {
-      enabled: true
+      enabled: true,
     },
     config: JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || ""),
   },
