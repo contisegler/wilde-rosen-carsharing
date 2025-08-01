@@ -1,6 +1,8 @@
 <script setup lang="ts">
   import { signInWithPopup, signInWithEmailAndPassword, GoogleAuthProvider } from "firebase/auth"
 
+  const route = useRoute()
+  const redirectTo = route.query.redirect as string || '/'
   const auth = useFirebaseAuth()! // only exists on client side
   const user = useCurrentUser()
   const username = useUsername()
@@ -17,7 +19,7 @@
         console.log("Signed in with Google")
         username.value = newUser.displayName ?? ""
         error.value = null
-        navigateTo("/")
+        navigateTo(redirectTo)
       },
       reason => {
         console.error("Failed signinRedirect", reason)
@@ -32,7 +34,7 @@
         console.log("Signed in with email")
         username.value = newUser.displayName ?? ""
         error.value = null
-        navigateTo("/")
+        navigateTo(redirectTo)
       },
       reason => {
         console.error("Failed signinRedirect", reason)

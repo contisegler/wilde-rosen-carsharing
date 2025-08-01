@@ -1,6 +1,10 @@
 <script setup lang="ts">
   import { updateProfile, signOut } from "firebase/auth"
 
+  definePageMeta({
+    middleware: "auth",
+  })
+
   const user = useCurrentUser()
   const username = useUsername()
   const auth = useFirebaseAuth && useFirebaseAuth()
@@ -54,33 +58,36 @@
 <template>
   <DefaultPageStructure title="Profil">
     <HalfWidth>
-    <div v-if="!user">
-      Melde dich an, um dein Profil zu verwalten. Zur
-      <NuxtLink to="/login">Anmeldung</NuxtLink>
-      .
-    </div>
-    <div v-else>
-      <div class="mb-5">Moin {{ user?.displayName }}, hier kannst du dein Profil und deine Einstellungen verwalten.</div>
-      <form class="flex flex-col gap-2" @submit.prevent="changeUserName">
-        <Input
-          v-model="changeName"
-          type="text"
-          autocomplete="nickname"
-          class="w-full"
-          :placeholder="username"
-        />
-        <Button type="submit" variant="outline" size="lg" class="w-full font-bold">
-          Namen ändern
-        </Button>
-        <div v-if="nameChangeAnswer" class="text-sm mt-1">
-          {{ nameChangeAnswer }}
+      <div v-if="!user">
+        Melde dich an, um dein Profil zu verwalten. Zur
+        <NuxtLink to="/login">Anmeldung</NuxtLink>
+        .
+      </div>
+      <div v-else>
+        <div class="mb-5">
+          Moin {{ user?.displayName }}, hier kannst du dein Profil und deine Einstellungen
+          verwalten.
         </div>
-      </form>
-      <hr class="my-6">
-      <Button variant="outline" size="lg" class="w-full font-bold" @click="handleLogout">
-        Abmelden
-      </Button>
-    </div>
+        <form class="flex flex-col gap-2" @submit.prevent="changeUserName">
+          <Input
+            v-model="changeName"
+            type="text"
+            autocomplete="nickname"
+            class="w-full"
+            :placeholder="username"
+          />
+          <Button type="submit" variant="outline" size="lg" class="w-full font-bold">
+            Namen ändern
+          </Button>
+          <div v-if="nameChangeAnswer" class="text-sm mt-1">
+            {{ nameChangeAnswer }}
+          </div>
+        </form>
+        <hr class="my-6" />
+        <Button variant="outline" size="lg" class="w-full font-bold" @click="handleLogout">
+          Abmelden
+        </Button>
+      </div>
     </HalfWidth>
   </DefaultPageStructure>
 </template>
