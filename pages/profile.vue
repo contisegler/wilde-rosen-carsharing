@@ -75,7 +75,7 @@
             type="text"
             autocomplete="nickname"
             class="w-full"
-            :placeholder="username"
+            :placeholder="user?.displayName"
           />
           <Button type="submit" variant="outline" size="lg" class="w-full font-bold">
             Namen ändern

@@ -6,7 +6,7 @@
 </script>
 
 <template>
-  <div class="flex flex-col items-center w-full">
+  <div class="flex flex-col w-full">
     <div class="flex flex-row items-center justify-between w-full mb-4">
       <Button
         :class="[
@@ -33,14 +33,16 @@
         <LucideArrowRight class="w-5 h-5" />
       </Button>
     </div>
-    <Alert v-if="loginError" variant="destructive" class="mb-4">
-      <AlertTitle>Fehler beim Login:</AlertTitle>
-      <AlertDescription>{{ loginError?.message || loginError?.toString() }}</AlertDescription>
-    </Alert>
-    <Alert v-if="nuxtError" variant="destructive" class="mb-4">
-      <AlertTitle>Nuxt Fehler:</AlertTitle>
-      <AlertDescription>{{ nuxtError?.message || nuxtError?.toString() }}</AlertDescription>
-    </Alert>
+    <div class="w-full items-center">
+      <Alert v-if="loginError" variant="destructive" class="mb-4">
+        <AlertTitle>Fehler beim Login:</AlertTitle>
+        <AlertDescription>{{ loginError?.message || loginError?.toString() }}</AlertDescription>
+      </Alert>
+      <Alert v-if="nuxtError" variant="destructive" class="mb-4">
+        <AlertTitle>Nuxt Fehler:</AlertTitle>
+        <AlertDescription>{{ nuxtError?.message || nuxtError?.toString() }}</AlertDescription>
+      </Alert>
+    </div>
     <slot />
   </div>
 </template>
