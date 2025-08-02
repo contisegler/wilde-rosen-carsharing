@@ -23,9 +23,11 @@
         userId: user.uid,
       })
       uploadStatus.value = "success"
+      setTimeout(() => (uploadStatus.value = ""), 2000)
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
       uploadStatus.value = "error"
+      setTimeout(() => (uploadStatus.value = ""), 2000)
     }
   }
 </script>
