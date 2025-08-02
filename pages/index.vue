@@ -1,30 +1,30 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  const user = useCurrentUser()
+</script>
 
 <template>
-  <div class="text-center pt-6">
-    <div class="flex flex-col gap-3 items-center">
-      <NuxtLink to="/kangoo" class="w-1/2">
+  <DefaultPageStructure>
+    <template #title>
+      <h1>Schäden</h1>
+    </template>
+    <HalfWidth>
+      <NuxtLink to="/kangoo" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Kangoo</Button>
       </NuxtLink>
-      <NuxtLink to="/kona" class="w-1/2">
+      <NuxtLink to="/kona" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Kona</Button>
       </NuxtLink>
-      <NuxtLink to="/zoe" class="w-1/2">
+      <NuxtLink to="/zoe" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Zoe</Button>
       </NuxtLink>
-
-      <!-- <div class="mt-4 pt-3 border-t w-1/2">
-        <div class="flex flex-col gap-3">
-          <NuxtLink to="/zoe-damage-entry" class="w-full">
-            <Button variant="outline" size="lg" class="w-full">Create Zoe Damage Report</Button>
-          </NuxtLink>
-          <NuxtLink to="/kangoo-damage-entry" class="w-full">
-            <Button variant="outline" size="lg" class="w-full">Create Kangoo Damage Report</Button>
-          </NuxtLink>
-        </div>
-      </div> -->
-    </div>
-  </div>
+      <div v-if="user" class="flex items-center my-4 w-full">
+        <hr class="flex-grow border-gray-300" />
+      </div>
+      <NuxtLink v-if="user" to="/report-damage" class="w-full">
+        <Button variant="outline" size="lg" class="w-full font-bold">Schaden melden</Button>
+      </NuxtLink>
+    </HalfWidth>
+  </DefaultPageStructure>
 </template>
 
 <style scoped></style>

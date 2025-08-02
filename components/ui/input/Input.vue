@@ -31,5 +31,5 @@
         props.class
       )
     "
-  >
+  />
 </template>
