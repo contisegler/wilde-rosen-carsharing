@@ -12,7 +12,7 @@
       <Button
         variant="outline"
         size="sm"
-        class="flex-shrink-0 rounded-full w-10 h-10"
+        :class="user ? 'flex-shrink-0 rounded-full w-10 h-10' : 'invisible flex-shrink-0 rounded-full w-10 h-10'"
         :aria-label="user ? 'Profile' : 'Login'"
         @click="user ? navigateTo('/profile') : navigateTo('/login')"
       >

@@ -1,4 +1,6 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+  const user = useCurrentUser()
+</script>
 
 <template>
   <DefaultPageStructure>
@@ -14,6 +16,12 @@
       </NuxtLink>
       <NuxtLink to="/zoe" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Zoe</Button>
+      </NuxtLink>
+      <div v-if="user" class="flex items-center my-4 w-full">
+        <hr class="flex-grow border-gray-300" />
+      </div>
+      <NuxtLink v-if="user" to="/report-damage" class="w-full">
+        <Button variant="outline" size="lg" class="w-full font-bold">Schaden melden</Button>
       </NuxtLink>
     </HalfWidth>
   </DefaultPageStructure>
