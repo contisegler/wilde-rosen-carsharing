@@ -17,9 +17,9 @@
   const imageUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.imagePath)).url
   const schematicUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.schematicPath)).url
 
-  const lightboxImages = computed(() => props.damageEntry.details?.map(detail => ({
+  const lightboxImages = computed(() => props.damageEntry.details?.map((detail, index) => ({
     src: useStorageFileUrl(storageRef(storage, detail.imagePath)).url.value,
-    title: detail.description,
+    title: (index + 1).toString() + ": " + detail.description,
   })))
   const lightboxVisible = ref<boolean>(false)
   const schematicLoaded = ref<boolean>(false)
