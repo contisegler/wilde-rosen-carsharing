@@ -7,6 +7,16 @@
 
   const uploadStatus = ref("")
   const selectedCar = ref("zoe")
+  interface CloudImage {
+    name: string
+    url: string
+    fullPath: string
+    size?: number
+    timeCreated?: string
+  }
+
+  const selectedImages = ref<CloudImage[]>([])
+  const damageDescription = ref("")
 
   async function uploadDamage() {
     try {
@@ -18,9 +28,14 @@
       }
       // Add a new damage entry to /cars/{carId}/damages
       await addDoc(collection(firestore, `cars/${selectedCar.value}/damages`), {
-        description: "New damage reported", // Expand as needed
+        description: damageDescription.value || "Neuer Schaden gemeldet",
         createdAt: new Date(),
         userId: user.uid,
+        images: selectedImages.value.map(img => ({
+          name: img.name,
+          url: img.url,
+          fullPath: img.fullPath
+        }))
       })
       uploadStatus.value = "success"
       setTimeout(() => (uploadStatus.value = ""), 2000)
@@ -48,6 +63,31 @@
         <option value="kona">Kona</option>
         <option value="kangoo">Kangoo</option>
       </select>
+
+      <label for="description" class="block text-left font-medium text-gray-700 mb-2">
+        Schadensbeschreibung:
+      </label>
+      <textarea
+        id="description"
+        v-model="damageDescription"
+        class="w-full p-2 mb-4 border border-gray-300 rounded-md"
+        rows="3"
+        placeholder="Beschreiben Sie den Schaden..."
+      ></textarea>
+
+      <div class="mb-4">
+        <label class="block text-left font-medium text-gray-700 mb-2">
+          Schadenbilder:
+        </label>
+        <CloudImageSelector
+          :storage-path="`cars/${selectedCar}/damages`"
+          :multiple="true"
+          :allow-upload="true"
+          :allow-browse="true"
+          @images-selected="selectedImages = $event"
+          @upload-error="uploadStatus = 'error'"
+        />
+      </div>
       <Button variant="outline" size="lg" class="w-full font-bold" @click="uploadDamage">
         Schaden melden
       </Button>
