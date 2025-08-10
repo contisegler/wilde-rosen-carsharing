@@ -18,15 +18,6 @@
 
 <template>
   <div>
-    <div class="flex items-center mb-4 relative">
-      <NuxtLink to="/" class="absolute left-0">
-        <Button variant="outline">Zurück</Button>
-      </NuxtLink>
-      <h2 class="w-full text-center text-lg sm:text-xl md:text-2xl font-bold">
-        {{ car?.title || carId }}
-      </h2>
-    </div>
-
     <!-- Loading state -->
     <template v-if="isLoading">
       <div class="text-center p-8">
@@ -67,13 +58,9 @@
 
     <!-- Default state -->
     <template v-else>
-      <div class="flex flex-wrap w-full">
-        <div class="w-full mx-auto">
-          <!-- All Damage Images -->
-          <div v-for="damageEntry in damageEntries" :key="damageEntry.id" class="mb-2">
-            <CarDamageImage :damage-entry="damageEntry" :car-id="carId" />
-          </div>
-        </div>
+      <!-- All Damage Images -->
+      <div v-for="damageEntry in damageEntries" :key="damageEntry.id" class="mb-2">
+        <CarDamageImage :damage-entry="damageEntry" :car-id="carId" />
       </div>
     </template>
   </div>

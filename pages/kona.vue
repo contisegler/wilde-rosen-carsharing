@@ -3,5 +3,8 @@
 </script>
 
 <template>
-  <CarViewer :car-id="'kona'" />
+  <DefaultPageStructure>
+    <template #title>Kona</template>
+    <CarViewer :car-id="'kona'" />
+  </DefaultPageStructure>
 </template>

@@ -17,14 +17,12 @@
   const imageUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.imagePath)).url
   const schematicUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.schematicPath)).url
 
-  const lightboxImages = props.damageEntry.details?.map(detail => ({
+  const lightboxImages = computed(() => props.damageEntry.details?.map((detail, index) => ({
     src: useStorageFileUrl(storageRef(storage, detail.imagePath)).url.value,
-    title: detail.description,
-  }))
- console.log(lightboxImages)
+    title: (index + 1).toString() + ": " + detail.description,
+  })))
   const lightboxVisible = ref<boolean>(false)
   const schematicLoaded = ref<boolean>(false)
-
 </script>
 
 <template>
@@ -34,21 +32,19 @@
     :data-order="damageEntry.order"
   >
     <!-- Main Damage Image with NuxtImg -->
-    <div class="overflow-hidden">
-      <NuxtImg
-        v-if="imageUrl"
-        :src="imageUrl"
-        class="w-full h-auto max-w-full max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
-        :alt="'Auto Schaden: ' + damageEntry.description"
-        sizes="sm:80vw md:70vw lg:736px"
-        format="webp"
-        quality="70"
-        loading="lazy"
-        fit="inside"
-        placeholder
-        @click="lightboxVisible = true"
-      />
-    </div>
+    <NuxtImg
+      v-if="imageUrl"
+      :src="imageUrl"
+      class="w-full max-w-full h-auto max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
+      :alt="'Auto Schaden: ' + damageEntry.description"
+      sizes="sm:80vw md:70vw lg:736px"
+      format="webp"
+      quality="70"
+      loading="lazy"
+      fit="inside"
+      placeholder
+      @click="lightboxVisible = true"
+    />
 
     <!-- Badge showing number of detail images -->
     <Badge

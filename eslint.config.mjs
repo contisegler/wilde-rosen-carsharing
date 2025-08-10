@@ -1,5 +1,18 @@
-// @ts-check
-import withNuxt from "./.nuxt/eslint.config.mjs"
+import { createConfigForNuxt } from "@nuxt/eslint-config/flat"
 
-export default withNuxt()
-// Your custom configs here
+export default createConfigForNuxt().append({
+  rules: {
+    "vue/html-self-closing": [
+      "warn",
+      {
+        html: {
+          void: "any",
+          normal: "any",
+          component: "always",
+        },
+        svg: "always",
+        math: "always",
+      },
+    ],
+  },
+})

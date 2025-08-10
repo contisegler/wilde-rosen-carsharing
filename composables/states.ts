@@ -3,3 +3,6 @@
 // in the pages/componenets you can use the
 // const counter = useCounter()
 // in the script section
+
+export const useUsername = () => useState<string>("username", () => "")
+export const useLoginError = () => useState<Error | null | undefined>("loginError", () => null)

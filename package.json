@@ -16,6 +16,7 @@
     "update-damage-urls": "node --import tsx scripts/firebase/update-damage-urls.ts"
   },
   "dependencies": {
+    "@firebase/app-types": "^0.9.3",
     "@nuxt/eslint": "^1.4.1",
     "@nuxt/image": "^1.10.0",
     "@tailwindcss/vite": "^4.1.10",
@@ -24,9 +25,11 @@
     "clsx": "^2.1.1",
     "eslint": "^9.29.0",
     "firebase": "^11.9.1",
-    "lucide-vue-next": "^0.514.0",
+    "firebase-admin": "^13.4.0",
+    "firebase-functions": "^6.4.0",
     "nuxt": "^3.17.5",
     "nuxt-easy-lightbox": "^1.0.2",
+    "nuxt-lucide-icons": "^1.0.5",
     "nuxt-vuefire": "^1.0.5",
     "reka-ui": "^2.3.1",
     "shadcn-nuxt": "^2.2.0",
@@ -38,10 +41,12 @@
     "vuefire": "^3.2.1"
   },
   "devDependencies": {
+    "@nuxt/eslint-config": "^1.7.1",
     "@types/node": "^24.0.13",
+    "@vue/eslint-config-prettier": "^10.2.0",
     "commander": "^14.0.0",
-    "firebase-admin": "^13.4.0",
     "prettier": "^3.5.3",
+    "prettier-plugin-vue": "^1.1.6",
     "ts-node": "^10.9.2",
     "tsx": "^4.20.3",
     "typescript": "^5.8.3",
