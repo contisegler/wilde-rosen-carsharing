@@ -17,6 +17,10 @@
   const imageUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.imagePath)).url
   const schematicUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.schematicPath)).url
 
+  watch(() => schematicUrl.value, () => {
+    console.log("schematicUrl changed", schematicUrl.value)
+  })
+
   const lightboxImages = computed(() => props.damageEntry.details?.map((detail, index) => ({
     src: useStorageFileUrl(storageRef(storage, detail.imagePath)).url.value,
     title: (index + 1).toString() + ": " + detail.description,

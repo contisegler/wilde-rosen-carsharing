@@ -30,7 +30,7 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
     fromFirestore: (snapshot, options): DamageEntry => {
       const data = snapshot.data(options) as DamageEntry
       data.id = snapshot.id
-      data.schematicPath = `${carId}_${data.side}.png`
+      data.schematicPath = `cars/${carId}/schematics/${carId}_${data.side}.png`
       return data
     },
   }

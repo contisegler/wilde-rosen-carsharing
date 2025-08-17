@@ -225,37 +225,6 @@
       ></div>
     </div>
 
-    <!-- Selected Images Preview -->
-    <div v-if="selectedImages.length > 0" class="space-y-2">
-      <h4 class="text-sm font-medium text-gray-700">
-        Ausgewählte Bilder ({{ selectedImages.length }})
-      </h4>
-      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
-        <div v-for="image in selectedImages" :key="image.fullPath" class="relative group">
-          <FirebaseNuxtImg
-            :src="image.url"
-            :alt="image.name"
-            class="w-full h-20 object-cover rounded border"
-            sizes="sm:150px md:200px"
-            :quality="80"
-            loading="lazy"
-          />
-          <div
-            class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity rounded flex items-center justify-center"
-          >
-            <Button size="sm" variant="destructive" @click="selectImage(image)">
-              <LucideX class="w-3 h-3" />
-            </Button>
-          </div>
-          <div
-            class="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-1 rounded-b truncate"
-          >
-            {{ image.name }}
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- Hidden File Input -->
     <input
       ref="fileInput"
@@ -300,7 +269,7 @@
               <FirebaseNuxtImg
                 :src="image.url"
                 :alt="image.name"
-                class="w-full h-32 object-cover rounded border transition-all"
+                class="w-full h-32 object-cover transition-all"
                 :class="
                   isImageSelected(image)
                     ? 'ring-2 ring-blue-500'
@@ -314,14 +283,14 @@
               <!-- Selection Indicator -->
               <div
                 v-if="isImageSelected(image)"
-                class="absolute top-2 right-2 bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                class="absolute top-2 right-2 bg-blue-500 text-white w-6 h-6 flex items-center justify-center"
               >
                 <LucideCheck class="w-3 h-3" />
               </div>
 
               <!-- Image Info -->
               <div
-                class="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-2 rounded-b"
+                class="absolute bottom-0 left-0 right-0 bg-black/70 text-white text-xs p-2"
               >
                 <div class="truncate font-medium">{{ image.name }}</div>
                 <div class="flex justify-between text-gray-300">
