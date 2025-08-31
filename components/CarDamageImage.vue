@@ -17,6 +17,10 @@
   const imageUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.imagePath)).url
   const schematicUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.schematicPath)).url
 
+  watch(() => schematicUrl.value, () => {
+    console.log("schematicUrl changed", schematicUrl.value)
+  })
+
   const lightboxImages = computed(() => props.damageEntry.details?.map((detail, index) => ({
     src: useStorageFileUrl(storageRef(storage, detail.imagePath)).url.value,
     title: (index + 1).toString() + ": " + detail.description,
@@ -27,21 +31,21 @@
 
 <template>
   <div
-    class="relative group min-h-[90px]"
+    class="relative group min-h-[210px]"
     :data-id="damageEntry.id"
     :data-order="damageEntry.order"
   >
     <!-- Main Damage Image with NuxtImg -->
-    <NuxtImg
+    <FirebaseNuxtImg
       v-if="imageUrl"
       :src="imageUrl"
-      class="w-full max-w-full h-auto max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
+      class="w-full max-w-full h-auto max-h-[600px] object-cover cursor-pointer transition-all duration-300 group-hover:brightness-90"
       :alt="'Auto Schaden: ' + damageEntry.description"
       sizes="sm:80vw md:70vw lg:736px"
       format="webp"
-      quality="70"
+      :quality="70"
       loading="lazy"
-      fit="inside"
+      :modifiers="{ rotate: null }"
       placeholder
       @click="lightboxVisible = true"
     />
@@ -58,7 +62,7 @@
     <!-- Schematic Overlay -->
     <div class="absolute top-2 right-2">
       <div class="relative">
-        <NuxtImg
+        <FirebaseNuxtImg
           v-if="schematicUrl"
           :src="schematicUrl"
           class="opacity-70"
@@ -66,7 +70,7 @@
           sizes="sm:30vw md:225px"
           loading="lazy"
           format="webp"
-          quality="60"
+          :quality="60"
           fit="contain"
           @load="schematicLoaded = true"
         />
