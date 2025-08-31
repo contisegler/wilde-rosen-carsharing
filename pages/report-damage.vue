@@ -1,5 +1,6 @@
 <script setup lang="ts">
   import { collection, addDoc } from "firebase/firestore"
+  import { ref as storageRef } from "firebase/storage"
 
   definePageMeta({
     middleware: "auth",
@@ -17,11 +18,64 @@
 
   const selectedImage = ref<CloudImage | null>(null)
   const damageDescription = ref("")
-  const selectedSide = ref<CarSide | null>(null)
+  const selectedSide = ref<CarSide | null>("left")
   const damageOrder = ref<number | null>(null)
+  const damageX = ref(50)
+  const damageY = ref(50)
+
+  // Reactive arrays for sliders
+  const xPosition = ref([50])
+  const yPosition = ref([50])
+
+  watch(xPosition, () => {
+    damageX.value = xPosition.value[0]
+  })
+  watch(yPosition, () => {
+    damageY.value = yPosition.value[0]
+  })
+
+  const storage = useFirebaseStorage()
+  
+  const schematicPath = computed(() => {
+    if (!selectedSide.value || !selectedCar.value) return null
+    return `cars/${selectedCar.value}/schematics/${selectedCar.value}_${selectedSide.value}.png`
+  })
+
+  const schematicStorageRef = computed(() => {
+    if (!schematicPath.value) return null
+    return storageRef(storage, schematicPath.value)
+  })
+
+  const schematicUrl = computed(() => {
+    if (!schematicStorageRef.value) return null
+    return useStorageFileUrl(schematicStorageRef.value).url.value
+  })
+
+  // Handle schematic click
+  const handleSchematicClick = (event: MouseEvent) => {
+    // Get the target element and its dimensions
+    const target = event.currentTarget as HTMLElement
+    const rect = target.getBoundingClientRect()
+
+    // Calculate position relative to the image
+    const x = Math.max(0, Math.min(100, ((event.clientX - rect.left) / rect.width) * 100))
+    const y = Math.max(0, Math.min(100, ((event.clientY - rect.top) / rect.height) * 100))
+
+    // Update both the damage position and the slider position arrays
+    damageX.value = x
+    damageY.value = y
+    xPosition.value = [x]
+    yPosition.value = [y]
+  }
 
   const isFormValid = computed(() => {
-    return selectedImage.value && damageDescription.value.trim() !== "" && selectedSide.value && damageOrder.value
+    console.log(selectedImage.value, damageDescription.value, selectedSide.value, damageOrder.value)
+    return (
+      selectedImage.value &&
+      damageDescription.value.trim() !== "" &&
+      selectedSide.value &&
+      damageOrder.value
+    )
   })
 
   async function uploadDamage() {
@@ -44,8 +98,8 @@
         ],
         order: damageOrder.value || 99,
         side: selectedSide.value || "front",
-        x: 0,
-        y: 0,
+        x: damageX.value,
+        y: damageY.value,
       }
 
       await addDoc(collection(firestore, `cars/${selectedCar.value}/damages`), {
@@ -56,6 +110,10 @@
       setTimeout(() => (uploadStatus.value = ""), 2000)
       selectedImage.value = null
       damageDescription.value = ""
+      selectedSide.value = null
+      damageOrder.value = null
+      damageX.value = 50
+      damageY.value = 50
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
     } catch (_) {
       uploadStatus.value = "error"
@@ -142,6 +200,61 @@
         <option value="top">Oben</option>
       </select>
 
+      <!-- Combined Schematic and Sliders -->
+      <div v-if="selectedSide && schematicUrl" class="w-full">
+        <label class="block text-left font-medium text-gray-700 mb-2">
+          Schadensposition (X: {{ Math.round(damageX) }}%, Y: {{ Math.round(damageY) }}%)
+        </label>
+        <div class="flex justify-center pb-6 pr-6">
+          <div class="relative">
+            <!-- Y Slider (Right) -->
+            <div class="absolute right-0 top-0 h-full transform translate-x-6">
+              <Slider
+                v-model="yPosition"
+                :min="0"
+                :max="100"
+                :step="1"
+                class="h-full"
+                orientation="vertical"
+                :inverted="true"
+              />
+            </div>
+            <!-- Schematic Image -->
+            <FirebaseNuxtImg
+              :src="schematicUrl"
+              class="cursor-crosshair min-w-80 min-h-60"
+              alt="Car side schematic"
+              loading="lazy"
+              format="webp"
+              quality="90"
+              sizes="sm:100vw md:80vw lg:60vw"
+              @mousedown="handleSchematicClick"
+            />
+            <div
+              class="damage-x-marker"
+              :style="{
+                left: `${damageX}%`,
+                top: `${damageY}%`,
+              }"
+            >
+              X
+            </div>
+            <!-- X Slider (Bottom) -->
+            <div class="absolute bottom-0 left-0 w-full transform translate-y-6">
+              <Slider v-model="xPosition" :min="0" :max="100" :step="1" class="w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Placeholder when no side is selected -->
+      <div
+        v-else
+        class="mb-4 p-4 bg-gray-50 rounded-md text-center text-gray-600"
+      >
+        Bitte wähle eine Fahrzeugseite aus, um die Schadensposition zu markieren.
+      </div>
+
       <label for="description" class="block text-left font-medium text-gray-700 mb-2">
         Schadensbeschreibung:
       </label>
@@ -154,9 +267,7 @@
         placeholder="Beschreiben Sie den Schaden..."
       ></textarea>
 
-      <label for="order" class="block text-left font-medium text-gray-700 mb-2">
-        Reihenfolge:
-      </label>
+      <label for="order" class="block text-left font-medium text-gray-700 mb-2">Reihenfolge:</label>
       <input
         id="order"
         v-model.number="damageOrder"
@@ -187,4 +298,35 @@
   </DefaultPageStructure>
 </template>
 
-<style scoped></style>
+<style scoped>
+.damage-x-marker {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  color: red;
+  font-weight: bold;
+  font-size: 24px;
+  text-shadow:
+    -1px -1px 0 #fff,
+    1px -1px 0 #fff,
+    -1px 1px 0 #fff,
+    1px 1px 0 #fff;
+}
+
+/* Responsive adjustments for the damage marker */
+@media (max-width: 576px) {
+  .damage-x-marker {
+    font-size: 16px;
+    text-shadow:
+      -0.5px -0.5px 0 #fff,
+      0.5px -0.5px 0 #fff,
+      -0.5px 0.5px 0 #fff,
+      0.5px 0.5px 0 #fff;
+  }
+}
+
+@media (max-width: 375px) {
+  .damage-x-marker {
+    font-size: 14px;
+  }
+}
+</style>
