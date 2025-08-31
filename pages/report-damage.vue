@@ -69,7 +69,6 @@
   }
 
   const isFormValid = computed(() => {
-    console.log(selectedImage.value, damageDescription.value, selectedSide.value, damageOrder.value)
     return (
       selectedImage.value &&
       damageDescription.value.trim() !== "" &&
