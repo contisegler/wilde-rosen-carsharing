@@ -278,6 +278,7 @@
                 sizes="sm:150px md:200px"
                 :quality="80"
                 loading="lazy"
+                :modifiers="{ rotate: null }"
               />
 
               <!-- Selection Indicator -->

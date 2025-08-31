@@ -54,7 +54,7 @@ export default defineNuxtConfig({
     domains: ["firebasestorage.googleapis.com"],
     alias: {
       firebase: 'https://firebasestorage.googleapis.com/v0/b/' + JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || "").storageBucket + '/o'
-    }
+    },
   },
 
   // shadcn-nuxt configuration

@@ -35,7 +35,7 @@
   })
 
   const storage = useFirebaseStorage()
-  
+
   const schematicPath = computed(() => {
     if (!selectedSide.value || !selectedCar.value) return null
     return `cars/${selectedCar.value}/schematics/${selectedCar.value}_${selectedSide.value}.png`
@@ -155,12 +155,12 @@
           <FirebaseNuxtImg
             :src="selectedImage.url"
             :alt="selectedImage.name"
-            class="w-full max-w-full h-auto max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
+            class="w-full max-w-full h-auto max-h-[600px] object-cover cursor-pointer transition-all duration-300 group-hover:brightness-90"
             sizes="sm:80vw md:70vw lg:736px"
             format="webp"
             :quality="70"
             loading="lazy"
-            fit="inside"
+            :modifiers="{ rotate: null }"
             placeholder
           />
           <div
@@ -200,59 +200,57 @@
         <option value="top">Oben</option>
       </select>
 
-      <!-- Combined Schematic and Sliders -->
-      <div v-if="selectedSide && schematicUrl" class="w-full">
-        <label class="block text-left font-medium text-gray-700 mb-2">
-          Schadensposition (X: {{ Math.round(damageX) }}%, Y: {{ Math.round(damageY) }}%)
-        </label>
-        <div class="flex justify-center pb-6 pr-6">
-          <div class="relative">
-            <!-- Y Slider (Right) -->
-            <div class="absolute right-0 top-0 h-full transform translate-x-6">
-              <Slider
-                v-model="yPosition"
-                :min="0"
-                :max="100"
-                :step="1"
-                class="h-full"
-                orientation="vertical"
-                :inverted="true"
+      <div class="min-h-[150px]">
+        <!-- Combined Schematic and Sliders -->
+        <div v-if="selectedSide && schematicUrl" class="w-full">
+          <label class="block text-left font-medium text-gray-700 mb-2">
+            Schadensposition (X: {{ Math.round(damageX) }}%, Y: {{ Math.round(damageY) }}%)
+          </label>
+          <div class="flex justify-center pb-6 pr-6">
+            <div class="relative">
+              <!-- Y Slider (Right) -->
+              <div class="absolute right-0 top-0 h-full transform translate-x-6">
+                <Slider
+                  v-model="yPosition"
+                  :min="0"
+                  :max="100"
+                  :step="1"
+                  class="h-full"
+                  orientation="vertical"
+                  :inverted="true"
+                />
+              </div>
+              <!-- Schematic Image -->
+              <FirebaseNuxtImg
+                :src="schematicUrl"
+                class="cursor-crosshair"
+                alt="Car side schematic"
+                loading="lazy"
+                format="webp"
+                quality="90"
+                sizes="sm:100vw md:80vw lg:60vw"
+                @mousedown="handleSchematicClick"
               />
-            </div>
-            <!-- Schematic Image -->
-            <FirebaseNuxtImg
-              :src="schematicUrl"
-              class="cursor-crosshair min-w-80 min-h-60"
-              alt="Car side schematic"
-              loading="lazy"
-              format="webp"
-              quality="90"
-              sizes="sm:100vw md:80vw lg:60vw"
-              @mousedown="handleSchematicClick"
-            />
-            <div
-              class="damage-x-marker"
-              :style="{
-                left: `${damageX}%`,
-                top: `${damageY}%`,
-              }"
-            >
-              X
-            </div>
-            <!-- X Slider (Bottom) -->
-            <div class="absolute bottom-0 left-0 w-full transform translate-y-6">
-              <Slider v-model="xPosition" :min="0" :max="100" :step="1" class="w-full" />
+              <div
+                class="damage-x-marker"
+                :style="{
+                  left: `${damageX}%`,
+                  top: `${damageY}%`,
+                }"
+              >
+                X
+              </div>
+              <!-- X Slider (Bottom) -->
+              <div class="absolute bottom-0 left-0 w-full transform translate-y-6">
+                <Slider v-model="xPosition" :min="0" :max="100" :step="1" class="w-full" />
+              </div>
             </div>
           </div>
         </div>
-      </div>
-
-      <!-- Placeholder when no side is selected -->
-      <div
-        v-else
-        class="mb-4 p-4 bg-gray-50 rounded-md text-center text-gray-600"
-      >
-        Bitte wähle eine Fahrzeugseite aus, um die Schadensposition zu markieren.
+        <!-- Placeholder when no side is selected -->
+        <div v-else class="mb-4 p-4 bg-gray-50 rounded-md text-center text-gray-600">
+          Bitte wähle eine Fahrzeugseite aus, um die Schadensposition zu markieren.
+        </div>
       </div>
 
       <label for="description" class="block text-left font-medium text-gray-700 mb-2">
@@ -299,34 +297,34 @@
 </template>
 
 <style scoped>
-.damage-x-marker {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  color: red;
-  font-weight: bold;
-  font-size: 24px;
-  text-shadow:
-    -1px -1px 0 #fff,
-    1px -1px 0 #fff,
-    -1px 1px 0 #fff,
-    1px 1px 0 #fff;
-}
-
-/* Responsive adjustments for the damage marker */
-@media (max-width: 576px) {
   .damage-x-marker {
-    font-size: 16px;
+    position: absolute;
+    transform: translate(-50%, -50%);
+    color: red;
+    font-weight: bold;
+    font-size: 24px;
     text-shadow:
-      -0.5px -0.5px 0 #fff,
-      0.5px -0.5px 0 #fff,
-      -0.5px 0.5px 0 #fff,
-      0.5px 0.5px 0 #fff;
+      -1px -1px 0 #fff,
+      1px -1px 0 #fff,
+      -1px 1px 0 #fff,
+      1px 1px 0 #fff;
   }
-}
 
-@media (max-width: 375px) {
-  .damage-x-marker {
-    font-size: 14px;
+  /* Responsive adjustments for the damage marker */
+  @media (max-width: 576px) {
+    .damage-x-marker {
+      font-size: 16px;
+      text-shadow:
+        -0.5px -0.5px 0 #fff,
+        0.5px -0.5px 0 #fff,
+        -0.5px 0.5px 0 #fff,
+        0.5px 0.5px 0 #fff;
+    }
   }
-}
+
+  @media (max-width: 375px) {
+    .damage-x-marker {
+      font-size: 14px;
+    }
+  }
 </style>

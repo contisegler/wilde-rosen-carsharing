@@ -31,7 +31,7 @@
 
 <template>
   <div
-    class="relative group min-h-[90px]"
+    class="relative group min-h-[210px]"
     :data-id="damageEntry.id"
     :data-order="damageEntry.order"
   >
@@ -39,13 +39,13 @@
     <FirebaseNuxtImg
       v-if="imageUrl"
       :src="imageUrl"
-      class="w-full max-w-full h-auto max-h-[600px] object-contain cursor-pointer transition-all duration-300 group-hover:brightness-90"
+      class="w-full max-w-full h-auto max-h-[600px] object-cover cursor-pointer transition-all duration-300 group-hover:brightness-90"
       :alt="'Auto Schaden: ' + damageEntry.description"
       sizes="sm:80vw md:70vw lg:736px"
       format="webp"
       :quality="70"
       loading="lazy"
-      fit="inside"
+      :modifiers="{ rotate: null }"
       placeholder
       @click="lightboxVisible = true"
     />
