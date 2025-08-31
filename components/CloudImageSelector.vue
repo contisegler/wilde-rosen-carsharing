@@ -67,7 +67,6 @@
       })
 
       availableImages.value = await Promise.all(imagePromises)
-      console.log("Available images:", availableImages.value)
     } catch (error) {
       console.error("Error loading images:", error)
       emit("upload-error", "Fehler beim Laden der Bilder")
