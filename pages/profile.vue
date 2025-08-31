@@ -22,7 +22,6 @@
     if (!user.value) return
     await updateProfile(user.value, { displayName: changeName.value }).then(
       () => {
-        console.log("Name changed")
         nameChangeAnswer.value = "Name erfolgreich geändert!"
         setTimeout(() => (nameChangeAnswer.value = null), 2000)
         error.value = null
@@ -43,7 +42,6 @@
     if (!auth) return
     signOut(auth).then(
       () => {
-        console.log("Signed out")
         loginError.value = null
         navigateTo("/")
       },

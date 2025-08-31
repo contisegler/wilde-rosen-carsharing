@@ -1,8 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import tailwindcss from "@tailwindcss/vite"
 
-// console.log("FIREBASE_WEBAPP_CONFIG at build:", process.env.FIREBASE_WEBAPP_CONFIG)
-
 export default defineNuxtConfig({
   compatibilityDate: "2025-05-01",
   devtools: { enabled: false },
@@ -50,6 +48,9 @@ export default defineNuxtConfig({
   // Image module configuration
   image: {
     domains: ["firebasestorage.googleapis.com"],
+    alias: {
+      firebase: 'https://firebasestorage.googleapis.com/v0/b/' + JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || "").storageBucket + '/o'
+    },
   },
 
   // shadcn-nuxt configuration

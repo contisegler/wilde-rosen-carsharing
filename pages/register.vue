@@ -15,7 +15,6 @@
   function signInWithGoogle() {
     signInWithPopup(auth, new GoogleAuthProvider()).then(
       ({ user: newUser }) => {
-        console.log("Signed in with Google")
         username.value = newUser.displayName ?? ""
         error.value = null
         navigateTo("/")
@@ -35,7 +34,6 @@
       ({ user: newUser }) => {
         updateProfile(newUser, { displayName: registerName.value }).then(
           () => {
-            console.log("Name changed")
             error.value = null
             username.value = registerName.value
           },
@@ -44,7 +42,6 @@
             error.value = reason
           }
         )
-        console.log("Registered with email")
         error.value = null
         user.value = newUser
         navigateTo("/")

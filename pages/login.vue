@@ -16,7 +16,6 @@
   function signInWithGoogle() {
     signInWithPopup(auth, new GoogleAuthProvider()).then(
       ({ user: newUser }) => {
-        console.log("Signed in with Google")
         username.value = newUser.displayName ?? ""
         error.value = null
         navigateTo(redirectTo)
@@ -31,7 +30,6 @@
   function signInWithEmail() {
     signInWithEmailAndPassword(auth, email.value, password.value).then(
       ({ user: newUser }) => {
-        console.log("Signed in with email")
         username.value = newUser.displayName ?? ""
         error.value = null
         navigateTo(redirectTo)
