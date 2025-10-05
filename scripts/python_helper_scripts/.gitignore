@@ -77,3 +77,6 @@ venv/
 .env/
 env/
 .venv/
+
+# Environment configuration
+env.py
