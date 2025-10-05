@@ -1,5 +1,5 @@
 // Firebase imports
-import { doc, collection, query, orderBy } from "firebase/firestore"
+import { doc, collection } from "firebase/firestore"
 import type { FirestoreDataConverter, WithFieldValue, DocumentData } from "firebase/firestore"
 
 interface UseCarDamagesOptions {
@@ -21,16 +21,29 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
   const error = ref<Error | null>(null)
   const isLoading = ref(true)
 
+  // Helper function to get side index for sorting
+  const getSideIndex = (side: CarSide): number => {
+    const sideOrder: Record<CarSide, number> = {
+      left: 0,
+      back: 1,
+      right: 2,
+      front: 3,
+      top: 4,
+    }
+    return sideOrder[side]
+  }
+
   // Create a converter for DamageEntry
   const damageEntryConverter: FirestoreDataConverter<DamageEntry> = {
     toFirestore: (entry: WithFieldValue<DamageEntry>): DocumentData => {
-      const { id, schematicPath, ...data } = entry as DamageEntry
+      const { id, schematicPath, sideIndex, ...data } = entry as DamageEntry
       return data
     },
     fromFirestore: (snapshot, options): DamageEntry => {
       const data = snapshot.data(options) as DamageEntry
       data.id = snapshot.id
       data.schematicPath = `cars/${carId}/schematics/${carId}_${data.side}.png`
+      data.sideIndex = getSideIndex(data.side)
       return data
     },
   }
@@ -55,18 +68,29 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
     pending: isCarLoading,
   } = useDocument<CarData>(doc(db, "cars", carId).withConverter(carConverter), { once: true })
 
-  // Fetch damage entries ordered by the 'order' field
+  // Fetch damage entries without Firestore ordering
   const {
-    data: damageEntries,
+    data: rawDamageEntries,
     error: damagesError,
     pending: isDamagesLoading,
   } = useCollection<DamageEntry>(
-    query(
-      collection(db, "cars", carId, "damages").withConverter(damageEntryConverter),
-      orderBy("order")
-    ),
+    collection(db, "cars", carId, "damages").withConverter(damageEntryConverter),
     { once: true, ssrKey: `car-damages-${carId}` }
   )
+
+  // Sort damage entries by side (using sideIndex) and then by x value
+  const damageEntries = computed(() => {
+    if (!rawDamageEntries.value) return null
+    
+    return [...rawDamageEntries.value].sort((a, b) => {
+      // First sort by side index
+      if (a.sideIndex !== b.sideIndex) {
+        return a.sideIndex - b.sideIndex
+      }
+      // Then sort by x value
+      return a.x - b.x
+    })
+  })
 
   // Handle errors and loading states
   watchEffect(() => {

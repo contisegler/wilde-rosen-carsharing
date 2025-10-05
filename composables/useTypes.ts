@@ -22,4 +22,5 @@ export interface DamageEntry {
   order: number
   imagePath: string
   schematicPath: string
+  sideIndex: number
 }
