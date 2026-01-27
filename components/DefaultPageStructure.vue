@@ -1,8 +1,11 @@
 <script setup lang="ts">
-  const router = useRouter()
   const route = useRoute()
   const loginError = useLoginError()
   const nuxtError = useError()
+
+  const upOneLevel = () => {
+    return route.path.split('/').slice(0, -1).join('/') || '/'
+  }
 </script>
 
 <template>
@@ -16,7 +19,7 @@
         variant="outline"
         size="sm"
         aria-label="Zurück"
-        @click="router.back()"
+        @click="navigateTo(upOneLevel())"
       >
         <LucideArrowLeft class="w-5 h-5" />
       </Button>
