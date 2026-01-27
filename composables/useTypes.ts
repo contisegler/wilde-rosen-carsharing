@@ -19,7 +19,6 @@ export interface DamageEntry {
   y: number
   side: CarSide
   details: DamageDetail[]
-  order: number
   imagePath: string
   schematicPath: string
   sideIndex: number

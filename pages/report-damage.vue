@@ -19,7 +19,6 @@
   const selectedImage = ref<CloudImage | null>(null)
   const damageDescription = ref("")
   const selectedSide = ref<CarSide | null>("left")
-  const damageOrder = ref<number | null>(null)
   const damageX = ref(50)
   const damageY = ref(50)
 
@@ -72,8 +71,7 @@
     return (
       selectedImage.value &&
       damageDescription.value.trim() !== "" &&
-      selectedSide.value &&
-      damageOrder.value
+      selectedSide.value
     )
   })
 
@@ -95,7 +93,6 @@
             imagePath: selectedImage.value?.fullPath || "",
           },
         ],
-        order: damageOrder.value || 99,
         side: selectedSide.value || "front",
         x: damageX.value,
         y: damageY.value,
@@ -106,11 +103,10 @@
         createdAt: new Date(),
       })
       uploadStatus.value = "success"
-      setTimeout(() => (uploadStatus.value = ""), 2000)
+      setTimeout(() => (uploadStatus.value = ""), 5000)
       selectedImage.value = null
       damageDescription.value = ""
       selectedSide.value = null
-      damageOrder.value = null
       damageX.value = 50
       damageY.value = 50
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -264,17 +260,6 @@
         placeholder="Beschreiben Sie den Schaden..."
       ></textarea>
 
-      <label for="order" class="block text-left font-medium text-gray-700 mb-2">Reihenfolge:</label>
-      <input
-        id="order"
-        v-model.number="damageOrder"
-        type="number"
-        step="0.1"
-        min="0"
-        class="w-full p-2 mb-4 border border-gray-300 rounded-md"
-        :disabled="!selectedImage"
-        placeholder="1.0"
-      />
     </div>
 
     <Button
@@ -287,10 +272,10 @@
       Schaden melden
     </Button>
     <p v-if="uploadStatus === 'success'" class="text-green-500 mt-4">
-      Schaden erfolgreich gemeldet!
+      Schaden erfolgreich gemeldet! Möchtest du einen weiteren Schaden melden?
     </p>
     <p v-if="uploadStatus === 'error'" class="text-red-500 mt-4">
-      Fehler beim Melden. Sind Sie angemeldet?
+      Fehler beim Melden. Bist du angemeldet?
     </p>
   </DefaultPageStructure>
 </template>
