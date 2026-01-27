@@ -30,7 +30,7 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
       front: 3,
       top: 4,
     }
-    return sideOrder[side]
+    return sideOrder[side] ?? 5
   }
 
   // Create a converter for DamageEntry

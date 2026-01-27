@@ -29,7 +29,9 @@
   <div
     class="relative group min-h-[210px]"
     :data-id="damageEntry.id"
-    :data-order="damageEntry.order"
+    :data-side="damageEntry.side"
+    :data-x="damageEntry.x"
+    :data-y="damageEntry.y"
   >
     <!-- Main Damage Image with NuxtImg -->
     <FirebaseNuxtImg
