@@ -1,25 +1,29 @@
 <script setup lang="ts">
-  const router = useRouter()
   const route = useRoute()
   const loginError = useLoginError()
   const nuxtError = useError()
+
+  const upOneLevel = () => {
+    return route.path.split('/').slice(0, -1).join('/') || '/'
+  }
 </script>
 
 <template>
   <div class="flex flex-col w-full">
     <div class="flex flex-row items-center justify-between w-full mb-4">
-      <Button
-        :class="[
-          route.path === '/' ? 'invisible w-10 h-10' : '',
-          'flex-shrink-0 rounded-full w-10 h-10',
-        ]"
-        variant="outline"
-        size="sm"
-        aria-label="Zurück"
-        @click="router.back()"
-      >
-        <LucideArrowLeft class="w-5 h-5" />
-      </Button>
+      <NuxtLink :to="upOneLevel()">
+        <Button
+          :class="[
+            route.path === '/' ? 'invisible w-10 h-10' : '',
+            'flex-shrink-0 rounded-full w-10 h-10',
+          ]"
+          variant="outline"
+          size="sm"
+          aria-label="Zurück"
+        >
+          <LucideArrowLeft class="w-5 h-5" />
+        </Button>
+      </NuxtLink>
 
       <h2 class="text-center text-xl sm:text-2xl font-bold">
         <slot name="title" />
