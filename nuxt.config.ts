@@ -32,7 +32,8 @@ export default defineNuxtConfig({
 
   // Vite configuration
   vite: {
-    plugins: [tailwindcss()],
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any -- upstream type mismatch between @tailwindcss/vite and Vite 7
+    plugins: [tailwindcss() as any],
   },
 
   // Modules
