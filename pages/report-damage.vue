@@ -155,7 +155,7 @@
             format="webp"
             :quality="70"
             loading="lazy"
-            :modifiers="{ rotate: null }"
+            :modifiers="{ rotate: 'undefined' }"
             placeholder
           />
           <div
