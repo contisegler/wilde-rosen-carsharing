@@ -22,6 +22,21 @@
   const damageX = ref(50)
   const damageY = ref(50)
 
+  // Extra detail entries (beyond the auto-generated first one)
+  interface DetailEntry {
+    image: CloudImage | null
+    description: string
+  }
+  const extraDetails = ref<DetailEntry[]>([])
+
+  function addDetail() {
+    extraDetails.value.push({ image: null, description: "" })
+  }
+
+  function removeDetail(index: number) {
+    extraDetails.value.splice(index, 1)
+  }
+
   // Reactive arrays for sliders
   const xPosition = ref([50])
   const yPosition = ref([50])
@@ -84,19 +99,29 @@
         return
       }
       // Add a new damage entry to /cars/{carId}/damages using DamageEntry structure
+      // Build details array: first entry is always the main image
+      const allDetails: DamageDetail[] = [
+        {
+          description: damageDescription.value || "Neuer Schaden gemeldet",
+          imagePath: selectedImage.value?.fullPath || "",
+        },
+        ...extraDetails.value
+          .filter(d => d.image)
+          .map(d => ({
+            description: d.description || "",
+            imagePath: d.image!.fullPath,
+          })),
+      ]
+
       const damageEntry: Partial<DamageEntry> = {
         description: damageDescription.value || "Neuer Schaden gemeldet",
         imagePath: selectedImage.value?.fullPath || "",
-        details: [
-          {
-            description: "Detail Beschreibung vom schaden.",
-            imagePath: selectedImage.value?.fullPath || "",
-          },
-        ],
+        details: allDetails,
         side: selectedSide.value || "front",
         x: damageX.value,
         y: damageY.value,
       }
+      console.log(damageEntry)
 
       await addDoc(collection(firestore, `cars/${selectedCar.value}/damages`), {
         ...damageEntry,
@@ -106,6 +131,7 @@
       setTimeout(() => (uploadStatus.value = ""), 5000)
       selectedImage.value = null
       damageDescription.value = ""
+      extraDetails.value = []
       selectedSide.value = null
       damageX.value = 50
       damageY.value = 50
@@ -260,6 +286,112 @@
         placeholder="Beschreiben Sie den Schaden..."
       ></textarea>
 
+    </div>
+
+    <!-- Details Section -->
+    <div
+      class="mb-6 transition-opacity"
+      :class="{ 'opacity-50 pointer-events-none': !(selectedImage && selectedSide && damageDescription) }"
+    >
+      <h3 class="text-left font-medium text-gray-700 mb-3">Schadensdetails</h3>
+
+      <!-- First detail: main image (read-only) -->
+      <div class="mb-4 p-3 border border-gray-200 rounded-md bg-gray-50">
+        <div class="flex items-center gap-2 mb-2">
+          <Badge variant="secondary">1</Badge>
+          <span class="text-sm font-medium text-gray-600">Übersichtsbild (automatisch)</span>
+        </div>
+        <div class="flex gap-3 items-start">
+          <div class="w-20 h-20 shrink-0 overflow-hidden rounded">
+            <FirebaseNuxtImg
+              v-if="selectedImage"
+              :src="selectedImage.url"
+              :alt="selectedImage.name"
+              class="w-full h-full object-cover"
+              sizes="80px"
+              :quality="60"
+              loading="lazy"
+              :modifiers="{ rotate: 'undefined' }"
+            />
+            <div v-else class="w-full h-full bg-gray-200 flex items-center justify-center">
+              <LucideImage class="w-6 h-6 text-gray-400" />
+            </div>
+          </div>
+          <div class="text-sm text-gray-500 pt-1">
+            {{ damageDescription || '—' }}
+          </div>
+        </div>
+      </div>
+
+      <!-- Extra details -->
+      <div
+        v-for="(detail, index) in extraDetails"
+        :key="index"
+        class="mb-4 p-3 border border-gray-200 rounded-md"
+      >
+        <div class="flex items-center justify-between mb-2">
+          <div class="flex items-center gap-2">
+            <Badge variant="outline">{{ index + 2 }}</Badge>
+            <span class="text-sm font-medium text-gray-700">Zusätzliches Detail</span>
+          </div>
+          <Button variant="ghost" size="sm" @click="removeDetail(index)">
+            <LucideTrash2 class="w-4 h-4 text-red-500" />
+          </Button>
+        </div>
+
+        <!-- Detail image selector -->
+        <div class="mb-2">
+          <label class="block text-left text-sm text-gray-600 mb-1">Detailbild:</label>
+          <div v-if="detail.image" class="flex gap-3 items-start">
+            <div class="relative w-20 h-20 shrink-0 overflow-hidden rounded">
+              <FirebaseNuxtImg
+                :src="detail.image.url"
+                :alt="detail.image.name"
+                class="w-full h-full object-cover"
+                sizes="80px"
+                :quality="60"
+                loading="lazy"
+                :modifiers="{ rotate: 'undefined' }"
+              />
+              <Button
+                variant="destructive"
+                size="icon"
+                class="absolute top-0 right-0 w-5 h-5"
+                @click="detail.image = null"
+              >
+                <LucideX class="w-3 h-3" />
+              </Button>
+            </div>
+            <span class="text-xs text-gray-500 pt-1 truncate">{{ detail.image.name }}</span>
+          </div>
+          <div v-else>
+            <CloudImageSelector
+              :storage-path="`cars/${selectedCar}/damages`"
+              :multiple="false"
+              :allow-upload="true"
+              :allow-browse="true"
+              @image-selected="detail.image = $event"
+            />
+          </div>
+        </div>
+
+        <!-- Detail description -->
+        <div>
+          <label class="block text-left text-sm text-gray-600 mb-1">Beschreibung:</label>
+          <textarea
+            v-model="detail.description"
+            class="w-full p-2 border border-gray-300 rounded-md text-sm"
+            rows="2"
+            placeholder="Detail beschreiben..."
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Add detail button -->
+      <Button variant="outline" size="sm" class="w-full" @click="addDetail">
+        <LucidePlus class="w-4 h-4 mr-2" />
+        Weiteres Detail hinzufügen
+      </Button>
     </div>
 
     <Button
