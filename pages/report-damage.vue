@@ -121,8 +121,6 @@
         x: damageX.value,
         y: damageY.value,
       }
-      console.log(damageEntry)
-
       await addDoc(collection(firestore, `cars/${selectedCar.value}/damages`), {
         ...damageEntry,
         createdAt: new Date(),
