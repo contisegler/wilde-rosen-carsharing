@@ -64,7 +64,7 @@ export default defineNuxtConfig({
     auth: {
       enabled: true,
     },
-    config: JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || ""),
+    // config: JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || ""),
   },
 
   // // Nitro configuration for optimized server
