@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-05-01",
   devtools: { enabled: false },
   css: ["~/assets/css/tailwind.css"],
-  ssr: true,
+  ssr: false,
 
   // App configuration
   appConfig: {
