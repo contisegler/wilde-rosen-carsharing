@@ -15,7 +15,7 @@
         <Button
           :class="[
             route.path === '/' ? 'invisible w-10 h-10' : '',
-            'flex-shrink-0 rounded-full w-10 h-10',
+            'shrink-0 rounded-full w-10 h-10',
           ]"
           variant="outline"
           size="sm"
@@ -31,7 +31,7 @@
       <Button
         variant="outline"
         size="sm"
-        class="invisible flex-shrink-0 rounded-full w-10 h-10"
+        class="invisible shrink-0 rounded-full w-10 h-10"
         aria-label="Vor'"
       >
         <LucideArrowRight class="w-5 h-5" />
