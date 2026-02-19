@@ -67,6 +67,16 @@
           Moin {{ user?.displayName }}, hier kannst du dein Profil und deine Einstellungen
           verwalten.
         </div>
+        <div class="mb-6">
+          <div class="mb-3">
+            <div class="text-sm font-semibold text-gray-600">Name</div>
+            <div class="text-lg">{{ user?.displayName || "Nicht angegeben" }}</div>
+          </div>
+          <div>
+            <div class="text-sm font-semibold text-gray-600">E-Mail</div>
+            <div class="text-lg">{{ user?.email || "Nicht angegeben" }}</div>
+          </div>
+        </div>
         <form class="flex flex-col gap-2" @submit.prevent="changeUserName">
           <Input
             v-model="changeName"
