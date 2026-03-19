@@ -8,17 +8,32 @@
 
   const props = defineProps<Props>()
 
+  const user = useCurrentUser()
+  const { isDamageReporter } = user.value?.uid 
+    ? useUserData({ userId: user.value.uid })
+    : { isDamageReporter: computed(() => false) }
+
   const numDetails = computed(() => {
     return props.damageEntry.details?.length
   })
 
   const storage = useFirebaseStorage()
 
-  const imageUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.imagePath)).url
+  // Add cache-busting timestamp to image URLs
+  const cacheBuster = computed(() => {
+    const timestamp = props.damageEntry.updatedAt?.getTime() || Date.now()
+    return `?t=${timestamp}`
+  })
+
+  const imageUrl = computed(() => {
+    const url = useStorageFileUrl(storageRef(storage, props.damageEntry.imagePath)).url.value
+    return url ? `${url}${cacheBuster.value}` : url
+  })
+  
   const schematicUrl = useStorageFileUrl(storageRef(storage, props.damageEntry.schematicPath)).url
 
   const lightboxImages = computed(() => props.damageEntry.details?.map((detail, index) => ({
-    src: useStorageFileUrl(storageRef(storage, detail.imagePath)).url.value,
+    src: `${useStorageFileUrl(storageRef(storage, detail.imagePath)).url.value}${cacheBuster.value}`,
     title: (index + 1).toString() + ": " + detail.description,
   })))
   const lightboxVisible = ref<boolean>(false)
@@ -57,8 +72,19 @@
       {{ numDetails }}
     </Badge>
 
+    <!-- Edit Button (top-right corner, for damage reporters only) -->
+    <Button
+      v-if="isDamageReporter"
+      variant="secondary"
+      size="icon"
+      class="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white shadow-md"
+      @click.stop="navigateTo(`/${carId}/edit-damage?damageId=${damageEntry.id}`)"
+    >
+      <LucidePencil class="w-4 h-4" />
+    </Button>
+
     <!-- Schematic Overlay -->
-    <div class="absolute top-2 right-2">
+    <div class="absolute top-2 right-[60px]">
       <div class="relative">
         <FirebaseNuxtImg
           v-if="schematicUrl"
