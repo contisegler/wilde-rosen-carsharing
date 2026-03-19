@@ -84,7 +84,7 @@
     </Button>
 
     <!-- Schematic Overlay -->
-    <div class="absolute top-2 right-[60px]">
+    <div class="absolute top-2" :class="isDamageReporter ? 'right-[60px]' : 'right-2'">
       <div class="relative">
         <FirebaseNuxtImg
           v-if="schematicUrl"
