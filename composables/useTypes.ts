@@ -22,4 +22,20 @@ export interface DamageEntry {
   imagePath: string
   schematicPath: string
   sideIndex: number
+  createdAt?: Date
+  updatedAt?: Date
+}
+
+export interface CloudImage {
+  name: string
+  url: string
+  fullPath: string
+  size?: number
+  timeCreated?: string
+}
+
+// Form state for damage details (used in UI)
+export interface DamageDetailFormEntry {
+  image: CloudImage | null
+  description: string
 }
