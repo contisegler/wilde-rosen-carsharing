@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-05-01",
   devtools: { enabled: false },
   css: ["~/assets/css/tailwind.css"],
-  ssr: false,
+  ssr: true,
 
   // App configuration
   appConfig: {
@@ -63,6 +63,9 @@ export default defineNuxtConfig({
   vuefire: {
     auth: {
       enabled: true,
+      // Session cookies require custom token signing, which doesn't work with ADC locally
+      // Enable only in production (App Hosting) where metadata server is accessible
+      sessionCookie: process.env.NODE_ENV === "production",
     },
     config: JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || ""),
   },

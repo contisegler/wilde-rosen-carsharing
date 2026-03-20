@@ -23,5 +23,8 @@ logs
 .env.*
 !.env.example
 
+# Firebase service account keys
+service-account.json
+service-account*.json
 
 temp/*
