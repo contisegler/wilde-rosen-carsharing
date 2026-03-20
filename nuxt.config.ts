@@ -5,7 +5,7 @@ export default defineNuxtConfig({
   compatibilityDate: "2025-05-01",
   devtools: { enabled: false },
   css: ["~/assets/css/tailwind.css"],
-  ssr: false,
+  ssr: true,
 
   // App configuration
   appConfig: {
@@ -63,6 +63,7 @@ export default defineNuxtConfig({
   vuefire: {
     auth: {
       enabled: true,
+      sessionCookie: true,
     },
     config: JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || ""),
   },
