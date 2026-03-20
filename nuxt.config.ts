@@ -2,6 +2,28 @@
 import tailwindcss from "@tailwindcss/vite"
 
 export default defineNuxtConfig({
+  hooks: {
+    'build:before': () => {
+      console.log('\n=== Nuxt Config at Build Time ===')
+      console.log('NODE_ENV:', process.env.NODE_ENV)
+      console.log('SSR:', true)
+      console.log('Dev mode:', process.env.NODE_ENV !== 'production')
+      console.log('Image firebase alias: ', 'https://firebasestorage.googleapis.com/v0/b/' + JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || "").storageBucket + '/o')
+      console.log('\nVueFire Config:')
+      console.log('  - Auth enabled:', true)
+      console.log('  - SessionCookie:', process.env.NODE_ENV === "production")
+      console.log('  - Firebase config present:', !!process.env.FIREBASE_WEBAPP_CONFIG)
+      console.log('  - Firebase config:\n', JSON.parse(process.env.FIREBASE_WEBAPP_CONFIG || ""))
+      console.log('\nCredentials:')
+      console.log('  - FIREBASE_CONFIG (App Hosting):', process.env.FIREBASE_CONFIG || false)
+      console.log('  - GOOGLE_APPLICATION_CREDENTIALS:', process.env.GOOGLE_APPLICATION_CREDENTIALS || 'not set (using ADC)')
+      console.log('\nBuild Info:')
+      console.log('  - TypeScript strict:', true)
+      console.log('  - TypeScript typeCheck:', true)
+      console.log('  - Devtools:', false)
+      console.log('=================================\n')
+    }
+  },
   compatibilityDate: "2025-05-01",
   devtools: { enabled: false },
   css: ["~/assets/css/tailwind.css"],
