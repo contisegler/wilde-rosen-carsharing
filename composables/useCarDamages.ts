@@ -40,11 +40,24 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
       return data
     },
     fromFirestore: (snapshot, options): DamageEntry => {
-      const data = snapshot.data(options) as DamageEntry
-      data.id = snapshot.id
-      data.schematicPath = `cars/${carId}/schematics/${carId}_${data.side}.png`
-      data.sideIndex = getSideIndex(data.side)
-      return data
+      const rawData = snapshot.data(options)
+      
+      // Convert Firestore Timestamps to JavaScript Dates
+      const entry: DamageEntry = {
+        ...(rawData as Omit<DamageEntry, 'id' | 'schematicPath' | 'sideIndex' | 'createdAt' | 'updatedAt'>),
+        id: snapshot.id,
+        schematicPath: `cars/${carId}/schematics/${carId}_${rawData.side}.png`,
+        sideIndex: getSideIndex(rawData.side as CarSide),
+        createdAt: rawData.createdAt?.toDate?.() || undefined,
+        updatedAt: rawData.updatedAt?.toDate?.() || undefined,
+      }
+      
+      // Lazy migration: set updatedAt from createdAt if missing, or use current date
+      if (!entry.updatedAt) {
+        entry.updatedAt = entry.createdAt || new Date()
+      }
+      
+      return entry
     },
   }
 

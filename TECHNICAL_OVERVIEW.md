@@ -89,6 +89,7 @@ wilde-rosen-carsharing/
 ├── composables/
 │   ├── useTypes.ts             # Shared TypeScript types: CarSide, CarData, DamageEntry, DamageDetail
 │   ├── useCarDamages.ts        # Composable: fetches car doc + damages subcollection from Firestore
+│   ├── useUserData.ts          # Composable: fetches user doc from Firestore, provides isDamageReporter
 │   └── states.ts               # Global reactive state: useUsername(), useLoginError()
 │
 ├── lib/
@@ -113,21 +114,26 @@ wilde-rosen-carsharing/
 
 ```
 Firestore root
-└── cars/                           # Collection
-    ├── kangoo                      # Document (CarData: { id, title })
-    │   └── damages/                # Subcollection
-    │       └── {damageId}          # Document (DamageEntry)
-    │           ├── description: string
-    │           ├── imagePath: string        # Firebase Storage path
-    │           ├── side: "front"|"back"|"left"|"right"|"top"
-    │           ├── x: number (0-100)        # % position on schematic
-    │           ├── y: number (0-100)
-    │           ├── details: DamageDetail[]  # Array of { description, imagePath }
-    │           └── createdAt: Timestamp     # Added on upload
-    ├── kona
-    │   └── damages/ ...
-    └── zoe
-        └── damages/ ...
+├── cars/                           # Collection
+│   ├── kangoo                      # Document (CarData: { id, title })
+│   │   └── damages/                # Subcollection
+│   │       └── {damageId}          # Document (DamageEntry)
+│   │           ├── description: string
+│   │           ├── imagePath: string        # Firebase Storage path
+│   │           ├── side: "front"|"back"|"left"|"right"|"top"
+│   │           ├── x: number (0-100)        # % position on schematic
+│   │           ├── y: number (0-100)
+│   │           ├── details: DamageDetail[]  # Array of { description, imagePath }
+│   │           └── createdAt: Timestamp     # Added on upload
+│   ├── kona
+│   │   └── damages/ ...
+│   └── zoe
+│       └── damages/ ...
+└── users/                          # Collection
+    └── {userId}                    # Document (UserData)
+        ├── damage_reporter: boolean         # Permission flag
+        ├── email: string
+        └── displayName: string
 ```
 
 **Firebase Storage structure:**
@@ -162,6 +168,16 @@ kangoo.vue
                  ├─ useStorageFileUrl() → schematic overlay URL
                  ├─ <FirebaseNuxtImg>  → converts URL to /firebase/ alias for NuxtImg optimization
                  └─ <VueEasyLightbox>  → detail images gallery on click
+```
+
+### Home page with permissions (`/`)
+
+```
+index.vue
+  ├─ useCurrentUser() → current Firebase Auth user
+  ├─ useUserData({ userId }) → Firestore: users/{userId} → userData ref
+  │    └─ isDamageReporter computed → checks userData.damage_reporter === true
+  └─ Show "Schaden melden" button only if isDamageReporter is true
 ```
 
 ### Reporting a damage (`/report-damage`, auth-protected)
@@ -237,8 +253,9 @@ Defined in `.env` (see `.env.example`):
 3. **shadcn-vue components** live in `components/ui/` and should not be manually edited. Add new ones with `npx shadcn-vue@latest add <component>`.
 4. **Types are defined in `composables/useTypes.ts`** and are auto-imported globally. `CarSide`, `CarData`, `DamageEntry`, `DamageDetail` can be used anywhere without imports.
 5. **Global state** (`useUsername`, `useLoginError`) uses Nuxt's `useState` via `composables/states.ts` — also auto-imported.
-6. **Car IDs** (`kangoo`, `kona`, `zoe`) are used as both Firestore document IDs and Firebase Storage path segments. They must match exactly.
-7. **Schematic images** follow the naming convention `cars/{carId}/schematics/{carId}_{side}.png` in Firebase Storage.
-8. **The `scripts/` directory** contains Python helper scripts for Firestore maintenance (copy docs, update URLs, validate, fix image paths). They use `uv` for dependency management and are completely separate from the Nuxt app.
-9. **Firebase config is parsed from env at build time** — changing Firebase project requires rebuilding.
-10. **The app language is German** — all UI text, labels, error messages, and placeholders are in German.
+6. **User permissions** are stored in Firestore `users/{userId}` collection. The `damage_reporter` boolean field controls access to the "Schaden melden" feature. Use `useUserData({ userId })` to fetch user data and check `isDamageReporter`.
+7. **Car IDs** (`kangoo`, `kona`, `zoe`) are used as both Firestore document IDs and Firebase Storage path segments. They must match exactly.
+8. **Schematic images** follow the naming convention `cars/{carId}/schematics/{carId}_{side}.png` in Firebase Storage.
+9. **The `scripts/` directory** contains Python helper scripts for Firestore maintenance (copy docs, update URLs, validate, fix image paths). They use `uv` for dependency management and are completely separate from the Nuxt app.
+10. **Firebase config is parsed from env at build time** — changing Firebase project requires rebuilding.
+11. **The app language is German** — all UI text, labels, error messages, and placeholders are in German.
