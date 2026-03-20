@@ -1,0 +1,13 @@
+diff --git a/node_modules/nuxt-vuefire/dist/module.mjs b/node_modules/nuxt-vuefire/dist/module.mjs
+index 4b1e8ce..6a98855 100644
+--- a/node_modules/nuxt-vuefire/dist/module.mjs
++++ b/node_modules/nuxt-vuefire/dist/module.mjs
+@@ -123,7 +123,7 @@ const module = defineNuxtModule({
+     addPlugin(resolve(runtimeDir, "payload-plugin"));
+     nuxt.options.build.transpile.push(runtimeDir);
+     nuxt.options.build.transpile.push(templatesDir);
+-    const hasServiceAccount = typeof process.env.GOOGLE_APPLICATION_CREDENTIALS === "string" && process.env.GOOGLE_APPLICATION_CREDENTIALS.length > 0;
++    const hasServiceAccount = (typeof process.env.GOOGLE_APPLICATION_CREDENTIALS === "string" && process.env.GOOGLE_APPLICATION_CREDENTIALS.length > 0) || !!process.env.FIREBASE_CONFIG || (nuxt.options.ssr && process.env.NODE_ENV === "development");
+     if (typeof process.env.GOOGLE_APPLICATION_CREDENTIALS === "string" && process.env.GOOGLE_APPLICATION_CREDENTIALS?.[0] !== "{") {
+       const resolvedCredentials = resolve(
+         nuxt.options.rootDir,
