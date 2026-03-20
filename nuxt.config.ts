@@ -24,7 +24,7 @@ export default defineNuxtConfig({
       console.log('=================================\n')
     }
   },
-  compatibilityDate: "2025-05-01",
+  compatibilityDate: "2026-03-20",
   devtools: { enabled: false },
   css: ["~/assets/css/tailwind.css"],
   ssr: true,
