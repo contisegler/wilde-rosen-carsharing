@@ -56,6 +56,7 @@
       await addDoc(collection(firestore, `cars/${selectedCar.value}/damages`), {
         ...damageEntry,
         createdAt: new Date(),
+        updatedAt: new Date(),
       })
       uploadStatus.value = "success"
       setTimeout(() => (uploadStatus.value = ""), 5000)
@@ -86,6 +87,7 @@
       <option value="zoe">Zoe</option>
       <option value="kona">Kona</option>
       <option value="kangoo">Kangoo</option>
+      <option value="jogger">Jogger</option>
     </select>
 
     <DamageImageUpload
