@@ -4,7 +4,7 @@
 
 <template>
   <DefaultPageStructure>
-    <template #title>Kona</template>
+    <template #title>Jogger</template>
     <CarViewer :car-id="'jogger'" />
   </DefaultPageStructure>
 </template>
