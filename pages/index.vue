@@ -22,6 +22,9 @@
       <NuxtLink to="/zoe" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Zoe</Button>
       </NuxtLink>
+      <NuxtLink to="/jogger" class="w-full">
+        <Button variant="outline" size="lg" class="w-full font-bold">Jogger</Button>
+      </NuxtLink>
       <div v-if="isDamageReporter" class="flex items-center my-4 w-full">
         <hr class="flex-grow border-gray-300" />
       </div>
