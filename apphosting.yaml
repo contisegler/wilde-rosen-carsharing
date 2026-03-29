@@ -6,6 +6,14 @@ runConfig:
   # concurrency: 80
   # cpu: 1
   # memoryMiB: 512
+
+# Build configuration
+# See https://firebase.google.com/docs/app-hosting/configure#build
+buildConfig:
+  runtime: nodejs22
+  installCommand: pnpm install --prod=false
+  buildCommand: pnpm run build
+
 # Environment variables and secrets.
 # env:
 # Configure environment variables.
