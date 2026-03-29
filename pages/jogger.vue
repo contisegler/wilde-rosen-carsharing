@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  // Page for displaying Kona damage images with schematics
+  // Page for displaying Jogger damage images with schematics
 </script>
 
 <template>

@@ -8,7 +8,7 @@
 
 A **German-language** carsharing damage-tracking web app for the "Wilde Rosen" community. Users can:
 
-- **View damages** for three shared cars (Kangoo, Kona, Zoe) with photos, schematic overlays, and lightbox galleries.
+- **View damages** for three shared cars (Kangoo, Kona, Zoe, Jogger) with photos, schematic overlays, and lightbox galleries.
 - **Report new damages** (authenticated users only) by uploading a photo, selecting a car side, positioning a marker on a schematic, and adding a description.
 - **Authenticate** via Google or email/password (Firebase Auth).
 - **Manage their profile** (change display name, log out).
@@ -70,6 +70,7 @@ wilde-rosen-carsharing/
 │   ├── kangoo.vue              # Car page: <CarViewer carId="kangoo">
 │   ├── kona.vue                # Car page: <CarViewer carId="kona">
 │   ├── zoe.vue                 # Car page: <CarViewer carId="zoe">
+│   ├── jogger.vue              # Car page: <CarViewer carId="jogger">
 │   ├── report-damage.vue       # Damage report form (auth-protected via middleware)
 │   ├── login.vue               # Google + email/password sign-in
 │   ├── register.vue            # Google + email/password registration
@@ -129,6 +130,8 @@ Firestore root
 │   │   └── damages/ ...
 │   └── zoe
 │       └── damages/ ...
+│   └── jogger
+│       └── damages/ ...
 └── users/                          # Collection
     └── {userId}                    # Document (UserData)
         ├── damage_reporter: boolean         # Permission flag
@@ -146,6 +149,9 @@ cars/
 │   ├── damages/
 │   └── schematics/
 └── zoe/
+    ├── damages/
+    └── schematics/
+└── jogger/
     ├── damages/
     └── schematics/
 ```
@@ -184,7 +190,7 @@ index.vue
 
 ```
 report-damage.vue
-  ├─ Select car (zoe/kona/kangoo)
+  ├─ Select car (zoe/kona/kangoo/jogger)
   ├─ <CloudImageSelector storagePath="cars/{car}/damages">
   │    ├─ Upload photo → Firebase Storage (uploadBytes + getDownloadURL)
   │    └─ OR browse existing images (listAll)
@@ -220,7 +226,7 @@ app.vue
               ├─ Back button + title slot + error alerts
               └─ Page content (slot)
                    ├─ <HalfWidth> — used for narrow form layouts (index, login, register, profile)
-                   ├─ <CarViewer> — used on car pages (kangoo, kona, zoe)
+                   ├─ <CarViewer> — used on car pages (kangoo, kona, zoe, jogger)
                    │    └─ <CarDamageImage> (per damage)
                    │         └─ <FirebaseNuxtImg> (damage photo + schematic)
                    └─ <CloudImageSelector> — used on report-damage page
@@ -254,7 +260,7 @@ Defined in `.env` (see `.env.example`):
 4. **Types are defined in `composables/useTypes.ts`** and are auto-imported globally. `CarSide`, `CarData`, `DamageEntry`, `DamageDetail` can be used anywhere without imports.
 5. **Global state** (`useUsername`, `useLoginError`) uses Nuxt's `useState` via `composables/states.ts` — also auto-imported.
 6. **User permissions** are stored in Firestore `users/{userId}` collection. The `damage_reporter` boolean field controls access to the "Schaden melden" feature. Use `useUserData({ userId })` to fetch user data and check `isDamageReporter`.
-7. **Car IDs** (`kangoo`, `kona`, `zoe`) are used as both Firestore document IDs and Firebase Storage path segments. They must match exactly.
+7. **Car IDs** (`kangoo`, `kona`, `zoe`, `jogger`) are used as both Firestore document IDs and Firebase Storage path segments. They must match exactly.
 8. **Schematic images** follow the naming convention `cars/{carId}/schematics/{carId}_{side}.png` in Firebase Storage.
 9. **The `scripts/` directory** contains Python helper scripts for Firestore maintenance (copy docs, update URLs, validate, fix image paths). They use `uv` for dependency management and are completely separate from the Nuxt app.
 10. **Firebase config is parsed from env at build time** — changing Firebase project requires rebuilding.

@@ -13,7 +13,7 @@ description: Project overview and architecture reference
 A **German-language** carsharing damage-tracking web app for the "Wilde Rosen" community.
 
 **Key Features:**
-- View damages for 3 shared cars (Kangoo, Kona, Zoe) with photos & schematics
+- View damages for 4 shared cars (Kangoo, Kona, Zoe, Jogger) with photos & schematics
 - Report new damages with photo upload, marker positioning, and descriptions
 - Google/email authentication via Firebase Auth
 - Profile management
@@ -31,7 +31,7 @@ A **German-language** carsharing damage-tracking web app for the "Wilde Rosen" c
 ## Project Structure
 
 ```
-├── pages/              # File-based routing (index, kangoo, kona, zoe, report-damage, login, register, profile)
+├── pages/              # File-based routing (index, kangoo, kona, zoe, jogger, report-damage, login, register, profile)
 ├── components/         # Auto-imported components (CarViewer, CarDamageImage, CloudImageSelector, etc.)
 │   └── ui/            # shadcn-vue primitives (DO NOT edit manually)
 ├── composables/        # useTypes.ts, useCarDamages.ts, states.ts (auto-imported)
@@ -58,6 +58,7 @@ cars/
 │           └── createdAt: Timestamp
 ├── kona/damages/...
 └── zoe/damages/...
+└── jogger/damages/...
 
 users/
 └── {userId}
@@ -87,5 +88,5 @@ npm run copy-car         # Copy car data (admin script)
 2. **Use `<FirebaseNuxtImg>`** for all Firebase Storage images
 3. **SPA mode** — No SSR, all client-side
 4. **German language** — All UI text must be in German
-5. **Car IDs** — Must match exactly: `kangoo`, `kona`, `zoe`
+5. **Car IDs** — Must match exactly: `kangoo`, `kona`, `zoe`, `jogger`  
 6. **User permissions** — Use `useUserData({ userId })` to check `isDamageReporter` for damage reporting access

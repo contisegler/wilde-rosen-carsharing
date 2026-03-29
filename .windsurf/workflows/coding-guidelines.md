@@ -57,7 +57,7 @@ Run `npm run lint:fix` to auto-format.
 
 ## Firebase Conventions
 
-- **Car IDs**: `kangoo`, `kona`, `zoe` (must match exactly in Firestore & Storage)
+- **Car IDs**: `kangoo`, `kona`, `zoe`, `jogger` (must match exactly in Firestore & Storage)
 - **Storage paths**: `cars/{carId}/damages/`, `cars/{carId}/schematics/`
 - **Schematic naming**: `{carId}_{side}.png` (e.g., `kangoo_front.png`)
 - **Firestore structure**: 
