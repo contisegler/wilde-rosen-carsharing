@@ -27,6 +27,7 @@
     "firebase": "^12.9.0",
     "firebase-admin": "^13.6.1",
     "firebase-functions": "^6.4.0",
+    "lucide-vue-next": "^1.0.0",
     "nuxt": "^3.17.5",
     "nuxt-easy-lightbox": "^1.1.0",
     "nuxt-lucide-icons": "^1.0.5",

@@ -9,5 +9,9 @@
   "[html]": {
     "editor.tabSize": 2,
     "editor.insertSpaces": true
+  },
+  "git.decorations.enabled": true,
+  "workbench.colorCustomizations": {
+    "gitDecoration.ignoredResourceForeground": "#6e768166"
   }
 }
