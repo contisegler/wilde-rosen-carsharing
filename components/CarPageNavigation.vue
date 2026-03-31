@@ -40,9 +40,9 @@ function switchToLog() {
 
 <template>
   <div class="mb-4 space-y-3">
-    <div class="flex items-center gap-2">
+    <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
       <Select :model-value="carId" @update:model-value="handleCarChange" :disabled="disabled">
-        <SelectTrigger :class="[hideViewButtons ? 'w-full' : 'flex-1', { 'opacity-50 cursor-not-allowed': disabled }]">
+        <SelectTrigger :class="[hideViewButtons ? 'w-full' : 'w-full sm:flex-1', { 'opacity-50 cursor-not-allowed': disabled }]">
           <div class="flex items-center gap-2">
             <LucideCar class="w-4 h-4" />
             <SelectValue :placeholder="carId" class="font-bold" />
@@ -55,27 +55,29 @@ function switchToLog() {
         </SelectContent>
       </Select>
 
-      <Button
-        v-if="!hideViewButtons"
-        variant="outline"
-        :style="currentView === 'log' ? { backgroundColor: '#798b26' } : {}"
-        :disabled="disabled"
-        @click="switchToLog"
-      >
-        <LucideNotebook class="w-4 h-4 mr-1" />
-        Fahrtenbuch
-      </Button>
+      <div v-if="!hideViewButtons" class="flex gap-2">
+        <Button
+          variant="outline"
+          class="flex-1 sm:flex-none"
+          :style="currentView === 'log' ? { backgroundColor: '#798b26' } : {}"
+          :disabled="disabled"
+          @click="switchToLog"
+        >
+          <LucideNotebook class="w-4 h-4 mr-1" />
+          Fahrtenbuch
+        </Button>
 
-      <Button
-        v-if="!hideViewButtons"
-        variant="outline"
-        :style="currentView === 'damages' ? { backgroundColor: '#798b26' } : {}"
-        :disabled="disabled"
-        @click="switchToDamages"
-      >
-        <LucideWrench class="w-4 h-4 mr-1" />
-        Schäden
-      </Button>
+        <Button
+          variant="outline"
+          class="flex-1 sm:flex-none"
+          :style="currentView === 'damages' ? { backgroundColor: '#798b26' } : {}"
+          :disabled="disabled"
+          @click="switchToDamages"
+        >
+          <LucideWrench class="w-4 h-4 mr-1" />
+          Schäden
+        </Button>
+      </div>
     </div>
   </div>
 </template>
