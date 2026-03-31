@@ -27,18 +27,23 @@ function generateDummyLogs(): LogEntry[] {
     { id: "user1", name: "Anna Schmidt" },
     { id: "user2", name: "Max Müller" },
     { id: "user3", name: "Lisa Weber" },
-    { id: "user4", name: "Tom Fischer" },
+    { id: "BOGhnxnoitdu0sGTbMoegee8iL72", name: "Tom Fischer" },
   ]
 
   const notes = [
-    "Einkauf in der Stadt",
-    "Fahrt zum Arzt",
-    "Ausflug ins Grüne",
-    "Besuch bei Freunden",
-    "Fahrt zur Arbeit",
+    "Tanken 65 €",
+    "",
+    "",
+    "",
+    "Reinigung 11 €",
     "",
     "",
   ]
+
+  // Helper function to round time to nearest 15 minutes
+  function roundToQuarterHour(minutes: number): number {
+    return Math.floor(minutes / 15) * 15
+  }
 
   const logs: LogEntry[] = []
   let logId = 1
@@ -55,13 +60,16 @@ function generateDummyLogs(): LogEntry[] {
 
       const startDate = new Date(now)
       startDate.setDate(startDate.getDate() - daysAgo)
-      startDate.setHours(8 + Math.floor(Math.random() * 10), Math.floor(Math.random() * 60))
+      const startHour = 8 + Math.floor(Math.random() * 10)
+      const startMinute = roundToQuarterHour(Math.floor(Math.random() * 60))
+      startDate.setHours(startHour, startMinute, 0, 0)
 
       const endDate = new Date(startDate)
-      endDate.setHours(startDate.getHours() + Math.floor(Math.random() * 4) + 1)
+      const durationHours = Math.floor(Math.random() * 4) + 1
+      const durationMinutes = roundToQuarterHour(Math.floor(Math.random() * 60))
+      endDate.setHours(startDate.getHours() + durationHours, startDate.getMinutes() + durationMinutes, 0, 0)
 
-      const kmDriven = Math.floor(Math.random() * 150) + 10
-      const startKm = 10000 + Math.floor(Math.random() * 50000)
+      const distance = Math.floor(Math.random() * 150) + 10
 
       logs.push({
         id: `log-${logId++}`,
@@ -71,14 +79,57 @@ function generateDummyLogs(): LogEntry[] {
         userName: user.name,
         startTime: startDate,
         endTime: endDate,
-        startKm: startKm,
-        endKm: startKm + kmDriven,
+        distance: distance, // Temporary field for distance driven
+        startKm: 0, // Will be calculated
+        endKm: 0, // Will be calculated
         notes: note,
-      })
+      } as any)
     }
   }
 
-  // Sort by date descending (newest first)
+  // Add one multi-day log entry
+  const multiDayStart = new Date(now)
+  multiDayStart.setDate(multiDayStart.getDate() - 30)
+  multiDayStart.setHours(14, 0, 0, 0)
+  
+  const multiDayEnd = new Date(multiDayStart)
+  multiDayEnd.setDate(multiDayEnd.getDate() + 2) // 2 days later
+  multiDayEnd.setHours(10, 30, 0, 0)
+  
+  logs.push({
+    id: `log-${logId++}`,
+    carId: "zoe",
+    carName: "Zoe",
+    userId: "user1",
+    userName: "Anna Schmidt",
+    startTime: multiDayStart,
+    endTime: multiDayEnd,
+    distance: 450, // Longer trip
+    startKm: 0, // Will be calculated
+    endKm: 0, // Will be calculated
+    notes: "Tanken: 55 € + 62 €",
+  } as any)
+
+  // Sort by time ascending (oldest first) to calculate km values chronologically
+  logs.sort((a, b) => a.startTime.getTime() - b.startTime.getTime())
+
+  // Initial km values for each car (start of very first log entry per car)
+  const carKm: Record<string, number> = {
+    kangoo: 10000,
+    kona: 15000,
+    zoe: 8000,
+    jogger: 12000,
+  }
+
+  // Calculate km values in chronological order per car
+  logs.forEach((log: any) => {
+    log.startKm = carKm[log.carId]
+    log.endKm = log.startKm + log.distance
+    carKm[log.carId] = log.endKm
+    delete log.distance // Remove temporary field
+  })
+
+  // Sort by date descending (newest first) for display
   return logs.sort((a, b) => b.startTime.getTime() - a.startTime.getTime())
 }
 

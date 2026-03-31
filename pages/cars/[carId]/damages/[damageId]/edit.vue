@@ -120,8 +120,6 @@ async function updateDamage() {
 
 <template>
   <DefaultPageStructure>
-    <template #title>Schaden bearbeiten</template>
-
     <div v-if="pending" class="text-center py-8">
       <p class="text-gray-600">Lade Schadensdaten...</p>
     </div>

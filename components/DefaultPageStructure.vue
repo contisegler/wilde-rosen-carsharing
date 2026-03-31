@@ -1,11 +1,6 @@
 <script setup lang="ts">
-  const route = useRoute()
   const loginError = useLoginError()
   const nuxtError = useError()
-
-  const upOneLevel = () => {
-    return route.path.split('/').slice(0, -1).join('/') || '/'
-  }
 </script>
 
 <template>

@@ -16,8 +16,8 @@ function addNewEntry() {
       class="w-full font-bold mb-4"
       @click="addNewEntry"
     >
-      <LucidePlus class="w-4 h-4 mr-2" />
-      Neuer Eintrag
+      <LucidePlay class="w-4 h-4 mr-2" />
+      Fahrt starten
     </Button>
     <CarLogViewer :car-id="carId" />
   </DefaultPageStructure>

@@ -9,8 +9,6 @@
   const userId = route.params.userId as string
   const user = useCurrentUser()
   const username = useUsername()
-  const auth = useFirebaseAuth && useFirebaseAuth()
-  const loginError = useLoginError()
 
   // Check if user is viewing their own settings
   const isOwnSettings = computed(() => user.value?.uid === userId)
@@ -46,19 +44,6 @@
     )
   }
 
-  function handleLogout() {
-    if (!auth) return
-    signOut(auth).then(
-      () => {
-        loginError.value = null
-        navigateTo("/")
-      },
-      reason => {
-        console.error("Failed signOut", reason)
-        loginError.value = reason
-      }
-    )
-  }
 </script>
 
 <template>
@@ -100,10 +85,6 @@
             {{ nameChangeAnswer }}
           </div>
         </form>
-        <hr class="my-6" />
-        <Button variant="outline" size="lg" class="w-full font-bold" @click="handleLogout">
-          Abmelden
-        </Button>
       </div>
     </HalfWidth>
   </DefaultPageStructure>

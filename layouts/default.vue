@@ -1,5 +1,15 @@
 <script setup lang="ts">
   const user = useCurrentUser()
+  const route = useRoute()
+  
+  function goToLogin() {
+    navigateTo({
+      path: '/login',
+      query: {
+        redirect: route.fullPath,
+      },
+    })
+  }
 </script>
 
 <template>
@@ -16,7 +26,7 @@
         size="sm"
         class="shrink-0 rounded-full w-10 h-10"
         aria-label="Login"
-        @click="navigateTo('/login')"
+        @click="goToLogin"
       >
         <LucideLogIn class="w-5 h-5" />
       </Button>

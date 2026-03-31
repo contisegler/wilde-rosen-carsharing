@@ -9,9 +9,6 @@
 
 <template>
   <DefaultPageStructure>
-    <template #title>
-      <h1>Wilde Rosen Carsharing</h1>
-    </template>
     <HalfWidth>
       <div class="mb-4 text-center text-gray-600">
         Willkommen! Wähle ein Auto, um Schäden oder das Fahrtenbuch anzusehen.

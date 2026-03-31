@@ -2,24 +2,16 @@
 interface Props {
   carId: string
   currentView: "damages" | "log"
-  showReportButton?: boolean
   disabled?: boolean
   hideViewButtons?: boolean
 }
 
 const props = withDefaults(defineProps<Props>(), {
-  showReportButton: false,
   disabled: false,
   hideViewButtons: false,
 })
 
 const route = useRoute()
-const user = useCurrentUser()
-
-// Check if user is a damage reporter
-const { isDamageReporter } = user.value?.uid
-  ? useUserData({ userId: user.value.uid })
-  : { isDamageReporter: ref(false) }
 
 // Available cars
 const cars = [
@@ -43,10 +35,6 @@ function switchToDamages() {
 
 function switchToLog() {
   navigateTo(`/cars/${props.carId}/log`)
-}
-
-function reportDamage() {
-  navigateTo(`/cars/${props.carId}/damages/add`)
 }
 </script>
 
@@ -89,16 +77,5 @@ function reportDamage() {
         Schäden
       </Button>
     </div>
-
-    <Button
-      v-if="showReportButton && isDamageReporter && currentView === 'damages'"
-      variant="default"
-      size="lg"
-      class="w-full font-bold"
-      @click="reportDamage"
-    >
-      <LucideAlertTriangle class="w-4 h-4 mr-2" />
-      Schaden melden
-    </Button>
   </div>
 </template>

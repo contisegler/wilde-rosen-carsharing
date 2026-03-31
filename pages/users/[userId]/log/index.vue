@@ -48,7 +48,7 @@ function addNewEntry() {
         @click="addNewEntry"
       >
         <LucidePlus class="w-4 h-4 mr-2" />
-        Neuer Eintrag
+        Starte neue Tour
       </Button>
     </div>
     <UserLogViewer :user-id="userId" />

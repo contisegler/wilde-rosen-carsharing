@@ -4,13 +4,13 @@ import { signOut } from "firebase/auth"
 const user = useCurrentUser()
 const auth = useFirebaseAuth()
 const loginError = useLoginError()
+const route = useRoute()
 
 function handleLogout() {
   if (!auth) return
   signOut(auth).then(
     () => {
       loginError.value = null
-      navigateTo("/")
     },
     reason => {
       console.error("Failed signOut", reason)
