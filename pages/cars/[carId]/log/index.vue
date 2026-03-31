@@ -19,6 +19,6 @@ function addNewEntry() {
       <LucidePlay class="w-4 h-4 mr-2" />
       Fahrt starten
     </Button>
-    <CarLogViewer :car-id="carId" />
+    <LogViewer :id="carId" type="car" />
   </DefaultPageStructure>
 </template>

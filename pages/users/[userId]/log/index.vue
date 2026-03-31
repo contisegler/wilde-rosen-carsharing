@@ -51,6 +51,6 @@ function addNewEntry() {
         Starte neue Tour
       </Button>
     </div>
-    <UserLogViewer :user-id="userId" />
+    <LogViewer :id="userId" type="user" />
   </DefaultPageStructure>
 </template>

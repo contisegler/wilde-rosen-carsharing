@@ -1,12 +1,15 @@
 <script setup lang="ts">
 interface Props {
-  userId: string
+  id: string
+  type: 'car' | 'user'
 }
 
 const props = defineProps<Props>()
 const user = useCurrentUser()
 
-const { logs, isLoading, error } = useUserLogs(props.userId)
+const { logs, isLoading, error } = props.type === 'car' 
+  ? useCarLogs(props.id) 
+  : useUserLogs(props.id)
 
 function formatDateTime(date: Date): string {
   return new Intl.DateTimeFormat("de-DE", {
@@ -20,8 +23,13 @@ function formatDateTime(date: Date): string {
 
 function calculateDuration(start: Date, end: Date): string {
   const diff = end.getTime() - start.getTime()
-  const hours = Math.floor(diff / (1000 * 60 * 60))
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
+  
+  if (days > 0) {
+    return `${days}d ${hours}h ${minutes}m`
+  }
   return `${hours}h ${minutes}m`
 }
 </script>
@@ -54,25 +62,22 @@ function calculateDuration(start: Date, end: Date): string {
           :key="log.id"
           class="border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition-shadow"
         >
-          <div class="flex justify-between items-center mb-1">
-            <div class="font-semibold text-sm">{{ log.carName }}</div>
-            <Badge variant="outline" class="text-xs">{{ log.carName }}</Badge>
-          </div>
+          <div class="font-semibold text-sm mb-1">{{ type === 'car' ? log.userName : log.carName }}</div>
 
           <div class="grid grid-cols-[auto_auto_auto_auto] gap-x-1 gap-y-1 text-sm">
             <span class="text-gray-600 mr-3">Start:</span>
-            <span class="font-medium text-right">{{ formatDateTime(log.startTime).split(', ')[0] }}</span>
-            <span class="font-medium text-right mr-3">{{ formatDateTime(log.startTime).split(', ')[1] }}</span>
+            <span class="font-medium text-right mr-2">{{ formatDateTime(log.startTime).split(', ')[0] }}</span>
+            <span class="font-medium text-left mr-3">{{ formatDateTime(log.startTime).split(', ')[1] }}</span>
             <span class="font-medium text-right">{{ log.startKm }} km</span>
             
             <span class="text-gray-600 mr-3">Ende:</span>
-            <span class="font-medium text-right">{{ formatDateTime(log.endTime).split(', ')[0] }}</span>
-            <span class="font-medium text-right mr-3">{{ formatDateTime(log.endTime).split(', ')[1] }}</span>
+            <span class="font-medium text-right mr-2">{{ formatDateTime(log.endTime).split(', ')[0] }}</span>
+            <span class="font-medium text-left mr-3">{{ formatDateTime(log.endTime).split(', ')[1] }}</span>
             <span class="font-medium text-right">{{ log.endKm }} km</span>
             
             <span></span>
             <span></span>
-            <span class="text-gray-600 text-right mr-3">{{ calculateDuration(log.startTime, log.endTime) }}</span>
+            <span class="text-gray-600 text-left mr-3">{{ calculateDuration(log.startTime, log.endTime) }}</span>
             <span class="text-gray-600 text-right">{{ log.endKm - log.startKm }} km</span>
           </div>
 
