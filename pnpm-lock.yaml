@@ -21,7 +21,7 @@ importers:
         specifier: ^4.1.18
         version: 4.2.2(vite@7.3.1(@types/node@25.5.0)(jiti@2.6.1)(lightningcss@1.32.0)(terser@5.46.1)(tsx@4.21.0)(yaml@2.8.3))
       '@vueuse/core':
-        specifier: ^13.3.0
+        specifier: ^13.9.0
         version: 13.9.0(vue@3.5.31(typescript@5.9.3))
       class-variance-authority:
         specifier: ^0.7.1
@@ -57,7 +57,7 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(@firebase/app-types@0.9.3)(firebase-admin@13.7.0)(firebase-functions@6.6.0(firebase-admin@13.7.0))(firebase@12.11.0)(magicast@0.5.2)(vuefire@3.2.2(consola@3.4.2)(firebase@12.11.0)(vue@3.5.31(typescript@5.9.3)))
       reka-ui:
-        specifier: ^2.8.0
+        specifier: ^2.9.2
         version: 2.9.2(vue@3.5.31(typescript@5.9.3))
       shadcn-nuxt:
         specifier: ^2.4.3
