@@ -283,7 +283,7 @@ Defined in `.env` (see `.env.example`):
 
 - **Prettier:** No semicolons, double quotes, trailing comma `es5`, print width 100, 2-space indent, LF line endings, `arrowParens: "avoid"`.
 - **ESLint:** Nuxt flat config. `vue/html-self-closing` set to `warn` with relaxed rules for HTML elements.
-- **Lint commands:** `npm run lint` (check), `npm run lint:fix` (auto-fix).
+- **Lint commands:** `pnpm lint` (check), `pnpm lint:fix` (auto-fix).
 
 ---
 

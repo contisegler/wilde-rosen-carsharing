@@ -16,7 +16,7 @@ gcloud auth application-default login
 gcloud auth application-default set-quota-project <PROJECT_ID>
 
 # 4. Start dev server
-npm run dev
+pnpm dev
 ```
 
 ### Production (Firebase App Hosting)
@@ -71,7 +71,7 @@ The project uses a patched version of `nuxt-vuefire` that detects credentials in
 
 6. Start the development server:
    ```bash
-   npm run dev
+   pnpm dev
    ```
 
 **Note:** Session cookies are disabled in development mode because custom token signing requires access to Google's metadata server, which is only available in Google Cloud environments. Auth still works fully for client-side operations. No IAM permissions are needed for local development since session cookies are disabled.
@@ -146,7 +146,7 @@ The project uses `patch-package` to modify `nuxt-vuefire` to support keyless aut
 
 **When VueFire PR #1651 merges:**
 1. Remove the patch: `rm patches/nuxt-vuefire+1.1.0.patch`
-2. Update nuxt-vuefire: `npm update nuxt-vuefire`
+2. Update nuxt-vuefire: `pnpm update nuxt-vuefire`
 3. Add to `nuxt.config.ts`:
    ```typescript
    vuefire: {

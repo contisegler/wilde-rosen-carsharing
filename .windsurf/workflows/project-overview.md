@@ -70,11 +70,11 @@ users/
 ## Common Commands
 
 ```bash
-npm run dev              # Start dev server
-npm run build            # Production build
-npm run lint             # Check code style
-npm run lint:fix         # Auto-fix linting issues
-npm run copy-car         # Copy car data (admin script)
+pnpm dev                 # Start dev server
+pnpm build               # Production build
+pnpm lint                # Check code style
+pnpm lint:fix            # Auto-fix linting issues
+pnpm copy-car            # Copy car data (admin script)
 ```
 
 ## Environment Variables

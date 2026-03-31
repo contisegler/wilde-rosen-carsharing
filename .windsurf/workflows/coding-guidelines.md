@@ -30,7 +30,7 @@ description: Coding style and conventions for Wilde Rosen Carsharing
 - **Arrow parens**: avoid (e.g., `x => x + 1`)
 - **Self-closing tags**: Relaxed for HTML elements
 
-Run `npm run lint:fix` to auto-format.
+Run `pnpm lint:fix` to auto-format.
 
 ## Component Guidelines
 
