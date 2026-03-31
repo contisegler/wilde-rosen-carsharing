@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { updateProfile, signOut } from "firebase/auth"
+  import { updateProfile } from "firebase/auth"
 
   definePageMeta({
     middleware: "auth",

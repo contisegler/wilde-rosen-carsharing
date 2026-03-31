@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const carId = route.params.carId as string
+const user = useCurrentUser()
 
 function addNewEntry() {
   navigateTo(`/cars/${carId}/log/add`)
@@ -11,6 +12,7 @@ function addNewEntry() {
   <DefaultPageStructure>
     <CarPageNavigation :car-id="carId" current-view="log" />
     <Button
+      v-if="user"
       variant="default"
       size="lg"
       class="w-full font-bold mb-4"

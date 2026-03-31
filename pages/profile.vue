@@ -1,4 +1,8 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: "auth",
+})
+
 // Legacy route - redirect to new settings page
 const user = useCurrentUser()
 
