@@ -10,26 +10,23 @@
 <template>
   <DefaultPageStructure>
     <template #title>
-      <h1>Schäden</h1>
+      <h1>Wilde Rosen Carsharing</h1>
     </template>
     <HalfWidth>
-      <NuxtLink to="/kangoo" class="w-full">
+      <div class="mb-4 text-center text-gray-600">
+        Willkommen! Wähle ein Auto, um Schäden oder das Fahrtenbuch anzusehen.
+      </div>
+      <NuxtLink to="/cars/kangoo/damages" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Kangoo</Button>
       </NuxtLink>
-      <NuxtLink to="/kona" class="w-full">
+      <NuxtLink to="/cars/kona/damages" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Kona</Button>
       </NuxtLink>
-      <NuxtLink to="/zoe" class="w-full">
+      <NuxtLink to="/cars/zoe/damages" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Zoe</Button>
       </NuxtLink>
-      <NuxtLink to="/jogger" class="w-full">
+      <NuxtLink to="/cars/jogger/damages" class="w-full">
         <Button variant="outline" size="lg" class="w-full font-bold">Jogger</Button>
-      </NuxtLink>
-      <div v-if="isDamageReporter" class="flex items-center my-4 w-full">
-        <hr class="flex-grow border-gray-300" />
-      </div>
-      <NuxtLink v-if="isDamageReporter" to="/report-damage" class="w-full">
-        <Button variant="outline" size="lg" class="w-full font-bold">Schaden melden</Button>
       </NuxtLink>
     </HalfWidth>
   </DefaultPageStructure>

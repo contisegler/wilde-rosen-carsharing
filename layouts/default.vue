@@ -9,15 +9,16 @@
         <img src="/carsharing_logo.svg" alt="Logo" class="h-10 w-auto" />
       </NuxtLink>
       <h1 class="text-center text-2xl sm:text-3xl font-bold mx-2">Wilde Rosen Carsharing</h1>
+      <UserMenu v-if="user" />
       <Button
+        v-else
         variant="outline"
         size="sm"
         class="shrink-0 rounded-full w-10 h-10"
-        :aria-label="user ? 'Profile' : 'Login'"
-        @click="user ? navigateTo('/profile') : navigateTo('/login')"
+        aria-label="Login"
+        @click="navigateTo('/login')"
       >
-        <LucideUser v-if="user" class="w-5 h-5" />
-        <LucideLogIn v-else class="w-5 h-5" />
+        <LucideLogIn class="w-5 h-5" />
       </Button>
     </div>
     <slot />

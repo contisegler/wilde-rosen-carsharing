@@ -19,7 +19,7 @@ A **German-language** carsharing damage-tracking web app for the "Wilde Rosen" c
 
 | Layer | Technology |
 |---|---|
-| **Framework** | Nuxt 3 (`^3.17.5`) — **SPA mode** (`ssr: false`) |
+| **Framework** | Nuxt 3 (`^3.17.5`) — **SSR enabled** (`ssr: true`) with Firebase Admin SDK |
 | **Language** | TypeScript (strict mode, type-checked) |
 | **UI Components** | [shadcn-vue](https://shadcn-vue.com/) (New York style, neutral base color) via `shadcn-nuxt` module |
 | **Styling** | Tailwind CSS v4 (`@tailwindcss/vite` plugin), CSS variables for theming, `tw-animate-css` |
@@ -40,7 +40,7 @@ These are essential to follow when making changes:
 - **Auto-imports are ON.** Vue functions (`ref`, `computed`, `watch`, etc.), Nuxt composables (`useRoute`, `navigateTo`, `definePageMeta`, etc.), VueFire composables (`useFirestore`, `useCurrentUser`, `useFirebaseAuth`, `useFirebaseStorage`, `useDocument`, `useCollection`, `useStorageFileUrl`, `getCurrentUser`), and all components in `components/` are auto-imported. **Do NOT add explicit imports for these.**
 - **Only type imports need explicit import statements** (e.g., `import type { FirestoreDataConverter } from "firebase/firestore"`).
 - **Firebase SDK functions** (`signInWithPopup`, `addDoc`, `collection`, `doc`, `ref as storageRef`, `uploadBytes`, etc.) still need explicit imports from their respective Firebase packages.
-- **SSR is disabled** (`ssr: false`). The app runs entirely client-side. No `server/` directory exists.
+- **SSR is enabled** (`ssr: true`). The app uses Firebase Admin SDK for server-side authentication with Application Default Credentials (ADC). See `ADMIN_SDK_SETUP.md` for details.
 - **TypeScript strict mode** is enabled with type checking.
 
 ---
@@ -60,37 +60,52 @@ wilde-rosen-carsharing/
 ├── .env / .env.example         # FIREBASE_WEBAPP_CONFIG (JSON), GOOGLE_APPLICATION_CREDENTIALS
 │
 ├── layouts/
-│   └── default.vue             # App shell: logo, title, profile/login button, <slot>
+│   └── default.vue             # App shell: logo, title, UserMenu (logged in) or login button, <slot>
 │
 ├── middleware/
 │   └── auth.ts                 # Route guard: redirects unauthenticated users to /login
 │
-├── pages/                      # File-based routing
-│   ├── index.vue               # Home: links to car pages + "Schaden melden" (if logged in)
-│   ├── kangoo.vue              # Car page: <CarViewer carId="kangoo">
-│   ├── kona.vue                # Car page: <CarViewer carId="kona">
-│   ├── zoe.vue                 # Car page: <CarViewer carId="zoe">
-│   ├── jogger.vue              # Car page: <CarViewer carId="jogger">
-│   ├── report-damage.vue       # Damage report form (auth-protected via middleware)
+├── pages/                      # File-based routing (REST-like structure)
+│   ├── index.vue               # Home: welcome text + links to car damages pages
 │   ├── login.vue               # Google + email/password sign-in
 │   ├── register.vue            # Google + email/password registration
-│   └── profile.vue             # Change name, log out (auth-protected via middleware)
+│   ├── profile.vue             # Legacy redirect to /users/[userId]/settings
+│   ├── cars/
+│   │   ├── index.vue           # Redirect to home
+│   │   └── [carId]/
+│   │       ├── index.vue       # Redirect to /cars/[carId]/damages
+│   │       ├── damages/
+│   │       │   ├── index.vue   # Damages view with CarPageNavigation + CarViewer
+│   │       │   ├── report.vue  # Report damage form (auth-protected, car pre-selected)
+│   │       │   └── edit.vue    # Edit damage form (auth-protected)
+│   │       └── log.vue         # Car log view with CarPageNavigation + CarLogViewer
+│   └── users/
+│       ├── index.vue           # Redirect to home
+│       └── [userId]/
+│           ├── index.vue       # Redirect to /users/[userId]/log
+│           ├── log.vue         # User log across all cars (auth-protected)
+│           └── settings.vue    # User settings (auth-protected, replaces profile)
 │
 ├── components/
 │   ├── CarViewer.vue           # Fetches & displays all damages for a car (uses useCarDamages)
 │   ├── CarDamageImage.vue      # Single damage card: photo, schematic overlay, lightbox
+│   ├── CarPageNavigation.vue   # Car selector + view toggle (damages/log) + report button
+│   ├── CarLogViewer.vue        # Displays dummy log entries for a specific car
+│   ├── UserMenu.vue            # Dropdown menu for logged-in users (log, settings, logout)
+│   ├── UserLogViewer.vue       # Displays dummy log entries for a user across all cars
 │   ├── CloudImageSelector.vue  # Upload to / browse Firebase Storage images
-│   ├── DefaultPageStructure.vue# Page wrapper: back button, title slot, error alerts, content slot
+│   ├── DefaultPageStructure.vue# Page wrapper: title slot, error alerts, content slot
 │   ├── FirebaseNuxtImg.vue     # Converts Firebase Storage URLs to NuxtImg alias format
 │   ├── HalfWidth.vue           # Centered column layout (max-w-[352px])
-│   └── ui/                     # shadcn-vue primitives (alert, badge, button, input, label,
-│                               #   select, slider, textarea) — DO NOT edit manually,
+│   └── ui/                     # shadcn-vue primitives (alert, badge, button, dropdown-menu,
+│                               #   input, label, select, slider, textarea) — DO NOT edit manually,
 │                               #   regenerate with `npx shadcn-vue@latest add <component>`
 │
 ├── composables/
 │   ├── useTypes.ts             # Shared TypeScript types: CarSide, CarData, DamageEntry, DamageDetail
 │   ├── useCarDamages.ts        # Composable: fetches car doc + damages subcollection from Firestore
 │   ├── useUserData.ts          # Composable: fetches user doc from Firestore, provides isDamageReporter
+│   ├── useLogData.ts           # Composable: provides dummy log data (useCarLogs, useUserLogs)
 │   └── states.ts               # Global reactive state: useUsername(), useLoginError()
 │
 ├── lib/
@@ -160,10 +175,14 @@ cars/
 
 ## 6. Key Data Flow
 
-### Viewing damages (e.g., `/kangoo`)
+### Viewing damages (e.g., `/cars/kangoo/damages`)
 
 ```
-kangoo.vue
+/cars/[carId]/damages/index.vue
+  ├─ <CarPageNavigation :carId currentView="damages" :showReportButton>
+  │    ├─ Car selector dropdown (navigates between cars)
+  │    ├─ View toggle buttons (damages/log)
+  │    └─ Report damage button (if user is damage reporter)
   └─ <CarViewer carId="kangoo">
        └─ useCarDamages({ carId: "kangoo" })
             ├─ useDocument()  → Firestore: cars/kangoo          → car ref
@@ -176,21 +195,32 @@ kangoo.vue
                  └─ <VueEasyLightbox>  → detail images gallery on click
 ```
 
-### Home page with permissions (`/`)
+### Viewing car log (e.g., `/cars/kangoo/log`)
 
 ```
-index.vue
-  ├─ useCurrentUser() → current Firebase Auth user
-  ├─ useUserData({ userId }) → Firestore: users/{userId} → userData ref
-  │    └─ isDamageReporter computed → checks userData.damage_reporter === true
-  └─ Show "Schaden melden" button only if isDamageReporter is true
+/cars/[carId]/log.vue
+  ├─ <CarPageNavigation :carId currentView="log">
+  └─ <CarLogViewer :carId>
+       └─ useCarLogs(carId) → dummy log data for the car
+            └─ Displays log entries with date/time, km readings, duration, distance
+            └─ Notes visible only to logged-in users
 ```
 
-### Reporting a damage (`/report-damage`, auth-protected)
+### Viewing user log (`/users/[userId]/log`)
 
 ```
-report-damage.vue
-  ├─ Select car (zoe/kona/kangoo/jogger)
+/users/[userId]/log.vue (auth-protected)
+  └─ <UserLogViewer :userId>
+       └─ useUserLogs(userId) → dummy log data for the user across all cars
+            └─ Displays log entries with car name, date/time, km readings, duration, distance
+            └─ Notes visible only to logged-in users
+```
+
+### Reporting a damage (`/cars/[carId]/damages/add`, auth-protected)
+
+```
+/cars/[carId]/damages/add.vue
+  ├─ Car pre-selected from route param
   ├─ <CloudImageSelector storagePath="cars/{car}/damages">
   │    ├─ Upload photo → Firebase Storage (uploadBytes + getDownloadURL)
   │    └─ OR browse existing images (listAll)
@@ -210,7 +240,7 @@ login.vue / register.vue
 
 middleware/auth.ts
   └─ defineNuxtRouteMiddleware → getCurrentUser() → redirect to /login if null
-  └─ Applied via definePageMeta({ middleware: "auth" }) on profile.vue and report-damage.vue
+  └─ Applied via definePageMeta({ middleware: "auth" }) on user pages and damage report/edit pages
 ```
 
 ---
@@ -220,16 +250,21 @@ middleware/auth.ts
 ```
 app.vue
 └─ <NuxtLayout> (layouts/default.vue)
-    ├─ Logo + Title + Profile button
+    ├─ Logo + Title
+    ├─ <UserMenu> (if logged in) — dropdown with log, settings, logout
+    │    OR Login button (if not logged in)
     └─ <NuxtPage> (pages/*.vue)
          └─ <DefaultPageStructure>
-              ├─ Back button + title slot + error alerts
+              ├─ Title slot (optional) + error alerts
               └─ Page content (slot)
-                   ├─ <HalfWidth> — used for narrow form layouts (index, login, register, profile)
-                   ├─ <CarViewer> — used on car pages (kangoo, kona, zoe, jogger)
+                   ├─ <HalfWidth> — used for narrow form layouts (index, login, register, settings)
+                   ├─ <CarPageNavigation> — car selector + view toggle + report button
+                   ├─ <CarViewer> — displays damages for a car
                    │    └─ <CarDamageImage> (per damage)
                    │         └─ <FirebaseNuxtImg> (damage photo + schematic)
-                   └─ <CloudImageSelector> — used on report-damage page
+                   ├─ <CarLogViewer> — displays log entries for a car
+                   ├─ <UserLogViewer> — displays log entries for a user
+                   └─ <CloudImageSelector> — used on damage report/edit pages
                         └─ <FirebaseNuxtImg> (thumbnails in browser modal)
 ```
 
@@ -254,7 +289,7 @@ Defined in `.env` (see `.env.example`):
 
 ## 10. Common Pitfalls & Things to Know
 
-1. **`ssr: false`** — There is no server-side rendering. All Firebase calls happen client-side. No `server/` API routes exist.
+1. **`ssr: true`** — Server-side rendering is enabled with Firebase Admin SDK for authentication. See `ADMIN_SDK_SETUP.md` for ADC setup. No `server/` API routes exist (auth handled by VueFire).
 2. **`FirebaseNuxtImg`** is a wrapper that converts raw Firebase Storage download URLs into the `/firebase/` alias path so `@nuxt/image` can optimize them. Always use `<FirebaseNuxtImg>` instead of raw `<NuxtImg>` for Firebase Storage images.
 3. **shadcn-vue components** live in `components/ui/` and should not be manually edited. Add new ones with `npx shadcn-vue@latest add <component>`.
 4. **Types are defined in `composables/useTypes.ts`** and are auto-imported globally. `CarSide`, `CarData`, `DamageEntry`, `DamageDetail` can be used anywhere without imports.

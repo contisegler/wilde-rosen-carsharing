@@ -5,8 +5,10 @@
     middleware: "auth",
   })
 
+  const route = useRoute()
+  const carId = route.params.carId as string
+
   const uploadStatus = ref("")
-  const selectedCar = ref("zoe")
   const selectedImage = ref<CloudImage | null>(null)
   const damageDescription = ref("")
   const selectedSide = ref<CarSide | null>("left")
@@ -53,13 +55,16 @@
         x: damageX.value,
         y: damageY.value,
       }
-      await addDoc(collection(firestore, `cars/${selectedCar.value}/damages`), {
+      await addDoc(collection(firestore, `cars/${carId}/damages`), {
         ...damageEntry,
         createdAt: new Date(),
         updatedAt: new Date(),
       })
       uploadStatus.value = "success"
-      setTimeout(() => (uploadStatus.value = ""), 5000)
+      setTimeout(() => {
+        uploadStatus.value = ""
+        navigateTo(`/cars/${carId}/damages`)
+      }, 2000)
       selectedImage.value = null
       damageDescription.value = ""
       extraDetails.value = []
@@ -76,29 +81,17 @@
 
 <template>
   <DefaultPageStructure>
-    <template #title>Schaden melden</template>
-    <label for="car" class="block text-left font-medium text-gray-700 mb-2">Auto auswählen:</label>
-    <select
-      id="car"
-      v-model="selectedCar"
-      class="w-full p-2 mb-4 border border-gray-300 rounded-md"
-      @change="selectedImage = null"
-    >
-      <option value="zoe">Zoe</option>
-      <option value="kona">Kona</option>
-      <option value="kangoo">Kangoo</option>
-      <option value="jogger">Jogger</option>
-    </select>
+    <CarPageNavigation :car-id="carId" current-view="damages" :disabled="true" />
 
     <DamageImageUpload
       v-model="selectedImage"
-      :car-id="selectedCar"
+      :car-id="carId"
       @upload-error="uploadStatus = 'error'"
     />
 
     <DamageSideSelector
       v-model="selectedSide"
-      :car-id="selectedCar"
+      :car-id="carId"
       :damage-x="damageX"
       :damage-y="damageY"
       :disabled="!selectedImage"
@@ -120,23 +113,33 @@
 
     <DamageDetailsForm
       v-model="extraDetails"
-      :car-id="selectedCar"
+      :car-id="carId"
       :main-image="selectedImage"
       :main-description="damageDescription"
       :disabled="!(selectedImage && selectedSide && damageDescription)"
     />
 
-    <Button
-      variant="outline"
-      size="lg"
-      class="w-full font-bold"
-      :disabled="!isFormValid"
-      @click="uploadDamage"
-    >
-      Schaden melden
-    </Button>
+    <div class="flex gap-2">
+      <Button
+        variant="outline"
+        size="lg"
+        class="flex-1"
+        @click="navigateTo(`/cars/${carId}/damages`)"
+      >
+        Abbrechen
+      </Button>
+      <Button
+        variant="default"
+        size="lg"
+        class="flex-1 font-bold"
+        :disabled="!isFormValid"
+        @click="uploadDamage"
+      >
+        Schaden melden
+      </Button>
+    </div>
     <p v-if="uploadStatus === 'success'" class="text-green-500 mt-4">
-      Schaden erfolgreich gemeldet! Möchtest du einen weiteren Schaden melden?
+      Schaden erfolgreich gemeldet! Weiterleitung...
     </p>
     <p v-if="uploadStatus === 'error'" class="text-red-500 mt-4">
       Fehler beim Melden. Bist du angemeldet?

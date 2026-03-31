@@ -10,32 +10,10 @@
 
 <template>
   <div class="flex flex-col w-full">
-    <div class="flex flex-row items-center justify-between w-full mb-4">
-      <NuxtLink :to="upOneLevel()">
-        <Button
-          :class="[
-            route.path === '/' ? 'invisible w-10 h-10' : '',
-            'shrink-0 rounded-full w-10 h-10',
-          ]"
-          variant="outline"
-          size="sm"
-          aria-label="Zurück"
-        >
-          <LucideArrowLeft class="w-5 h-5" />
-        </Button>
-      </NuxtLink>
-
+    <div class="flex flex-row items-center justify-center w-full mb-4">
       <h2 class="text-center text-xl sm:text-2xl font-bold">
         <slot name="title" />
       </h2>
-      <Button
-        variant="outline"
-        size="sm"
-        class="invisible shrink-0 rounded-full w-10 h-10"
-        aria-label="Vor'"
-      >
-        <LucideArrowRight class="w-5 h-5" />
-      </Button>
     </div>
     <div class="w-full items-center">
       <Alert v-if="loginError" variant="destructive" class="mb-4">

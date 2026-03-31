@@ -78,7 +78,7 @@
       variant="secondary"
       size="icon"
       class="absolute top-2 right-2 z-10 bg-white/90 hover:bg-white shadow-md"
-      @click.stop="navigateTo(`/${carId}/edit-damage?damageId=${damageEntry.id}`)"
+      @click.stop="navigateTo(`/cars/${carId}/damages/${damageEntry.id}/edit`)"
     >
       <LucidePencil class="w-4 h-4" />
     </Button>

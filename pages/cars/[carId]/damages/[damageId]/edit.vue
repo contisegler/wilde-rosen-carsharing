@@ -8,7 +8,7 @@ definePageMeta({
 
 const route = useRoute()
 const carId = route.params.carId as string
-const damageId = route.query.damageId as string
+const damageId = route.params.damageId as string
 
 const uploadStatus = ref("")
 const selectedImage = ref<CloudImage | null>(null)
@@ -108,7 +108,7 @@ async function updateDamage() {
 
     uploadStatus.value = "success"
     setTimeout(() => {
-      navigateTo(`/${carId}?t=${Date.now()}`)
+      navigateTo(`/cars/${carId}/damages?t=${Date.now()}`)
     }, 1500)
   } catch (error) {
     console.error("Error updating damage:", error)
@@ -128,17 +128,13 @@ async function updateDamage() {
 
     <div v-else-if="!damageData" class="text-center py-8">
       <p class="text-red-600">Schaden nicht gefunden.</p>
-      <Button variant="outline" class="mt-4" @click="navigateTo(`/${carId}`)">
+      <Button variant="outline" class="mt-4" @click="navigateTo(`/cars/${carId}/damages`)">
         Zurück zur Übersicht
       </Button>
     </div>
 
     <div v-else>
-      <div class="mb-4 p-3 bg-gray-100 rounded-md">
-        <p class="text-sm text-gray-600">
-          <strong>Auto:</strong> {{ carId.charAt(0).toUpperCase() + carId.slice(1) }}
-        </p>
-      </div>
+      <CarPageNavigation :car-id="carId" current-view="damages" :disabled="true" />
 
       <DamageImageUpload
         v-model="selectedImage"
@@ -177,7 +173,7 @@ async function updateDamage() {
       />
 
       <div class="flex gap-3">
-        <Button variant="outline" class="flex-1" @click="navigateTo(`/${carId}`)">
+        <Button variant="outline" class="flex-1" @click="navigateTo(`/cars/${carId}/damages`)">
           Abbrechen
         </Button>
         <Button
