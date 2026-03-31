@@ -26,7 +26,7 @@ function generateDummyLogs(): LogEntry[] {
   const users = [
     { id: "user1", name: "Anna Schmidt" },
     { id: "user2", name: "Max Müller" },
-    { id: "user3", name: "Lisa Weber" },
+    { id: "qYRNFRjRw0QxYW8nFXdx7EsJAdO2", name: "Lisa Weber" },
     { id: "BOGhnxnoitdu0sGTbMoegee8iL72", name: "Tom Fischer" },
   ]
 
