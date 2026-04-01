@@ -1,4 +1,4 @@
-import { google } from 'googleapis';
+import { calendar } from '@googleapis/calendar';
 import { GoogleAuth } from 'google-auth-library';
 
 const CALENDAR_ID = 'eaec8e2b705d0cab95707f20a55df8e6883a6aa99e7c24928e91130e7a308fcd@group.calendar.google.com';
@@ -9,9 +9,9 @@ export default defineEventHandler(async (event) => {
       scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
     });
 
-    const calendar = google.calendar({ version: 'v3', auth });
+    const calendarClient = calendar({ version: 'v3', auth });
 
-    const response = await calendar.events.list({
+    const response = await calendarClient.events.list({
       calendarId: CALENDAR_ID,
       timeMin: new Date().toISOString(),
       maxResults: 100,

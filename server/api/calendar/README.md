@@ -47,19 +47,32 @@ This API endpoint fetches events from the Google Calendar using service account 
 The API uses Google's Application Default Credentials (ADC) which automatically works in Cloud Run:
 
 1. **In Cloud Run:** The service account attached to the Cloud Run service is automatically used
-2. **Local Development:** You'll get authentication errors unless you set up local credentials
+2. **Local Development Setup**
 
-### Local Development Setup (Optional)
+**Important:** Standard `gcloud auth application-default login` does NOT grant Calendar API access. You need to use a custom OAuth client with Calendar scopes.
 
-If you want to test locally, you need to authenticate:
+**Option 1: Use custom OAuth client (recommended for local dev)**
 
-```bash
-# Option 1: Use gcloud CLI
-gcloud auth application-default login
+1. Get the OAuth 2.0 Client ID:
+   - **For team members:** Download from [Secret Manager](https://console.cloud.google.com/security/secret-manager/secret/OAuth2Client_LocalDevelopment-CalendarAPI_CLIENT_SECRET/versions?project=wilde-rosen-npr-dfafc)
+   - Save it to `.oauth-client-secret.json` (already in `.gitignore`)
+   - **To create a new one:** Go to APIs & Credentials → Create Credentials → OAuth client ID (Application type: Desktop app)
 
-# Option 2: Use a service account key file (not recommended for production)
-export GOOGLE_APPLICATION_CREDENTIALS="/path/to/service-account-key.json"
-```
+2. Authenticate with Calendar scope:
+   ```bash
+   gcloud auth application-default login \
+     --client-id-file=.oauth-client-secret.json \
+     --scopes=https://www.googleapis.com/auth/calendar.readonly,https://www.googleapis.com/auth/cloud-platform
+   ```
+
+3. Restart your dev server
+
+**Option 2: Test on deployed environment**
+- The API already works in Cloud Run with the service account
+- Use the deployed NPR environment for API testing
+- Use local dev for UI/frontend changes only
+
+**Note:** Never commit OAuth client secrets to git.
 
 ## Implementation Details
 

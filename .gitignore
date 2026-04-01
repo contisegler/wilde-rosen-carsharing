@@ -22,6 +22,7 @@ logs
 .env
 .env.*
 !.env.example
+.oauth-client-secret.json
 
 # Firebase service account keys
 service-account.json
