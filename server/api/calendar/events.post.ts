@@ -5,6 +5,16 @@ const CALENDAR_ID = 'eaec8e2b705d0cab95707f20a55df8e6883a6aa99e7c24928e91130e7a3
 
 export default defineEventHandler(async (event) => {
   try {
+    const body = await readBody(event);
+    const { timeMin, timeMax } = body;
+
+    if (!timeMin || !timeMax) {
+      return {
+        success: false,
+        error: 'timeMin and timeMax are required parameters',
+      };
+    }
+
     const auth = new GoogleAuth({
       scopes: ['https://www.googleapis.com/auth/calendar.readonly'],
     });
@@ -13,7 +23,8 @@ export default defineEventHandler(async (event) => {
 
     const response = await calendarClient.events.list({
       calendarId: CALENDAR_ID,
-      timeMin: new Date().toISOString(),
+      timeMin: timeMin,
+      timeMax: timeMax,
       maxResults: 100,
       singleEvents: true,
       orderBy: 'startTime',
@@ -30,8 +41,7 @@ export default defineEventHandler(async (event) => {
         description: event.description,
         start: event.start?.dateTime || event.start?.date,
         end: event.end?.dateTime || event.end?.date,
-        location: event.location,
-        status: event.status,
+        creator: event.creator?.email
       })),
     };
   } catch (error: any) {
