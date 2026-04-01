@@ -10,15 +10,19 @@ export default defineEventHandler(async (event) => {
     return
   }
 
-  console.log('Auth middleware check:', {
-    path,
-    event: event
-  })
-  
-  // In production, check for authenticated user (VueFire session cookie)
-  const user = event.context.user
-
-  if (!user) {
+  // Test if getCurrentUser() works in server middleware
+  try {
+    const user = await getCurrentUser()
+    console.log('getCurrentUser() in server middleware:', user)
+    
+    if (!user) {
+      throw createError({
+        statusCode: 401,
+        statusMessage: 'Unauthorized - Authentication required',
+      })
+    }
+  } catch (error) {
+    console.error('Error calling getCurrentUser() in server middleware:', error)
     throw createError({
       statusCode: 401,
       statusMessage: 'Unauthorized - Authentication required',
