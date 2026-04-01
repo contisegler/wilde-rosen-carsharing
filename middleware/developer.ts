@@ -23,13 +23,6 @@ export default defineNuxtRouteMiddleware(async (to, _) => {
   
   const isDeveloper = userDocSnap.exists() && userDocSnap.data()?.developer === true
   
-  console.log('Developer middleware check:', {
-    userId: user.uid,
-    exists: userDocSnap.exists(),
-    developer: userDocSnap.data()?.developer,
-    isDeveloper
-  })
-  
   if (!isDeveloper) {
     
     useLoginError().value = new Error("You are not a developer")

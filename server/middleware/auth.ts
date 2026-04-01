@@ -10,6 +10,11 @@ export default defineEventHandler(async (event) => {
     return
   }
 
+  console.log('Auth middleware check:', {
+    path,
+    event: event
+  })
+  
   // In production, check for authenticated user (VueFire session cookie)
   const user = event.context.user
 
