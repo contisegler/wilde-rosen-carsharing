@@ -1,7 +1,7 @@
 export default defineEventHandler(async (event) => {
-  // Only protect /api routes
+  // Only protect /api/calendar routes
   const path = getRequestURL(event).pathname
-  if (!path.startsWith('/api')) {
+  if (!path.startsWith('/api/calendar')) {
     return
   }
 
