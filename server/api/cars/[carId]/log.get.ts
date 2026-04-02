@@ -9,7 +9,7 @@ export default defineEventHandler(async (event): Promise<LogEntry[]> => {
         throw createError({ statusCode: 400, statusMessage: 'Missing carId' });
     }
     
-    const logsSnapshot = await $firestore.collection("cars").doc(carId).collection("logs").get();
+    const logsSnapshot = await $firestore.collection("cars").doc(carId).collection("log").get();
     
     if (logsSnapshot.empty) {
         return [];
