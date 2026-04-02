@@ -5,7 +5,6 @@ import type { FirebaseEmulatorConfig } from '~~/shared/types';
 import firebaseJson from '~~/firebase.json';
 
 export default defineNuxtPlugin({
-  // Firebase initialization code here
   setup(nuxtApp) {
     const appConfig = useAppConfig();
     const runtimeConfig = useRuntimeConfig();
