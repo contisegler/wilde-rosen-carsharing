@@ -23,6 +23,7 @@ export default defineNuxtRouteMiddleware(async (to, _) => {
   
   const isDeveloper = userDocSnap.exists() && userDocSnap.data()?.developer === true
   
+
   if (!isDeveloper) {
     
     useLoginError().value = new Error("You are not a developer")
