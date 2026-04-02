@@ -38,3 +38,16 @@ export interface Damage {
     y: number;
     updatedAt: Date;
 }
+
+export interface LogEntry {
+    id: string;
+    carId: string;
+    carName: string;
+    userId: string;
+    userName: string;
+    startTime: Date;
+    endTime: Date;
+    startKm: number;
+    endKm: number;
+    notes?: string;
+}
