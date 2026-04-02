@@ -1,4 +1,5 @@
-import admin, { ServiceAccount } from 'firebase-admin';
+import admin from 'firebase-admin';
+import type { ServiceAccount } from 'firebase-admin';
 import { cert } from 'firebase-admin/app';
 import firebaseJson from '~~/firebase.json';
 import type { FirebaseEmulatorConfig } from '~~/shared/types';

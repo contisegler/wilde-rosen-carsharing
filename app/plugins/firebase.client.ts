@@ -35,6 +35,7 @@ export default defineNuxtPlugin({
     console.log(`[Firebase] initialized {emulators: ${JSON.stringify(emulatorsConfig)}}`);
     return {
       provide: {
+        firebaseApp: app,
         firestore: firestore,
         auth: auth
       },

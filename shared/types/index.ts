@@ -30,6 +30,8 @@ export interface Damage {
     id: string;
     description: string;
     imagePath: string;
+    schematicPath: string;
+    sideIndex: number;
     details: DamageDetail[];
     createdAt: Date;
     side: CarSide;

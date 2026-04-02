@@ -2,7 +2,7 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@pinia/nuxt', '@nuxt/ui', '@nuxt/image'],
+  modules: ['@pinia/nuxt', '@nuxt/ui', '@nuxt/image', 'nuxt-easy-lightbox'],
   css: ['~/assets/css/main.css'],
   ui: {
     colorMode: false,
@@ -13,8 +13,15 @@ export default defineNuxtConfig({
         'firebase/app',
         'firebase/auth',
         'firebase/firestore',
+        'firebase/storage',
         'zod',
       ]
+    }
+  },
+  image: {
+    domains: ['firebasestorage.googleapis.com'],
+    alias: {
+      firebase: `https://firebasestorage.googleapis.com/v0/b/${process.env.NUXT_FIREBASE_STORAGE_BUCKET}/o`
     }
   },
   appConfig: {
