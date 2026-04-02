@@ -1,6 +1,7 @@
 import { $firestore } from "../../../src/firebase_admin";
+import type { Damage } from "~~/shared/types";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<Damage[]> => {
     assertMethod(event, 'GET');
     const carId = getRouterParam(event, 'carId');
     
@@ -14,10 +15,15 @@ export default defineEventHandler(async (event) => {
         return [];
     }
     
-    const damages = damagesSnapshot.docs.map(doc => ({
-        id: doc.id,
-        ...doc.data()
-    }));
+    const damages: Damage[] = damagesSnapshot.docs.map(doc => {
+        const data = doc.data();
+        return {
+            id: doc.id,
+            ...data,
+            createdAt: data.createdAt?.toDate() || new Date(),
+            updatedAt: data.updatedAt?.toDate() || new Date(),
+        } as Damage;
+    });
     
     return damages;
 });
