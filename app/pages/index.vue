@@ -15,7 +15,13 @@ const { data: cars, status, error } = useFetch('/api/cars', {
     <div v-else-if="error">Error loading cars: {{ error }}</div>
     <template v-else-if="cars">
       <NuxtLink v-for="car in cars" :key="car.id" :to="`/cars/${car.id}/damages`" class="w-full">
-        <UButton variant="outline" class="w-full font-bold">{{ car.title }}</UButton>
+        <UButton 
+          variant="outline" 
+          class="w-full font-bold"
+          color="neutral"
+        >
+          {{ car.title }}
+        </UButton>
       </NuxtLink>
     </template>
   </div>
