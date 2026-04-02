@@ -56,9 +56,8 @@ import type { AuthFormField, ButtonProps, FormSubmitEvent } from "@nuxt/ui";
 import { FirebaseError } from "firebase/app";
 import { getAdditionalUserInfo, GoogleAuthProvider, type UserCredential } from "firebase/auth";
 import { z } from "zod";
-import { useUser } from "~/composables/stores/user";
 
-const userStore = useUser();
+const user = useUser();
 const registering = ref(true);
 const error = ref();
 const providers: ButtonProps[] = [
@@ -134,18 +133,18 @@ const registerFields: AuthFormField[] = [
     },
 ];
 
-watch(
-    () => userStore.isLogged,
-    () => {
-        if (userStore.isLogged) navigateTo("/app");
-    },
-    { immediate: true },
-);
+// watch(
+//     () => user.isLogged,
+//     () => {
+//         if (user.isLogged) navigateTo("/app");
+//     },
+//     { immediate: true },
+// );
 
 async function onSignInSubmit(payload: FormSubmitEvent<LoginSchema>) {
     error.value = undefined;
     try {
-        await userStore.login({ email: payload.data.email, password: payload.data.password, remember: payload.data.remember });
+        await user.login({ email: payload.data.email, password: payload.data.password, remember: payload.data.remember });
     } catch (ex) {
         error.value = authErrorToReadable(ex);
     }
@@ -154,7 +153,7 @@ async function onSignInSubmit(payload: FormSubmitEvent<LoginSchema>) {
 async function onRegisterSubmit(payload: FormSubmitEvent<RegisterSchema>) {
     error.value = undefined;
     try {
-        await userStore.register({
+        await user.register({
             email: payload.data.email,
             password: payload.data.password,
             remember: payload.data.remember,
@@ -170,7 +169,7 @@ async function onGoogleSignin() {
         const provider = new GoogleAuthProvider();
         provider.addScope("email");
         provider.addScope("profile");
-        await userStore.authenticateWithProvider({
+        await user.authenticateWithProvider({
             provider: provider,
             userDataDelegate: (credentials: UserCredential) => {
                 const info = getAdditionalUserInfo(credentials);

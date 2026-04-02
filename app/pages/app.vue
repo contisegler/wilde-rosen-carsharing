@@ -26,7 +26,6 @@
 <script lang="ts" setup>
 import type { FormSubmitEvent } from "@nuxt/ui";
 import z from "zod";
-import { useUser } from "~/composables/stores/user";
 
 const formSchema = z.object({ fullName: z.string().nonempty() });
 type FormSchema = z.infer<typeof formSchema>;
