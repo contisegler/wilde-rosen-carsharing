@@ -3,6 +3,13 @@ export interface WithId<T> {
     payload: T;
 }
 
+export interface UserData {
+    id: string;
+    email: string;
+    fullName: string;
+    lastName: string;
+}
+
 export interface FirebaseEmulatorConfig {
     auth: boolean;
     firestore: boolean;
