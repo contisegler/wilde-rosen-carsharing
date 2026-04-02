@@ -14,7 +14,7 @@ function goToLogin() {
 
 <template>
   <UApp>
-    <UContainer class="py-3">
+    <UContainer class="py-3 max-w-3xl">
       <div class="flex flex-row items-center justify-between w-full mb-5">
         <NuxtLink to="/" class="shrink-0">
           <img src="/carsharing_logo.svg" alt="Logo" class="h-10 w-auto" />
