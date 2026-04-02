@@ -42,7 +42,6 @@ export interface Damage {
 export interface LogEntry {
     id: string;
     carId: string;
-    carName: string;
     userId: string;
     userName: string;
     startTime: Date;
