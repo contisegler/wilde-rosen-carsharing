@@ -3,7 +3,13 @@ export default defineAppConfig({
     button: {
       defaultVariants: {
         size: 'lg'
-      }
+      },
+      compoundVariants: [
+        {
+          variant: 'outline',
+          class: 'border'
+        }
+      ]
     }
   }
 })
