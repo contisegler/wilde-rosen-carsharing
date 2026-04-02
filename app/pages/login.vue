@@ -1,56 +1,3 @@
-<template>
-    <div class="flex flex-col items-center mt-4">
-        <u-page-card class="w-full max-w-md" variant="soft">
-            <div class="flex justify-center w-full">
-                <u-tabs
-                    :items="[
-                        { label: 'Login', value: 'login' },
-                        { label: 'Register', value: 'register' },
-                    ]"
-                    class="w-fit"
-                    default-value="register"
-                    @update:model-value="
-                        (val) => {
-                            registering = val === 'register';
-                            error = undefined;
-                        }
-                    "
-                ></u-tabs>
-            </div>
-            <u-auth-form
-                v-if="!registering"
-                :schema="loginSchema"
-                title="Login"
-                loading-auto
-                :validate-on="['change']"
-                :providers="providers"
-                :fields="signinFields"
-                :submit="{ label: 'Login' }"
-                @submit="onSignInSubmit"
-            >
-                <template #validation>
-                    <u-alert v-if="error" color="error" icon="i-lucide-info" title="Error accessing account" :description="error" />
-                </template>
-            </u-auth-form>
-            <u-auth-form
-                v-else
-                :schema="registerSchema"
-                title="Register"
-                loading-auto
-                :validate-on="['change']"
-                :providers="providers"
-                :fields="registerFields"
-                :submit="{ label: 'Create account' }"
-                @submit="onRegisterSubmit"
-            >
-                <template #validation>
-                    <u-alert v-if="error" color="error" icon="i-lucide-info" title="Error creating account" :description="error" />
-                </template>
-            </u-auth-form>
-        </u-page-card>
-    </div>
-</template>
-
 <script lang="ts" setup>
 import type { AuthFormField, ButtonProps, FormSubmitEvent } from "@nuxt/ui";
 import { FirebaseError } from "firebase/app";
@@ -58,11 +5,11 @@ import { getAdditionalUserInfo, GoogleAuthProvider, type UserCredential } from "
 import { z } from "zod";
 
 const user = useUser();
-const registering = ref(true);
+const registering = ref(false);
 const error = ref();
 const providers: ButtonProps[] = [
     {
-        label: "Enter with Google",
+        label: "Mit Google anmelden",
         variant: "subtle",
         color: "neutral",
         icon: "logos:google-icon",
@@ -70,13 +17,13 @@ const providers: ButtonProps[] = [
     },
 ];
 const loginSchema = z.object({
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(8),
     remember: z.boolean(),
 });
 const registerSchema = z.object({
     name: z.string(),
-    email: z.string().email(),
+    email: z.email(),
     password: z.string().min(8),
     remember: z.boolean(),
 });
@@ -87,19 +34,19 @@ const signinFields: AuthFormField[] = [
     {
         name: "email",
         type: "email",
-        label: "Email",
-        placeholder: "johndoe@gmail.com",
+        label: "E-Mail",
+        placeholder: "max.mustermann@gmail.com",
         required: true,
     },
     {
         name: "password",
-        label: "Password",
+        label: "Passwort",
         type: "password",
         required: true,
     },
     {
         name: "remember",
-        label: "Remember me",
+        label: "Angemeldet bleiben",
         type: "checkbox",
         defaultValue: true,
     },
@@ -108,26 +55,26 @@ const registerFields: AuthFormField[] = [
     {
         name: "name",
         type: "text",
-        label: "Full name",
-        placeholder: "John Doe",
+        label: "Vollständiger Name",
+        placeholder: "Max Mustermann",
         required: true,
     },
     {
         name: "email",
         type: "email",
-        label: "Email",
-        placeholder: "johndoe@gmail.com",
+        label: "E-Mail",
+        placeholder: "max.mustermann@gmail.com",
         required: true,
     },
     {
         name: "password",
-        label: "Password",
+        label: "Passwort",
         type: "password",
         required: true,
     },
     {
         name: "remember",
-        label: "Remember me",
+        label: "Angemeldet bleiben",
         type: "checkbox",
         defaultValue: true,
     },
@@ -189,21 +136,74 @@ function authErrorToReadable(error: any) {
     if (error instanceof FirebaseError) {
         switch (error.code) {
             case "auth/invalid-credential":
-                return "Invalid credentials provided";
+                return "Ungültige Anmeldedaten";
             case "auth/invalid-email":
-                return "The provided email is not valid";
+                return "Die angegebene E-Mail ist ungültig";
             case "auth/user-disabled":
-                return "User has been disabled";
+                return "Benutzer wurde deaktiviert";
             case "auth/user-not-found":
-                return "Account not found";
+                return "Benutzer nicht gefunden";
             case "auth/wrong-password":
-                return "The provided password is wrong";
+                return "Das angegebene Passwort ist falsch";
             case "auth/email-already-in-use":
-                return "The email is already in use";
+                return "Die E-Mail wird bereits verwendet";
         }
     }
-    return "Generic authentication error";
+    return "Allgemeiner Authentifizierungsfehler";
 }
 </script>
+
+<template>
+    <div class="flex flex-col items-center mt-4">
+        <u-page-card class="w-full max-w-md" variant="soft">
+            <div class="flex justify-center w-full">
+                <u-tabs
+                    :items="[
+                        { label: 'Anmelden', value: 'login' },
+                        { label: 'Registrieren', value: 'register' },
+                    ]"
+                    class="w-fit"
+                    default-value="login"
+                    @update:model-value="
+                        (val) => {
+                            registering = val === 'register';
+                            error = undefined;
+                        }
+                    "
+                ></u-tabs>
+            </div>
+            <u-auth-form
+                v-if="!registering"
+                :schema="loginSchema"
+                title="Anmelden"
+                loading-auto
+                :validate-on="['change']"
+                :providers="providers"
+                :fields="signinFields"
+                :submit="{ label: 'Anmelden' }"
+                @submit="onSignInSubmit"
+            >
+                <template #validation>
+                    <u-alert v-if="error" color="error" icon="i-lucide-info" title="Fehler beim Zugriff auf das Konto" :description="error" />
+                </template>
+            </u-auth-form>
+            <u-auth-form
+                v-else
+                :schema="registerSchema"
+                title="Registrieren"
+                loading-auto
+                :validate-on="['change']"
+                :providers="providers"
+                :fields="registerFields"
+                :submit="{ label: 'Konto erstellen' }"
+                @submit="onRegisterSubmit"
+            >
+                <template #validation>
+                    <u-alert v-if="error" color="error" icon="i-lucide-info" title="Fehler beim Erstellen des Kontos" :description="error" />
+                </template>
+            </u-auth-form>
+        </u-page-card>
+    </div>
+</template>
 
 <style></style>
