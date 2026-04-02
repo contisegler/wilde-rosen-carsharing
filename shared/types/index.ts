@@ -6,8 +6,7 @@ export interface WithId<T> {
 export interface UserData {
     id: string;
     email: string;
-    fullName: string;
-    lastName: string;
+    displayName: string;
 }
 
 export interface FirebaseEmulatorConfig {

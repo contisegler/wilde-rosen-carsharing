@@ -25,11 +25,11 @@ export const useUser = defineStore('user-store', () => {
         })
     };
 
-    const register = async ({ email, password, data, remember = true}: { email: string; password: string; data: {fullName: string}; remember: boolean }) => {
+    const register = async ({ email, password, displayName, remember = true}: { email: string; password: string; displayName: string; remember: boolean }) => {
         await rememberAuth(remember);
         const res = await createUserWithEmailAndPassword($auth, email, password);
-        await patch({ email: email, fullName: data.fullName , id: res.user.uid });
-        await updateProfile(res.user, { displayName: data.fullName });
+        await patch({ email: email, displayName: displayName , id: res.user.uid });
+        await updateProfile(res.user, { displayName: displayName });
     };
 
     const login = async ({ email, password, remember = true}: { email: string; password: string; remember: boolean }) => {
@@ -50,7 +50,7 @@ export const useUser = defineStore('user-store', () => {
         const res = await signInWithPopup($auth, provider);
         const userData = userDataDelegate(res);
         await patch(userData);
-        await updateProfile(res.user, { displayName: userData.fullName });
+        await updateProfile(res.user, { displayName: userData.displayName });
     };
 
     const logout = async () => {

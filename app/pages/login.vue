@@ -103,8 +103,8 @@ async function onRegisterSubmit(payload: FormSubmitEvent<RegisterSchema>) {
         await user.register({
             email: payload.data.email,
             password: payload.data.password,
+            displayName: payload.data.name,
             remember: payload.data.remember,
-            data: { fullName: payload.data.name },
         });
     } catch (ex) {
         error.value = authErrorToReadable(ex);
@@ -121,7 +121,7 @@ async function onGoogleSignin() {
             userDataDelegate: (credentials: UserCredential) => {
                 const info = getAdditionalUserInfo(credentials);
                 return <UserData>{
-                    fullName: credentials.user.displayName,
+                    displayName: credentials.user.displayName,
                     email: credentials.user.email,
                     id: credentials.user.uid,
                 };

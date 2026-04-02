@@ -6,7 +6,7 @@ const user = useUser()
 const items = computed<DropdownMenuItem[][]>(() => [
   [
     {
-      label: user.userData?.fullName || 'Mein Konto',
+      label: user.userData?.displayName || 'Mein Konto',
       type: 'label',
     },
   ],
