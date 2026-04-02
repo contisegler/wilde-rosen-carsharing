@@ -3,7 +3,7 @@ import type { UserData } from '~~/shared/types';
 import { doc, setDoc, onSnapshot, DocumentSnapshot, type DocumentData, type Unsubscribe } from 'firebase/firestore';
 import { updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword, setPersistence, browserLocalPersistence, inMemoryPersistence, type AuthProvider, type User, type UserCredential, signInWithPopup } from 'firebase/auth';
 
-export const useUserStore = defineStore('user-store', () => {
+export const useUser = defineStore('user-store', () => {
     const {$auth, $firestore} = useNuxtApp();
     
     const userData = ref<UserData>();
@@ -94,6 +94,7 @@ export const useUserStore = defineStore('user-store', () => {
         register,
         login,
         authenticateWithProvider,
+        logout,
         patch
     };
 });

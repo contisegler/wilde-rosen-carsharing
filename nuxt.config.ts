@@ -10,6 +10,7 @@ export default defineNuxtConfig({
         'firebase/app',
         'firebase/auth',
         'firebase/firestore',
+        'zod',
       ]
     }
   },
