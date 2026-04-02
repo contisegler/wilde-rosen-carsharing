@@ -6,7 +6,6 @@ const { data: damages, status: damagesStatus, error: damagesError } = useFetch(`
   key: `damages-${carId}`
 })
 
-
 const { data: car, status: carStatus, error: carError } = useFetch(`/api/cars/${carId}`, {
   key: `cars-${carId}`
 })
@@ -14,6 +13,8 @@ const { data: car, status: carStatus, error: carError } = useFetch(`/api/cars/${
 
 <template>
   <div>
+    <CarPageNavigation :car-id="carId" current-view="damages" />
+    
     <h2 class="text-xl font-bold mb-4">Schäden am {{ car?.title }}</h2>
     <div v-if="damagesStatus === 'pending'">Loading...</div>
     <div v-else-if="damagesError">Error: {{ damagesError }}</div>

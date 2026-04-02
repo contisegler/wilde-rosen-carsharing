@@ -13,6 +13,8 @@ const { data: car, status: carStatus, error: carError } = useFetch(`/api/cars/${
 
 <template>
   <div>
+    <CarPageNavigation :car-id="carId" current-view="log" />
+    
     <h2 class="text-xl font-bold mb-4">Fahrtenbuch für {{ car?.title }}</h2>
     <div v-if="logStatus === 'pending'">Loading...</div>
     <div v-else-if="logError">Error: {{ logError }}</div>
