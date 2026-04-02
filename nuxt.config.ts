@@ -4,6 +4,9 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@pinia/nuxt', '@nuxt/ui'],
   css: ['~/assets/css/main.css'],
+  ui: {
+    colorMode: false,
+  },
   vite: {
     optimizeDeps: {
       include: [
