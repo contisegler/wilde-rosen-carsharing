@@ -8,6 +8,10 @@ export default defineAppConfig({
         {
           variant: 'outline',
           class: 'border'
+        },
+        {
+          variant: 'solid',
+          class: 'text-gray-900'
         }
       ]
     }
