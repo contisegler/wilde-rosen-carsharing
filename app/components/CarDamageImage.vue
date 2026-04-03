@@ -85,6 +85,7 @@ const isDamageReporter = computed(() => false) // TODO: Implement permission che
       format="webp"
       :quality="60"
       loading="lazy"
+      :modifiers="{ rotate: 'undefined' }"
       densities="1x 2x"
       @click="lightboxVisible = true"
     />
