@@ -43,7 +43,7 @@ async function handleLogout() {
 </script>
 
 <template>
-  <UDropdownMenu :items="items">
+  <UDropdownMenu :items="items" :content="{ align: 'end' }">
     <UButton
       variant="outline"
       square
