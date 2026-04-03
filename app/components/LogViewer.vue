@@ -19,8 +19,8 @@ const { data: logs, status: logsStatus, error: logsError } = useFetch<LogEntry[]
   transform: (data: any[]): LogEntry[] => {
     return data.map(log => ({
       ...log,
-      startTime: new Date(log.startTime),
-      endTime: new Date(log.endTime)
+      startTime: log.startTime ? new Date(log.startTime) : undefined,
+      endTime: log.endTime ? new Date(log.endTime) : undefined
     }))
   }
 })
@@ -80,19 +80,20 @@ function calculateDuration(start: Date, end: Date): string {
 
         <div class="grid grid-cols-[auto_auto_auto_auto] gap-x-1 gap-y-1 text-sm">
           <span class="text-gray-600 mr-3">Start:</span>
-          <span class="font-medium text-right mr-2">{{ formatDateTime(log.startTime).split(', ')[0] }}</span>
-          <span class="font-medium text-left mr-3">{{ formatDateTime(log.startTime).split(', ')[1] }}</span>
-          <span class="font-medium text-right">{{ log.startKm }} km</span>
-          
-          <span class="text-gray-600 mr-3">Ende:</span>
-          <span class="font-medium text-right mr-2">{{ formatDateTime(log.endTime).split(', ')[0] }}</span>
-          <span class="font-medium text-left mr-3">{{ formatDateTime(log.endTime).split(', ')[1] }}</span>
-          <span class="font-medium text-right">{{ log.endKm }} km</span>
-          
-          <span></span>
-          <span></span>
-          <span class="text-gray-600 text-left mr-3">{{ calculateDuration(log.startTime, log.endTime) }}</span>
-          <span class="text-gray-600 text-right">{{ log.endKm - log.startKm }} km</span>
+          <span class="font-medium text-right mr-2">{{ log.startTime ? formatDateTime(log.startTime).split(', ')[0] : '-' }}</span>
+          <span class="font-medium text-left mr-3">{{ log.startTime ? formatDateTime(log.startTime).split(', ')[1] : '-' }}</span>
+          <span class="font-medium text-right">{{ log.startKm ? log.startKm : '-' }} km</span>
+          <template v-if="log.endKm || log.endTime">
+            <span class="text-gray-600 mr-3">Ende:</span>
+            <span class="font-medium text-right mr-2">{{ log.endTime ? formatDateTime(log.endTime).split(', ')[0] : '-' }}</span>
+            <span class="font-medium text-left mr-3">{{ log.endTime ? formatDateTime(log.endTime).split(', ')[1] : '-' }}</span>
+            <span class="font-medium text-right">{{ log.endKm ? log.endKm : '-' }} km</span>
+            
+            <span></span>
+            <span></span>
+            <span class="text-gray-600 text-left mr-3">{{log.startTime && log.endTime ? calculateDuration(log.startTime, log.endTime) : '-' }}</span>
+            <span class="text-gray-600 text-right">{{ log.endKm && log.startKm ? log.endKm - log.startKm : '-' }} km</span>
+          </template>
         </div>
 
         <div v-if="user.isLogged && log.notes" class="mt-1 text-sm text-gray-700 italic">
