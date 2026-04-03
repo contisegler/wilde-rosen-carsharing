@@ -7,10 +7,15 @@ interface Props {
 
 const props = defineProps<Props>()
 const user = useUser()
+const { authHeaders } = useAuthHeaders()
 
-// Fetch log data from API
+// Key with user ID triggers refetch on login/logout
+const fetchKey = computed(() => `logs-${props.carId}-${user.userData?.id || 'anonymous'}`)
+
+// Fetch log data from API with auth headers
 const { data: logs, status: logsStatus, error: logsError } = useFetch<LogEntry[]>(`/api/cars/${props.carId}/log`, {
-  key: `logs-${props.carId}`,
+  key: fetchKey,
+  headers: authHeaders,
   transform: (data: any[]): LogEntry[] => {
     return data.map(log => ({
       ...log,
@@ -71,7 +76,7 @@ function calculateDuration(start: Date, end: Date): string {
         :key="log.id"
         class="border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition-shadow"
       >
-        <div class="font-semibold text-sm mb-1">{{ log.userName }}</div>
+        <div v-if="user.isLogged && log.userName" class="font-semibold text-sm mb-1">{{ log.userName }}</div>
 
         <div class="grid grid-cols-[auto_auto_auto_auto] gap-x-1 gap-y-1 text-sm">
           <span class="text-gray-600 mr-3">Start:</span>
