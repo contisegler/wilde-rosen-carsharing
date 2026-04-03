@@ -17,11 +17,17 @@ const { data: logs, status: logsStatus, error: logsError } = useFetch<LogEntry[]
   key: fetchKey,
   headers: authHeaders,
   transform: (data: any[]): LogEntry[] => {
-    return data.map(log => ({
-      ...log,
-      startTime: log.startTime ? new Date(log.startTime) : undefined,
-      endTime: log.endTime ? new Date(log.endTime) : undefined
-    }))
+    return data
+      .map(log => ({
+        ...log,
+        startTime: log.startTime ? new Date(log.startTime) : undefined,
+        endTime: log.endTime ? new Date(log.endTime) : undefined
+      }))
+      .sort((a, b) => {
+        if (!a.startTime) return 1
+        if (!b.startTime) return -1
+        return b.startTime.getTime() - a.startTime.getTime()
+      })
   }
 })
 
