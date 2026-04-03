@@ -80,10 +80,16 @@ const registerFields: AuthFormField[] = [
     },
 ];
 
+const route = useRoute();
+
 watch(
     () => user.isLogged,
     () => {
-        if (user.isLogged) navigateTo("/");
+        if (user.isLogged) {
+            // Check if there's a redirect query parameter
+            const redirectTo = route.query.redirect as string | undefined;
+            navigateTo(redirectTo || "/");
+        }
     },
     { immediate: true },
 );
