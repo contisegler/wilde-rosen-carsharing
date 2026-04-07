@@ -19,18 +19,18 @@ const props = defineProps<Props>()
 const emit = defineEmits<Emits>()
 
 const selectedSide = computed({
-  get: () => props.modelValue,
-  set: value => emit('update:modelValue', value),
+  get: () => props.modelValue ?? undefined,
+  set: value => emit('update:modelValue', value as CarSide | null),
 })
 
 const schematicUrl = ref<string | null>(null)
 const schematicLoaded = ref(false)
 
 const sideOptions = [
-  { value: 'front', label: 'Vorne' },
-  { value: 'back', label: 'Hinten' },
   { value: 'left', label: 'Links' },
+  { value: 'back', label: 'Hinten' },
   { value: 'right', label: 'Rechts' },
+  { value: 'front', label: 'Vorne' },
   { value: 'top', label: 'Oben' },
 ]
 
@@ -74,11 +74,10 @@ function handleSchematicClick(event: MouseEvent) {
     </label>
     <USelectMenu
       v-model="selectedSide"
-      :options="sideOptions"
-      value-attribute="value"
-      option-attribute="label"
+      :items="sideOptions"
+      value-key="value"
       :disabled="disabled"
-      class="mb-4"
+      class="w-full mb-4"
     />
 
     <div class="min-h-[150px]">

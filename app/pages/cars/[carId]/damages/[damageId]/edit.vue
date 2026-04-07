@@ -153,7 +153,7 @@ async function updateDamage() {
 
     <div v-else-if="damageError || !damageData" class="text-center py-8">
       <UAlert
-        color="red"
+        color="error"
         variant="solid"
         title="Fehler"
         description="Schaden nicht gefunden."
@@ -196,6 +196,7 @@ async function updateDamage() {
           :disabled="!selectedImage"
           :rows="3"
           placeholder="Beschreiben Sie den Schaden..."
+          class="w-full"
         />
       </div>
 
@@ -229,7 +230,7 @@ async function updateDamage() {
 
       <UAlert
         v-if="uploadStatus === 'success'"
-        color="green"
+        color="success"
         variant="solid"
         class="mt-4"
         title="Erfolg"
@@ -237,7 +238,7 @@ async function updateDamage() {
       />
       <UAlert
         v-if="uploadStatus === 'error'"
-        color="red"
+        color="error"
         variant="solid"
         class="mt-4"
         title="Fehler"

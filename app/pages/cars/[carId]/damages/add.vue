@@ -139,6 +139,7 @@ async function submitDamage() {
           :disabled="!selectedImage"
           :rows="3"
           placeholder="Beschreiben Sie den Schaden..."
+          class="w-full"
         />
       </div>
 
