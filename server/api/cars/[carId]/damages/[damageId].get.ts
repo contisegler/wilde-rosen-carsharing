@@ -1,6 +1,7 @@
 import { $firestore } from "../../../../src/firebase_admin";
+import type { Damage } from "~~/shared/types";
 
-export default defineEventHandler(async (event) => {
+export default defineEventHandler(async (event): Promise<Damage> => {
     assertMethod(event, 'GET');
     const carId = getRouterParam(event, 'carId');
     const damageId = getRouterParam(event, 'damageId');
@@ -13,6 +14,11 @@ export default defineEventHandler(async (event) => {
     if (!damageDoc.exists) {
         throw createError({ statusCode: 404, statusMessage: 'Damage not found' });
     }
-    const damageData = damageDoc.data();
-    return damageData;
+    
+    const data = damageDoc.data();
+    if (!data) {
+        throw createError({ statusCode: 404, statusMessage: 'Damage data not found' });
+    }
+    
+    return transformDamageDoc(damageDoc.id, data, carId);
 });

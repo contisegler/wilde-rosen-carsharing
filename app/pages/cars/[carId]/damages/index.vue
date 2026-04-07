@@ -20,6 +20,17 @@ const { data: damages, status: damagesStatus, error: damagesError } = useFetch(`
   <div>
     <CarPageNavigation :car-id="carId" current-view="damages" />
     
+    <!-- Add damage button -->
+    <div class="mb-4 flex justify-end">
+      <UButton
+        icon="i-lucide-plus"
+        color="primary"
+        @click="navigateTo(`/cars/${carId}/damages/add`)"
+      >
+        Neuen Schaden melden
+      </UButton>
+    </div>
+    
     <!-- Loading state -->
     <div v-if="damagesStatus === 'pending'" class="text-center p-8">
       <p>Lade Schadensdaten...</p>
@@ -38,6 +49,14 @@ const { data: damages, status: damagesStatus, error: damagesError } = useFetch(`
     <!-- Empty state -->
     <div v-else-if="!damages || damages.length === 0" class="text-center p-8">
       <p>Keine Schäden gefunden.</p>
+      <UButton
+        icon="i-lucide-plus"
+        color="primary"
+        class="mt-4"
+        @click="navigateTo(`/cars/${carId}/damages/add`)"
+      >
+        Ersten Schaden melden
+      </UButton>
     </div>
     
     <!-- Damage list -->
