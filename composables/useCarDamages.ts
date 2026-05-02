@@ -95,14 +95,16 @@ export function useCarDamages({ carId }: UseCarDamagesOptions): UseCarDamagesRet
   const damageEntries = computed(() => {
     if (!rawDamageEntries.value) return null
     
-    return [...rawDamageEntries.value].sort((a, b) => {
-      // First sort by side index
-      if (a.sideIndex !== b.sideIndex) {
-        return a.sideIndex - b.sideIndex
-      }
-      // Then sort by x value
-      return a.x - b.x
-    })
+    return [...rawDamageEntries.value]
+      .filter((entry) => !entry.isArchive)
+      .sort((a, b) => {
+        // First sort by side index
+        if (a.sideIndex !== b.sideIndex) {
+          return a.sideIndex - b.sideIndex
+        }
+        // Then sort by x value
+        return a.x - b.x
+      })
   })
 
   // Handle errors and loading states

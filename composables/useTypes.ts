@@ -24,6 +24,7 @@ export interface DamageEntry {
   sideIndex: number
   createdAt?: Date
   updatedAt?: Date
+  isArchive?: boolean
 }
 
 export interface CloudImage {
