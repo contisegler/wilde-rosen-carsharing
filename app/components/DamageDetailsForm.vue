@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import type { StorageFile } from '~/composables/useFirebaseStorageUpload'
-
-export interface DamageDetailFormEntry {
-  image: File | StorageFile | null
-  description: string
-}
+import type { DamageDetailFormEntry, StorageFile } from '~~/shared/types'
 
 interface Props {
   carId: string
@@ -26,8 +21,6 @@ const extraDetails = computed({
   set: value => emit('update:modelValue', value),
 })
 
-const uploadingIndex = ref<number | null>(null)
-
 function addDetail() {
   extraDetails.value = [...extraDetails.value, { image: null, description: '' }]
 }
@@ -46,15 +39,6 @@ function updateDetailDescription(index: number, description: string) {
   }
 }
 
-function handleDetailImageSelect(index: number, file: File | null | undefined) {
-  if (!file) return
-  
-  const newDetails = [...extraDetails.value]
-  if (newDetails[index]) {
-    newDetails[index].image = file
-    extraDetails.value = newDetails
-  }
-}
 
 function removeDetailImage(index: number) {
   const newDetails = [...extraDetails.value]
@@ -75,6 +59,14 @@ function getImageUrl(image: File | StorageFile | null): string | null {
 function getImageName(image: File | StorageFile | null): string {
   if (!image) return ''
   return image.name
+}
+
+function handleDetailImageFromSelector(index: number, image: File | StorageFile) {
+  const newDetails = [...extraDetails.value]
+  if (newDetails[index]) {
+    newDetails[index].image = image
+    extraDetails.value = newDetails
+  }
 }
 </script>
 
@@ -145,18 +137,10 @@ function getImageName(image: File | StorageFile | null): string {
           <span class="text-xs text-gray-500 pt-1 truncate">{{ getImageName(detail.image) }}</span>
         </div>
         <div v-else>
-          <UFileUpload
-            :model-value="null"
-            accept="image/*"
-            variant="button"
-            @update:model-value="handleDetailImageSelect(index, $event)"
-          >
-            <template #default>
-              <UButton icon="i-lucide-upload">
-                Bild hochladen
-              </UButton>
-            </template>
-          </UFileUpload>
+          <ImageSelector
+            :storage-path="`cars/${props.carId}/damages`"
+            @select="handleDetailImageFromSelector(index, $event)"
+          />
         </div>
       </div>
 
@@ -166,6 +150,8 @@ function getImageName(image: File | StorageFile | null): string {
           :model-value="detail.description"
           placeholder="Detail beschreiben..."
           :rows="2"
+          class="w-full"
+          :disabled="!detail.image"
           @update:model-value="updateDetailDescription(index, $event)"
         />
       </div>
@@ -174,10 +160,11 @@ function getImageName(image: File | StorageFile | null): string {
     <UButton
       icon="i-lucide-plus"
       variant="outline"
-      block
+      :disabled="disabled"
       @click="addDetail"
     >
       Weiteres Detail hinzufügen
     </UButton>
+
   </div>
 </template>
