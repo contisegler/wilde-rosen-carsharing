@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import type { CarSide, DamageDetail } from '~~/shared/types'
-import type { StorageFile } from '~/composables/useFirebaseStorageUpload'
+import type { CarSide, DamageDetail, StorageFile } from '~~/shared/types'
 
 definePageMeta({
   middleware: 'auth',

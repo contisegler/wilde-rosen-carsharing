@@ -51,3 +51,16 @@ export interface LogEntry {
     endKm: number;
     notes?: string;
 }
+
+export interface StorageFile {
+  name: string
+  url: string
+  fullPath: string
+  size?: number
+  timeCreated?: string
+}
+
+export interface DamageDetailFormEntry {
+  image: File | StorageFile | null
+  description: string
+}

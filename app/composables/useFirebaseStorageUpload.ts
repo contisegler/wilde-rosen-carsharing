@@ -1,12 +1,5 @@
 import { ref as storageRef, uploadBytes, getDownloadURL, listAll, getMetadata, deleteObject } from 'firebase/storage'
-
-export interface StorageFile {
-  name: string
-  url: string
-  fullPath: string
-  size?: number
-  timeCreated?: string
-}
+import type { StorageFile } from '~~/shared/types'
 
 export function useFirebaseStorageUpload(storagePath: string) {
   const uploading = ref(false)

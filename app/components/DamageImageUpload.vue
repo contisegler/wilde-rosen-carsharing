@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref as storageRef, getDownloadURL } from 'firebase/storage'
-import type { StorageFile } from '~/composables/useFirebaseStorageUpload'
+import type { StorageFile } from '~~/shared/types'
 
 interface Props {
   carId: string
