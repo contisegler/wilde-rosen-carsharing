@@ -30,7 +30,6 @@ export default defineNuxtConfig({
     }
   },
   runtimeConfig: {
-    firebaseServiceAccount: process.env.NUXT_FIREBASE_SERVICE_ACCOUNT,
     public: {
       firebaseApiKey: process.env.NUXT_FIREBASE_API_KEY,
       firebaseAuthDomain: process.env.NUXT_FIREBASE_AUTH_DOMAIN,

@@ -1,12 +1,8 @@
 import admin from 'firebase-admin';
-import type { ServiceAccount } from 'firebase-admin';
-import { cert } from 'firebase-admin/app';
 import firebaseJson from '~~/firebase.json';
 import type { FirebaseEmulatorConfig } from '~~/shared/types';
 
-const runtimeConfig = useRuntimeConfig();
 const appConfig = useAppConfig();
-const serviceAccount: ServiceAccount = JSON.parse(JSON.stringify(runtimeConfig.firebaseServiceAccount)) as ServiceAccount;
 
 const emulatorsConfig: boolean | FirebaseEmulatorConfig = (appConfig as any).firebase.emulators;
 if (process.env.NODE_ENV !== 'production') {
@@ -21,9 +17,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 console.log(`[Firebase admin app] connected {emulators: ${JSON.stringify(emulatorsConfig)}}`);
 
-const $adminApp = admin.initializeApp({
-    credential: cert(serviceAccount),
-});
+const $adminApp = admin.initializeApp();
 const $firestore = $adminApp.firestore();
 $firestore.settings({ ignoreUndefinedProperties: true });
 const $auth = $adminApp.auth();
