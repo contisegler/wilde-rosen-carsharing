@@ -3,6 +3,8 @@ import type { Damage } from '~~/shared/types'
 
 const route = useRoute()
 const carId = route.params.carId as string
+const user = useUser()
+const canReportDamage = computed(() => user.userRoles?.damageReporter ?? false)
 
 const { data: damages, status: damagesStatus, error: damagesError } = useFetch(`/api/cars/${carId}/damages`, {
   key: `damages-${carId}`,
@@ -20,8 +22,8 @@ const { data: damages, status: damagesStatus, error: damagesError } = useFetch(`
   <div>
     <CarPageNavigation :car-id="carId" current-view="damages" />
     
-    <!-- Add damage button -->
-    <div class="mb-4 flex justify-end">
+    <!-- Add damage button - only for users with damageReporter role -->
+    <div v-if="canReportDamage" class="mb-4 flex justify-end">
       <UButton
         icon="i-lucide-plus"
         color="primary"

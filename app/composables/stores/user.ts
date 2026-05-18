@@ -8,22 +8,41 @@ export const useUser = defineStore('user-store', () => {
     
     const userData = ref<UserData>();
     const isLogged = ref<boolean>(false);
+    const userRoles = ref<Record<string, boolean> | undefined>(undefined);
+    const uid = ref<string | undefined>(undefined);
 
     var userDataSnapshotUnsub: Unsubscribe | undefined = undefined;
-    
+    var rolesSnapshotUnsub: Unsubscribe | undefined = undefined;
+
     const subscribe = () => {
         $auth.onAuthStateChanged(async (user) =>{
             if (user) {
+                uid.value = user.uid;
                 userDataSnapshotUnsub = onSnapshot(doc($firestore, "users", user.uid), onUserDataSnapshot);
+                rolesSnapshotUnsub = onSnapshot(doc($firestore, "users", user.uid, "settings", "roles"), onUserRolesSnapshot);
                 isLogged.value = true;
             }
             else {
                 console.log('User logged out');
+                uid.value = undefined;
                 isLogged.value = false;
                 userData.value = undefined;
+                userRoles.value = undefined;
+                userDataSnapshotUnsub?.();
+                rolesSnapshotUnsub?.();
             }
         })
     };
+
+    async function onUserRolesSnapshot(snapshot: DocumentSnapshot<DocumentData, DocumentData>) {
+        const data = snapshot.data();
+        if (!data) {
+            userRoles.value = undefined;
+            return;
+        }
+        console.log('new userRoles snapshot:', data);
+        userRoles.value = data as Record<string, boolean>;
+    }
 
     const register = async ({ email, password, displayName, remember = true}: { email: string; password: string; displayName: string; remember: boolean }) => {
         await rememberAuth(remember);
@@ -55,6 +74,7 @@ export const useUser = defineStore('user-store', () => {
 
     const logout = async () => {
         userDataSnapshotUnsub?.();
+        rolesSnapshotUnsub?.();
         await $auth.signOut();
     };
 
@@ -90,6 +110,8 @@ export const useUser = defineStore('user-store', () => {
     return {
         userData,
         isLogged,
+        userRoles,
+        uid,
         subscribe,
         register,
         login,

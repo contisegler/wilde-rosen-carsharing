@@ -1,6 +1,6 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  compatibilityDate: '2026-04-04',
+  compatibilityDate: '2026-05-18',
   devtools: { enabled: true },
   modules: ['@pinia/nuxt', '@nuxt/ui', '@nuxt/image', 'nuxt-easy-lightbox'],
   css: ['~/assets/css/main.css'],

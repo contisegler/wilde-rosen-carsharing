@@ -46,9 +46,9 @@ export interface LogEntry {
     userId: string;
     userName: string;
     startTime: Date;
-    endTime: Date;
+    endTime?: Date;
     startKm: number;
-    endKm: number;
+    endKm?: number;
     notes?: string;
 }
 
