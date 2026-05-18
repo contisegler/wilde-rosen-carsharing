@@ -11,21 +11,21 @@
   },
   "dependencies": {
     "@nuxt/image": "2.0.0",
-    "@nuxt/ui": "^4.6.0",
+    "@nuxt/ui": "^4.7.1",
     "@pinia/nuxt": "0.11.3",
-    "firebase": "^12.11.0",
-    "firebase-admin": "^13.7.0",
-    "nuxt": "^4.4.2",
+    "firebase": "^12.13.0",
+    "firebase-admin": "^13.10.0",
+    "nuxt": "^4.4.5",
     "nuxt-easy-lightbox": "^1.1.0",
     "pinia": "^3.0.4",
-    "tailwindcss": "^4.2.2",
-    "vue": "^3.5.31",
-    "vue-router": "^5.0.4",
-    "zod": "^4.3.6"
+    "tailwindcss": "^4.3.0",
+    "vue": "^3.5.34",
+    "vue-router": "^5.0.7",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
-    "@iconify-json/lucide": "^1.2.101",
-    "nuxi": "^3.34.0",
-    "vue-tsc": "^3.2.6"
+    "@iconify-json/lucide": "^1.2.108",
+    "nuxi": "^3.35.2",
+    "vue-tsc": "^3.2.9"
   }
 }

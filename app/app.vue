@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { de } from '@nuxt/ui/locale'
+
 const user = useUser()
 const route = useRoute()
 
@@ -13,7 +15,7 @@ function goToLogin() {
 </script>
 
 <template>
-  <UApp>
+  <UApp :locale="de">
     <UContainer class="py-3 max-w-3xl">
       <div class="flex flex-row items-center justify-between w-full mb-5">
         <NuxtLink to="/" class="shrink-0">
