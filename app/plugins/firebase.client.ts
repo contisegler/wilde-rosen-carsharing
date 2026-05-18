@@ -7,17 +7,7 @@ import firebaseJson from '~~/firebase.json';
 export default defineNuxtPlugin({
   setup(nuxtApp) {
     const appConfig = useAppConfig();
-    const runtimeConfig = useRuntimeConfig();
-    const clientAppConfig = {
-      apiKey: runtimeConfig.public.firebaseApiKey,
-      authDomain: runtimeConfig.public.firebaseAuthDomain,
-      projectId: runtimeConfig.public.firebaseProjectId,
-      storageBucket: runtimeConfig.public.firebaseStorageBucket,
-      messagingSenderId: runtimeConfig.public.firebaseMessagingSenderId,
-      appId: runtimeConfig.public.firebaseAppId,
-    };
-
-    const app = initializeApp(clientAppConfig);
+    const app = initializeApp((appConfig as any).firebase.webAppConfig);
     const auth = getAuth(app);
     const firestore = initializeFirestore(app, {ignoreUndefinedProperties: true});
 

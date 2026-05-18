@@ -1,4 +1,8 @@
 export default defineAppConfig({
+  firebase: {
+    emulators: false as boolean | { auth?: boolean; firestore?: boolean },
+    webAppConfig: {} as Record<string, string>,
+  },
   ui: {
     button: {
       defaultVariants: {
