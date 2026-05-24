@@ -10,6 +10,7 @@ interface Props {
 const props = defineProps<Props>()
 const user = useUser()
 const { authHeaders } = useAuthHeaders()
+const isMember = computed(() => user.userRoles?.member ?? false)
 
 // Key with user ID triggers refetch on login/logout
 const fetchKey = computed(() => `logs-${props.carId}-${user.uid || 'anonymous'}`)
@@ -272,7 +273,7 @@ function calculateDuration(start: Date, end: Date): string {
   <div>
     <!-- Neue Fahrt starten Form - Hidden only if latest tour is from current user and unfinished -->
     <UForm
-      v-if="user.isLogged && !latestTourBlocksStart"
+      v-if="isMember && !latestTourBlocksStart"
       :schema="startFormSchema"
       :state="{ startDateTime: startDateTime ?? undefined, startKm: startKm ?? 0 }"
       class="border rounded-lg p-4 mb-4 bg-blue-50 shadow-sm space-y-3"
@@ -345,10 +346,10 @@ function calculateDuration(start: Date, end: Date): string {
         :key="log.id"
         class="border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition-shadow"
       >
-        <div v-if="user.isLogged && log.userName" class="font-semibold text-sm mb-1">{{ log.userName }}</div>
+        <div v-if="isMember && log.userName" class="font-semibold text-sm mb-1">{{ log.userName }}</div>
 
         <!-- Show info display OR end form for current user's unfinished tours -->
-        <div v-if="!(user.isLogged && log.userId === user.uid && (!log.endTime || !log.endKm))">
+        <div v-if="!(isMember && log.userId === user.uid && (!log.endTime || !log.endKm))">
           <div class="grid grid-cols-[auto_auto_auto_auto] gap-x-1 gap-y-1 text-sm">
             <span class="text-gray-600 mr-3">Start:</span>
             <span class="font-medium text-right mr-2">{{ formatDate(log.startTime) }}</span>
@@ -439,7 +440,7 @@ function calculateDuration(start: Date, end: Date): string {
           </UButton>
         </UForm>
 
-        <div v-if="user.isLogged && log.notes" class="mt-1 text-sm text-gray-700 italic">
+        <div v-if="isMember && log.notes" class="mt-1 text-sm text-gray-700 italic">
           {{ log.notes }}
         </div>
       </div>

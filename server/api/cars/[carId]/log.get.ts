@@ -11,7 +11,8 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>[]> =>
     
     // Access user directly from context (populated by middleware)
     const user = event.context.authenticatedUser;
-    const isAuthenticated = !!user;
+    const userRoles = event.context.userRoles;
+    const isMember = user && userRoles?.includes('member') ? true : false;
     
     const logsSnapshot = await $firestore.collection("cars").doc(carId).collection("log").get();
     
@@ -29,8 +30,8 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>[]> =>
         if (data.endTime) logEntry.endTime = data.endTime?.toDate() || new Date();
         if (data.startKm) logEntry.startKm = data.startKm;
         if (data.endKm) logEntry.endKm = data.endKm;
-        // Only include sensitive data if user is authenticated
-        if (isAuthenticated) {
+        // Only include sensitive data if user is a member
+        if (isMember) {
             if (data.note) logEntry.notes = data.note;
             if (data.userId) logEntry.userId = data.userId;
             if (data.userName) logEntry.userName = data.userName;

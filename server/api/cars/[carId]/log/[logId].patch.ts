@@ -11,10 +11,15 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>> => {
     }
     
     const user = event.context.authenticatedUser;
-    console.log('PATCH /log - authenticatedUser uid:', user?.uid);
     if (!user) {
         throw createError({ statusCode: 401, statusMessage: 'Nicht angemeldet' });
     }
+    
+    const userRoles = event.context.userRoles;
+    if (!userRoles.includes('member')) {
+        throw createError({ statusCode: 403, statusMessage: 'Nicht authorisiert' });
+    }
+    console.log('PATCH /log - user:', user?.uid, user?.name, user?.email, 'roles:', userRoles);
 
     const body = await readBody(event);
 

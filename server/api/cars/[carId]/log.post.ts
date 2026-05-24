@@ -13,7 +13,12 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>> => {
     if (!user) {
         throw createError({ statusCode: 401, statusMessage: 'Nicht angemeldet' });
     }
-    console.log('POST /log - authenticatedUser:', user?.uid, user?.name, user?.email);
+    
+    const userRoles = event.context.userRoles;
+    if (!userRoles.includes('member')) {
+        throw createError({ statusCode: 403, statusMessage: 'Nicht authorisiert' });
+    }
+    console.log('POST /log - user:', user?.uid, user?.name, user?.email, 'roles:', userRoles);
 
     const body = await readBody(event);
 
