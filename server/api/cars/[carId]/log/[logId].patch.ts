@@ -64,6 +64,18 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>> => {
         updateData.endKm = endKm;
     }
     
+    // Handle notes field (optional)
+    if (body.notes !== undefined) {
+        if (typeof body.notes !== 'string') {
+            throw createError({ statusCode: 400, statusMessage: 'Notizen müssen ein Text sein' });
+        }
+        if (body.notes.length > 500) {
+            throw createError({ statusCode: 400, statusMessage: 'Notizen dürfen maximal 500 Zeichen lang sein' });
+        }
+        // Store as 'note' (singular) to match the existing field name in Firestore
+        updateData.note = body.notes;
+    }
+    
     // Handle start fields update
     if (body.startTime || body.startKm != null) {
         const startTime = body.startTime ? new Date(body.startTime) : logData?.startTime?.toDate();
