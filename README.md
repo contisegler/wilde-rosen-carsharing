@@ -74,44 +74,6 @@ bun run preview
 
 Check out the [deployment documentation](https://nuxt.com/docs/getting-started/deployment) for more information.
 
-## Firebase Admin Scripts
+## License
 
-This directory contains helper scripts for Firebase Admin operations.
-
-### Setup
-
-1. Install dependencies:
-
-   ```bash
-   # Install project dependencies
-   npm install -D typescript ts-node @types/node
-
-   # Install Firebase and Commander
-   npm install firebase-admin commander
-   ```
-
-2. Set up authentication:
-   - Install Google Cloud SDK if you haven't already:
-
-     ```bash
-     # On Linux
-     sudo apt-get install google-cloud-sdk
-
-     # On macOS
-     brew install --cask google-cloud-sdk
-     ```
-
-   - Log in using your Google account:
-     ```bash
-     gcloud auth application-default login
-     ```
-   - Set your project:
-     ```bash
-     gcloud config set project <your-project-id>
-     ```
-
-### Copy Car
-
-```bash
-npm run copy-car -s <source-car-id> -d <destination-car-id>
-```
+Copyright (C) 2026 Hendrik Preuss. Licensed under [AGPL-3.0-or-later](LICENSE).

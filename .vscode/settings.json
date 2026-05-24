@@ -1,17 +1,10 @@
 {
-  "eslint.useFlatConfig": true,
-  "prettier.vueIndentScriptAndStyle": true,
-  "vue.format.script.initialIndent": true,
-  "vue.format.style.initialIndent": true,
-  "[vue]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  "files.associations": {
+    "*.css": "tailwindcss"
   },
-  "[html]": {
-    "editor.tabSize": 2,
-    "editor.insertSpaces": true
+  "editor.quickSuggestions": {
+    "strings": "on"
   },
-  "git.decorations.enabled": true,
-  "workbench.colorCustomizations": {
-    "gitDecoration.ignoredResourceForeground": "#6e768166"
-  }
+  "tailwindCSS.classAttributes": ["class", "ui"],
+  "tailwindCSS.classFunctions": ["defineAppConfig"]
 }
