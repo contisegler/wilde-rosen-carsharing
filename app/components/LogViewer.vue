@@ -10,6 +10,7 @@ interface Props {
 const props = defineProps<Props>()
 const user = useUser()
 const { authHeaders } = useAuthHeaders()
+const isMember = computed(() => user.userRoles?.member ?? false)
 
 // Key with user ID triggers refetch on login/logout
 const fetchKey = computed(() => `logs-${props.carId}-${user.uid || 'anonymous'}`)
@@ -63,6 +64,7 @@ type CalendarValue = CalendarDateTime | null
 // Start form state (plain refs, not persisted across navigation)
 const startDateTime = ref<CalendarValue>(null)
 const startKm = ref<number | undefined>(undefined)
+const startNotes = ref<string | undefined>(undefined)
 
 // --- Start form schema ---
 const startFormSchema = z.object({
@@ -70,6 +72,7 @@ const startFormSchema = z.object({
     message: 'Datum und Uhrzeit sind erforderlich'
   }),
   startKm: z.number().min(1, 'Kilometerstand muss größer als 0 sein'),
+  notes: z.string().max(500, 'Notizen dürfen maximal 500 Zeichen lang sein').optional(),
 })
 
 // --- End form schema (validates endKm > startKm) ---
@@ -82,6 +85,7 @@ const endFormSchema = z.object({
       message: 'Ende Datum und Uhrzeit sind erforderlich'
     }),
   endKm: z.number({ message: 'Kilometerstand ist erforderlich' }).min(0),
+  notes: z.string().max(500, 'Notizen dürfen maximal 500 Zeichen lang sein').optional(),
 }).refine((data) => data.endKm > data.startKm, {
   message: 'End-Kilometerstand muss größer als Start-Kilometerstand sein',
   path: ['endKm'],
@@ -145,7 +149,7 @@ function prefillStartDateTime() {
 }
 
 // Per-tour end form state (for inline end forms)
-const tourEndForms = ref(new Map<string, { startDateTime: CalendarValue; startKm: number | undefined; endDateTime: CalendarValue; endKm: number | undefined }>())
+const tourEndForms = ref(new Map<string, { startDateTime: CalendarValue; startKm: number | undefined; endDateTime: CalendarValue; endKm: number | undefined; notes: string | undefined }>())
 
 function getTourEndForm(tourId: string, log?: LogEntry) {
   if (!tourEndForms.value.has(tourId)) {
@@ -154,6 +158,7 @@ function getTourEndForm(tourId: string, log?: LogEntry) {
       startKm: log?.startKm,
       endDateTime: null,
       endKm: undefined,
+      notes: log?.notes,
     })
   }
   return tourEndForms.value.get(tourId)!
@@ -182,10 +187,12 @@ async function onSubmit() {
       body: {
         startTime: calendarDateTimeToDate(startDateTime.value).toISOString(),
         startKm: startKm.value,
+        notes: startNotes.value,
       },
     })
     startDateTime.value = null
     startKm.value = undefined
+    startNotes.value = undefined
     await refreshLogs()
   } catch (e: any) {
     console.error('onSubmit failed:', e)
@@ -215,6 +222,7 @@ async function endTour(tourId: string) {
         startKm: form.startKm,
         endTime: calendarDateTimeToDate(form.endDateTime).toISOString(),
         endKm: form.endKm,
+        notes: form.notes,
       },
     })
     // Clear this tour's form
@@ -272,9 +280,9 @@ function calculateDuration(start: Date, end: Date): string {
   <div>
     <!-- Neue Fahrt starten Form - Hidden only if latest tour is from current user and unfinished -->
     <UForm
-      v-if="user.isLogged && !latestTourBlocksStart"
+      v-if="isMember && !latestTourBlocksStart"
       :schema="startFormSchema"
-      :state="{ startDateTime: startDateTime ?? undefined, startKm: startKm ?? 0 }"
+      :state="{ startDateTime: startDateTime ?? undefined, startKm: startKm ?? 0, notes: startNotes }"
       class="border rounded-lg p-4 mb-4 bg-blue-50 shadow-sm space-y-3"
       @submit="onSubmit"
     >
@@ -306,6 +314,14 @@ function calculateDuration(start: Date, end: Date): string {
             placeholder="km"
             :increment="false"
             :decrement="false"
+          />
+        </UFormField>
+        <UFormField label="Notizen" name="notes" class="col-span-full">
+          <UTextarea
+            v-model="startNotes"
+            placeholder="Optionale Notizen zur Fahrt..."
+            :rows="1"
+            class="w-full"
           />
         </UFormField>
       </div>
@@ -345,10 +361,10 @@ function calculateDuration(start: Date, end: Date): string {
         :key="log.id"
         class="border rounded-lg p-3 bg-white shadow-sm hover:shadow-md transition-shadow"
       >
-        <div v-if="user.isLogged && log.userName" class="font-semibold text-sm mb-1">{{ log.userName }}</div>
+        <div v-if="isMember && log.userName" class="font-semibold text-sm mb-1">{{ log.userName }}</div>
 
         <!-- Show info display OR end form for current user's unfinished tours -->
-        <div v-if="!(user.isLogged && log.userId === user.uid && (!log.endTime || !log.endKm))">
+        <div v-if="!(isMember && log.userId === user.uid && (!log.endTime || !log.endKm))">
           <div class="grid grid-cols-[auto_auto_auto_auto] gap-x-1 gap-y-1 text-sm">
             <span class="text-gray-600 mr-3">Start:</span>
             <span class="font-medium text-right mr-2">{{ formatDate(log.startTime) }}</span>
@@ -371,7 +387,7 @@ function calculateDuration(start: Date, end: Date): string {
         <UForm
           v-else
           :schema="endFormSchema"
-          :state="{ startDateTime: getTourEndForm(log.id, log).startDateTime ?? undefined, startKm: getTourEndForm(log.id, log).startKm, endDateTime: getTourEndForm(log.id, log).endDateTime ?? undefined, endKm: getTourEndForm(log.id, log).endKm }"
+          :state="{ startDateTime: getTourEndForm(log.id, log).startDateTime ?? undefined, startKm: getTourEndForm(log.id, log).startKm, endDateTime: getTourEndForm(log.id, log).endDateTime ?? undefined, endKm: getTourEndForm(log.id, log).endKm, notes: getTourEndForm(log.id, log).notes }"
           class="mt-3 pt-3 border-t bg-blue-50 -mx-3 -mb-3 p-3 rounded-b-lg space-y-3"
           @submit="endTour(log.id)"
         >
@@ -428,6 +444,15 @@ function calculateDuration(start: Date, end: Date): string {
                 :decrement="false"
               />
             </UFormField>
+            <UFormField label="Notizen" name="notes" class="col-span-full">
+              <UTextarea
+                :model-value="getTourEndForm(log.id, log).notes"
+                @update:model-value="(val) => getTourEndForm(log.id, log).notes = val"
+                placeholder="Optionale Notizen zur Fahrt..."
+                :rows="1"
+                class="w-full"
+              />
+            </UFormField>
           </div>
           <p v-if="tourErrors.get(log.id)" class="text-red-600 text-sm">{{ tourErrors.get(log.id) }}</p>
           <UButton
@@ -439,7 +464,7 @@ function calculateDuration(start: Date, end: Date): string {
           </UButton>
         </UForm>
 
-        <div v-if="user.isLogged && log.notes" class="mt-1 text-sm text-gray-700 italic">
+        <div v-if="isMember && log.notes" class="mt-1 text-sm text-gray-700 italic">
           {{ log.notes }}
         </div>
       </div>

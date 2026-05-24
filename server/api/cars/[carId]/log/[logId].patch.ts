@@ -11,10 +11,15 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>> => {
     }
     
     const user = event.context.authenticatedUser;
-    console.log('PATCH /log - authenticatedUser uid:', user?.uid);
     if (!user) {
         throw createError({ statusCode: 401, statusMessage: 'Nicht angemeldet' });
     }
+    
+    const userRoles = event.context.userRoles;
+    if (!userRoles.includes('member')) {
+        throw createError({ statusCode: 403, statusMessage: 'Nicht authorisiert' });
+    }
+    console.log('PATCH /log - user:', user?.uid, user?.name, user?.email, 'roles:', userRoles);
 
     const body = await readBody(event);
 
@@ -57,6 +62,18 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>> => {
         
         updateData.endTime = endTime;
         updateData.endKm = endKm;
+    }
+    
+    // Handle notes field (optional)
+    if (body.notes !== undefined) {
+        if (typeof body.notes !== 'string') {
+            throw createError({ statusCode: 400, statusMessage: 'Notizen müssen ein Text sein' });
+        }
+        if (body.notes.length > 500) {
+            throw createError({ statusCode: 400, statusMessage: 'Notizen dürfen maximal 500 Zeichen lang sein' });
+        }
+        // Store as 'note' (singular) to match the existing field name in Firestore
+        updateData.note = body.notes;
     }
     
     // Handle start fields update

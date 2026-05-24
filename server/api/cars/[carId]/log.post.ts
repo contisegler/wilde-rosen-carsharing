@@ -13,7 +13,12 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>> => {
     if (!user) {
         throw createError({ statusCode: 401, statusMessage: 'Nicht angemeldet' });
     }
-    console.log('POST /log - authenticatedUser:', user?.uid, user?.name, user?.email);
+    
+    const userRoles = event.context.userRoles;
+    if (!userRoles.includes('member')) {
+        throw createError({ statusCode: 403, statusMessage: 'Nicht authorisiert' });
+    }
+    console.log('POST /log - user:', user?.uid, user?.name, user?.email, 'roles:', userRoles);
 
     const body = await readBody(event);
 
@@ -21,12 +26,28 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>> => {
         throw createError({ statusCode: 400, statusMessage: 'startTime und startKm sind erforderlich' });
     }
 
-    const logData = {
+    // Validate notes if provided
+    if (body.notes !== undefined) {
+        if (typeof body.notes !== 'string') {
+            throw createError({ statusCode: 400, statusMessage: 'Notizen müssen ein Text sein' });
+        }
+        if (body.notes.length > 500) {
+            throw createError({ statusCode: 400, statusMessage: 'Notizen dürfen maximal 500 Zeichen lang sein' });
+        }
+    }
+
+    const logData: any = {
         userId: user.uid,
         userName: user.name || user.email || 'Unbekannt',
         startTime: new Date(body.startTime),
         startKm: Number(body.startKm),
     };
+    
+    // Add notes if provided (store as 'note' singular to match existing field name)
+    if (body.notes) {
+        logData.note = body.notes;
+    }
+    
     console.log('POST /log - saving logData:', logData);
     
     try {
