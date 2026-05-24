@@ -9,11 +9,19 @@ const canReportDamage = computed(() => user.userRoles?.damageReporter ?? false)
 const { data: damages, status: damagesStatus, error: damagesError } = useFetch(`/api/cars/${carId}/damages`, {
   key: `damages-${carId}`,
   transform: (data: any[]): Damage[] => {
-    return data.map(damage => ({
-      ...damage,
-      createdAt: new Date(damage.createdAt),
-      updatedAt: new Date(damage.updatedAt)
-    }))
+    return data
+      .map(damage => ({
+        ...damage,
+        createdAt: new Date(damage.createdAt),
+        updatedAt: new Date(damage.updatedAt)
+      }))
+      .filter((damage) => !damage.isArchive)
+      .sort((a, b) => {
+        if (a.sideIndex !== b.sideIndex) {
+          return a.sideIndex - b.sideIndex
+        }
+        return a.x - b.x
+      })
   }
 })
 </script>
@@ -52,6 +60,7 @@ const { data: damages, status: damagesStatus, error: damagesError } = useFetch(`
     <div v-else-if="!damages || damages.length === 0" class="text-center p-8">
       <p>Keine Schäden gefunden.</p>
       <UButton
+        v-if="canReportDamage"
         icon="i-lucide-plus"
         color="primary"
         class="mt-4"

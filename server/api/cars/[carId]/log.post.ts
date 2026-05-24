@@ -10,10 +10,10 @@ export default defineEventHandler(async (event): Promise<Partial<LogEntry>> => {
     }
     
     const user = event.context.authenticatedUser;
-    console.log('POST /log - authenticatedUser:', user?.uid, user?.name, user?.email);
     if (!user) {
         throw createError({ statusCode: 401, statusMessage: 'Nicht angemeldet' });
     }
+    console.log('POST /log - authenticatedUser:', user?.uid, user?.name, user?.email);
 
     const body = await readBody(event);
 

@@ -5,10 +5,22 @@ import type { Damage } from "~~/shared/types";
 export default defineEventHandler(async (event): Promise<Damage> => {
     assertMethod(event, 'POST');
     const carId = getRouterParam(event, 'carId');
+
+    const user = event.context.authenticatedUser;
+    if (!user) {
+        throw createError({ statusCode: 401, statusMessage: 'Nicht angemeldet' });
+    }
+    
+    const userRoles = event.context.userRoles;
+    if (!userRoles.includes('damageReporter')) {
+        throw createError({ statusCode: 403, statusMessage: 'Nicht authorisiert' });
+    }
+    console.log('POST /damages - user:', user?.uid, user?.name, user?.email, 'roles:', userRoles);
     
     if (!carId) {
         throw createError({ statusCode: 400, statusMessage: 'Missing carId' });
     }
+    
     
     // Get and validate request body with Zod
     const rawBody = await readBody(event);

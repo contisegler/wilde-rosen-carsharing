@@ -20,7 +20,7 @@ export default defineEventHandler(async (event): Promise<Damage[]> => {
     );
     
     // Sort by side index, then by x position
-    damages
+    return damages
       .filter((damage) => !damage.isArchive)
       .sort((a, b) => {
         if (a.sideIndex !== b.sideIndex) {
@@ -28,6 +28,4 @@ export default defineEventHandler(async (event): Promise<Damage[]> => {
         }
         return a.x - b.x;
     });
-    
-    return damages;
 });
