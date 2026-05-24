@@ -10,6 +10,7 @@ interface Props {
 const props = defineProps<Props>()
 
 const user = useUser()
+const canReportDamage = computed(() => user.userRoles?.damageReporter ?? false)
 
 const numDetails = computed(() => props.damage.details?.length || 0)
 
@@ -62,9 +63,6 @@ const lightboxImages = computed(() =>
 
 const lightboxVisible = ref(false)
 const schematicLoaded = ref(false)
-
-// Check if user is damage reporter (simplified for now)
-const isDamageReporter = computed(() => false) // TODO: Implement permission check
 </script>
 
 <template>
@@ -101,7 +99,7 @@ const isDamageReporter = computed(() => false) // TODO: Implement permission che
 
     <!-- Edit Button (top-right corner, for damage reporters only) -->
     <UButton
-      v-if="isDamageReporter"
+      v-if="canReportDamage"
       variant="soft"
       color="neutral"
       square
@@ -111,7 +109,7 @@ const isDamageReporter = computed(() => false) // TODO: Implement permission che
     />
 
     <!-- Schematic Overlay -->
-    <div class="absolute top-2" :class="isDamageReporter ? 'right-[60px]' : 'right-2'">
+    <div class="absolute top-2" :class="canReportDamage ? 'right-[60px]' : 'right-2'">
       <div class="relative">
         <FirebaseNuxtImg
           v-if="schematicUrl"
