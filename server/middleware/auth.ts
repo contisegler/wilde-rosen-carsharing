@@ -21,10 +21,18 @@ export default defineEventHandler(async (event) => {
   try {
     const decodedToken = await $auth.verifyIdToken(idToken);
     event.context.authenticatedUser = decodedToken;
-    
-    // Fetch user roles from Firestore
-    const rolesDoc = await $firestore.collection('users').doc(decodedToken.uid).collection('settings').doc('roles').get();
-    
+
+    // Fetch user data and roles from Firestore in parallel
+    const [userDoc, rolesDoc] = await Promise.all([
+      $firestore.collection('users').doc(decodedToken.uid).get(),
+      $firestore.collection('users').doc(decodedToken.uid).collection('settings').doc('roles').get(),
+    ]);
+
+    event.context.authenticatedUser = {
+      ...decodedToken,
+      name: userDoc.data()?.displayName || decodedToken.name,
+    };
+
     if (rolesDoc.exists) {
       const rolesData = rolesDoc.data();
       if (rolesData) {

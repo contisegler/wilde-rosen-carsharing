@@ -19,13 +19,13 @@ const items = computed<DropdownMenuItem[][]>(() => [
     // {
     //   label: 'Fahrtenbuch',
     //   icon: 'i-lucide-notebook',
-    //   to: user.userData?.id ? `/users/${user.userData.id}/log` : '#',
+    //   to: user.userData?.id ? `/users/${user.uid}/log` : '#',
     // },
-    // {
-    //   label: 'Einstellungen',
-    //   icon: 'i-lucide-settings',
-    //   to: user.userData?.id ? `/users/${user.userData.id}/settings` : '#',
-    // },
+    {
+      label: 'Einstellungen',
+      icon: 'i-lucide-settings',
+      to: user.uid ? `/users/${user.uid}/settings` : '#',
+    },
   ],
   [
     {
