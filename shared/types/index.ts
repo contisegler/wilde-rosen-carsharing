@@ -37,7 +37,8 @@ export interface Damage {
     side: CarSide;
     x: number;
     y: number;
-    updatedAt: Date;
+    updatedAt: Date;  
+    isArchive?: boolean;
 }
 
 export interface LogEntry {
