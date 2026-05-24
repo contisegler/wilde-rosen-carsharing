@@ -115,7 +115,7 @@ User roles are stored in Firestore under `users/{uid}/settings/roles` as boolean
 | Role              | Permissions                                    |
 |-------------------|------------------------------------------------|
 | (none / guest)    | View all car damages (read-only)               |
-| `member`          | View damages + use the Fahrtenbuch (log tours)  |
+| `member`          | View damages (read-only) + use the Fahrtenbuch (log tours) |
 | `damageReporter`  | View damages + add/edit damage reports          |
 
 Roles are assigned via Firestore (not through the app UI). The server middleware verifies the user's Firebase ID token and fetches roles from Firestore on each API request.

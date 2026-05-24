@@ -2,6 +2,8 @@
 
 Members can log car tours in the Fahrtenbuch. You need an account with the **member** role.
 
+The member role only grants access to the Fahrtenbuch. Damages are displayed the same as for guests (read-only, no add or edit buttons).
+
 ## 1. Log In
 
 Click the login icon in the top-right corner to open the login page. Sign in with your email and password, or use Google Sign-In.
