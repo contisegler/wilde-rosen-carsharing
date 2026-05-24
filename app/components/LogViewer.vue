@@ -282,10 +282,8 @@ function calculateDuration(start: Date, end: Date): string {
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <UFormField label="Start Datum & Uhrzeit" name="startDateTime">
           <div class="flex gap-1 items-center">
-            <UInputDate
+            <DateTimeInput
               v-model="startDateTime"
-              granularity="minute"
-              :hour-cycle="24"
               icon="i-lucide-calendar-clock"
               class="flex-1"
             />
@@ -381,11 +379,9 @@ function calculateDuration(start: Date, end: Date): string {
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <UFormField label="Start Datum & Uhrzeit" name="startDateTime">
               <div class="flex gap-1 items-center">
-                <UInputDate
+                <DateTimeInput
                   :model-value="getTourEndForm(log.id, log).startDateTime"
                   @update:model-value="(val) => getTourEndForm(log.id, log).startDateTime = val"
-                  granularity="minute"
-                  :hour-cycle="24"
                   icon="i-lucide-calendar-clock"
                   class="flex-1"
                 />
@@ -404,11 +400,9 @@ function calculateDuration(start: Date, end: Date): string {
             </UFormField>
             <UFormField label="Ende Datum & Uhrzeit" name="endDateTime">
               <div class="flex gap-1 items-center">
-                <UInputDate
+                <DateTimeInput
                   :model-value="getTourEndForm(log.id, log).endDateTime"
                   @update:model-value="(val) => getTourEndForm(log.id, log).endDateTime = val"
-                  granularity="minute"
-                  :hour-cycle="24"
                   icon="i-lucide-calendar-clock"
                   class="flex-1"
                 />
