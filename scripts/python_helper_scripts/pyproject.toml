@@ -5,6 +5,8 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "google-api-python-client>=2.196.0",
+    "google-auth>=2.49.1",
     "google-cloud-firestore>=2.21.0",
     "google-cloud-storage>=3.4.0",
     "ipykernel>=6.30.0",
