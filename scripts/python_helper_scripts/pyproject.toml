@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
+    "cairosvg>=2.9.0",
     "google-api-python-client>=2.196.0",
     "google-auth>=2.49.1",
     "google-cloud-firestore>=2.21.0",
@@ -12,4 +13,5 @@ dependencies = [
     "ipykernel>=6.30.0",
     "pandas>=2.3.1",
     "pydantic>=2.11.7",
+    "qrcode[pil]>=8.2",
 ]
