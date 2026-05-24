@@ -97,14 +97,23 @@ pnpm preview
 
 ## Deployment
 
-The project uses **Firebase App Hosting** with two environments:
+The project uses **Firebase App Hosting** with three branches and two Firebase/GCP projects:
 
-| Branch   | Environment | Description                     |
-|----------|-------------|---------------------------------|
-| `main`   | Production  | Live production deployment      |
-| `staging`| NPR         | Non-production / staging preview |
+```
+npr  →  staging  →  main
+ ↓        ↓          ↓
+dev DB   prod DB    prod DB
+```
 
-Pushing to `main` or `staging` triggers an automatic build and deploy via a **Firebase App Hosting webhook**. Firebase App Hosting builds the Nuxt application and deploys it to its hosting infrastructure.
+| Branch    | Environment | GCP Project | Database      | Purpose                                           |
+|-----------|-------------|-------------|---------------|---------------------------------------------------|
+| `npr`     | NPR (dev)   | Separate    | Dev database  | Independent development environment — safe to break |
+| `staging` | Staging     | Production  | Prod database | Pre-release verification with real production data |
+| `main`    | Production  | Production  | Prod database | Live production deployment                        |
+
+Changes flow from `npr` → `staging` → `main`. The `npr` branch uses its own GCP project with a separate database and storage, so there are no consequences to production. The `staging` and `main` branches share the same production database, so `staging` is used to verify changes look correct with real data before merging to `main`.
+
+Pushing to any of these branches triggers an automatic build and deploy via a **Firebase App Hosting webhook**. Firebase App Hosting builds the Nuxt application and deploys it to its hosting infrastructure.
 
 The `FIREBASE_WEBAPP_CONFIG` environment variable is injected automatically by Firebase App Hosting at build time — no manual `.env` file is needed in deployed environments.
 
