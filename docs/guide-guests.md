@@ -30,6 +30,4 @@ Use the dropdown at the top of the page to switch between cars.
 
 ## 5. View the Fahrtenbuch (Tour Log)
 
-Click the **Fahrtenbuch** button to see recorded tours. Without logging in, no tours are displayed.
-
-![Fahrtenbuch guest view](images/09-fahrtenbuch-guest.png)
+Click the **Fahrtenbuch** button to see recorded tours. Without logging in, the Fahrtenbuch is not available — you need to sign in as a member.
