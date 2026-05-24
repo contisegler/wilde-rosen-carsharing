@@ -27,48 +27,6 @@ This directory contains Python scripts for managing Firebase Firestore and Googl
 
 ## Scripts
 
-### Image Path Fixer
-
-The `fix_image_paths.py` script checks and fixes image paths in Firestore for car damage entries. It ensures all images follow the correct path pattern: `cars/{car_id}/damages/`.
-
-#### Features:
-- Scans all cars and their damage entries in Firestore
-- Identifies images with incorrect paths
-- Copies images to the correct location in Google Cloud Storage
-- Updates Firestore entries with new image URLs
-- Supports dry-run mode for safe testing
-- Provides detailed statistics and logging
-
-#### Usage:
-
-**Direct usage:**
-```bash
-python fix_image_paths.py --project-id your-project-id --bucket-name your-bucket-name [--dry-run] [--verbose]
-```
-
-**Using environment configuration:**
-```bash
-python run_fix_image_paths.py --env npr --bucket-name your-bucket-name [--dry-run] [--verbose]
-```
-
-#### Examples:
-
-**Dry run to see what would be changed:**
-```bash
-python run_fix_image_paths.py --env npr --bucket-name wilde-rosen-carsharing.appspot.com --dry-run --verbose
-```
-
-**Actually fix the paths:**
-```bash
-python run_fix_image_paths.py --env npr --bucket-name wilde-rosen-carsharing.appspot.com --verbose
-```
-
-#### Parameters:
-- `--env`: Environment (npr or prd) - uses project IDs from env.py
-- `--bucket-name`: Google Cloud Storage bucket name
-- `--dry-run`: Preview changes without making them
-- `--verbose`: Enable detailed logging
-
 ### Other Utilities
 
 - `firebase_util.py`: Base utilities for Firestore operations
